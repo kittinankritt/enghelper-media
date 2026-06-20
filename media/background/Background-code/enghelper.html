@@ -1450,7 +1450,132 @@
                 </div>
             </div>
 
-            <div id="view-mode-image-container" style="display: none; text-align: center; margin-bottom: 20px;">
+            <!-- New Top Metrics Section -->
+            <div class="vocab-top-metrics-row">
+                <div class="vocab-synonyms-antonyms-card">
+                    <div class="vocab-sa-col">
+                        <div class="vocab-sa-badge syn">Synonyms</div>
+                        <ul id="vocab-synonyms-list"></ul>
+                    </div>
+                    <div class="vocab-sa-col">
+                        <div class="vocab-sa-badge ant">Antonyms</div>
+                        <ul id="vocab-antonyms-list"></ul>
+                    </div>
+                </div>
+                <div class="vocab-cefr-gauges-wrapper">
+                    <div class="vocab-cefr-card">
+                        <div class="vocab-cefr-header">CEFR LEVEL</div>
+                        <div class="vocab-cefr-row-new">
+                            <span class="cefr-spot" data-level="A1">A1</span>
+                            <span class="cefr-spot" data-level="A2">A2</span>
+                            <span class="cefr-spot" data-level="B1">B1</span>
+                            <span class="cefr-spot" data-level="B2">B2</span>
+                            <span class="cefr-spot" data-level="C1">C1</span>
+                            <span class="cefr-spot" data-level="C2">C2</span>
+                        </div>
+                    </div>
+                    <div class="vocab-gauges-card">
+                        <div class="vocab-gauge-box">
+                            <div class="vocab-gauge-container">
+                                <svg class="vocab-radial-gauge" viewBox="0 0 100 55">
+                                    <defs>
+                                        <linearGradient id="vocab-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#a855f7" />
+                                            <stop offset="100%" stop-color="#ec4899" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
+                                    <path id="vocab-frequency-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
+                                    <circle id="vocab-frequency-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
+                                </svg>
+                            </div>
+                            <div class="vocab-gauge-label-main">FREQUENCY</div>
+                            <div class="vocab-gauge-label-sub" id="vocab-frequency-sub">-</div>
+                        </div>
+                        <div class="vocab-gauge-box">
+                            <div class="vocab-gauge-container">
+                                <svg class="vocab-radial-gauge" viewBox="0 0 100 55">
+                                    <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
+                                    <path id="vocab-formality-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
+                                    <circle id="vocab-formality-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
+                                </svg>
+                            </div>
+                            <div class="vocab-gauge-label-main">FORMALITY</div>
+                            <div class="vocab-gauge-label-sub" id="vocab-formality-sub">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Balanced Bottom Details Layout -->
+            <div class="vocab-bottom-details-layout">
+                <!-- Left Column: Explanation and Examples -->
+                <div class="vocab-bottom-left-col">
+                    <!-- วิธีใช้จริง -->
+                    <div class="vocab-detail-card main-note" id="vocab-usage-note-card">
+                        <div class="vocab-card-header">
+                            <i class="fi fi-rr-map"></i> วิธีใช้จริง
+                        </div>
+                        <div class="vocab-card-body" id="vocab-usage-note-content"></div>
+                    </div>
+                    <!-- ตัวอย่างประโยค -->
+                    <div class="vocab-detail-card examples" id="vocab-examples-card">
+                        <div class="vocab-card-header">
+                            <span><i class="fi fi-rr-quote-right"></i> ตัวอย่างประโยค</span>
+                            <div class="vocab-header-actions">
+                                <button id="generate-examples-btn-new" class="ai-feature-btn compact" title="สร้างตัวอย่างเพิ่ม" type="button">
+                                    <i class="fi fi-rr-book-open-reader"></i>
+                                </button>
+                                <button class="dialog-audio-btn static" id="view-mode-examples-audio-btn-new" title="เล่นเสียงตัวอย่าง" type="button">
+                                    <i class="fi fi-rr-volume"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="vocab-card-body">
+                            <ul id="vocab-examples-list-ul" style="margin:0; padding-left: 20px; color: var(--text-color); line-height: 1.6;"></ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Structural Info and Pitfalls -->
+                <div class="vocab-bottom-right-col">
+                    <!-- คำที่มักใช้คู่กัน -->
+                    <div class="vocab-detail-card collocations" id="vocab-collocations-card">
+                        <div class="vocab-card-header">
+                            <i class="fi fi-rr-link-alt"></i> คำที่มักใช้คู่กัน
+                        </div>
+                        <div class="vocab-card-body">
+                            <ul id="vocab-collocations-list-ul"></ul>
+                        </div>
+                    </div>
+                    <!-- จุดที่มักพลาด -->
+                    <div class="vocab-detail-card pitfall" id="vocab-mistake-card">
+                        <div class="vocab-card-header">
+                            <i class="fi fi-rr-triangle-warning"></i> จุดที่มักพลาด
+                        </div>
+                        <div class="vocab-card-body" id="vocab-mistake-content"></div>
+                    </div>
+                    <!-- ทิปจำ -->
+                    <div class="vocab-detail-card tip" id="vocab-tip-card">
+                        <div class="vocab-card-header">
+                            <i class="fi fi-rr-lightbulb-on"></i> ทิปจำ
+                        </div>
+                        <div class="vocab-card-body" id="vocab-tip-content"></div>
+                    </div>
+                    <!-- รากศัพท์ -->
+                    <div class="vocab-detail-card root-info" id="vocab-root-card">
+                        <div class="vocab-card-header">
+                            <i class="fi fi-rr-leaf"></i> รากศัพท์
+                        </div>
+                        <div class="vocab-card-body">
+                            <div class="root-capsule-container-new" id="vocab-root-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keep old elements in a hidden container to prevent JS errors -->
+            <div class="old-vocab-elements-hidden-wrap" style="display: none !important;">
+<div id="view-mode-image-container" style="display: none; text-align: center; margin-bottom: 20px;">
                 <img id="view-mode-image" src="" alt="Word Illustration" style="max-height: 180px; max-width: 100%; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); object-fit: cover; border: 1px solid rgba(var(--theme-rgb), 0.1);">
             </div>
 
@@ -1551,6 +1676,7 @@
             </div>
 
             <div id="vocab-learning-notes-view" class="view-mode-item vocab-learning-notes-view" style="display:none;">
+            </div>
             </div>
 
             <div id="view-mode-actions" style="margin-top: 20px; display: none; text-align: center;">

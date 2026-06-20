@@ -53190,3 +53190,354 @@
             background: rgba(255, 255, 255, 0.3) !important;
             transform: scale(1.1) rotate(5deg) !important;
         }
+
+
+/* ==========================================================================
+   Redesigned Vocabulary Detail Styles
+   ========================================================================== */
+.vocab-top-metrics-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .vocab-top-metrics-row {
+        flex-direction: column;
+    }
+}
+
+.vocab-synonyms-antonyms-card {
+    flex: 1.2;
+    background: rgba(147, 51, 234, 0.03) !important;
+    border: 1px solid rgba(147, 51, 234, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 18px 22px !important;
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 4px 24px rgba(147, 51, 234, 0.04) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.vocab-sa-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vocab-sa-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+    letter-spacing: 0.8px;
+}
+
+.vocab-sa-badge.syn {
+    background: rgba(168, 85, 247, 0.12) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(168, 85, 247, 0.2) !important;
+}
+
+.vocab-sa-badge.ant {
+    background: rgba(236, 72, 153, 0.12) !important;
+    color: #f472b6 !important;
+    border: 1px solid rgba(236, 72, 153, 0.2) !important;
+}
+
+#vocab-synonyms-list, #vocab-antonyms-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#vocab-synonyms-list li, #vocab-antonyms-list li {
+    font-size: 0.92rem !important;
+    color: var(--text-color) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#vocab-synonyms-list li::before, #vocab-antonyms-list li::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+    flex-shrink: 0;
+}
+
+#vocab-antonyms-list li::before {
+    background: #ec4899;
+    box-shadow: 0 0 8px #ec4899;
+}
+
+.vocab-cefr-gauges-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.vocab-cefr-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px !important;
+    padding: 16px 20px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.vocab-cefr-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--light-text-color);
+    letter-spacing: 1px;
+    position: absolute;
+    top: -9px;
+    background: var(--surface-color);
+    padding: 0 10px;
+}
+
+[data-theme="dark"] .vocab-cefr-header {
+    background: #110e20;
+}
+
+.vocab-cefr-row-new {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+.cefr-spot {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.15);
+    padding: 6px 0;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.3s ease;
+    cursor: default;
+    flex: 1;
+    text-align: center;
+}
+
+.cefr-spot.active {
+    color: #ffffff !important;
+    background: #a855f7 !important;
+    border-color: #c084fc !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5) !important;
+    text-shadow: 0 0 2px #fff !important;
+}
+
+.vocab-gauges-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px !important;
+    padding: 14px 20px !important;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+}
+
+.vocab-gauge-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.vocab-gauge-container {
+    width: 85px;
+    height: 48px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vocab-radial-gauge {
+    width: 100%;
+    height: auto;
+}
+
+.vocab-radial-gauge path {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vocab-radial-gauge circle {
+    transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vocab-gauge-label-main {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--light-text-color);
+    letter-spacing: 0.5px;
+}
+
+.vocab-gauge-label-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.85;
+}
+
+.vocab-bottom-details-layout {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    align-items: flex-start;
+}
+
+.vocab-bottom-left-col {
+    flex: 1.25;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.vocab-bottom-right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .vocab-bottom-details-layout {
+        flex-direction: column;
+    }
+    .vocab-bottom-left-col, .vocab-bottom-right-col {
+        width: 100%;
+    }
+}
+
+.vocab-detail-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vocab-detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.vocab-detail-card.pitfall {
+    background: rgba(239, 68, 68, 0.03) !important;
+    border-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+.vocab-detail-card.tip {
+    background: rgba(234, 179, 8, 0.03) !important;
+    border-color: rgba(234, 179, 8, 0.15) !important;
+}
+
+.vocab-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding-bottom: 8px;
+}
+
+.vocab-detail-card.pitfall .vocab-card-header {
+    color: #f87171 !important;
+}
+
+.vocab-detail-card.tip .vocab-card-header {
+    color: #fbbf24 !important;
+}
+
+.vocab-card-body {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.vocab-card-body p {
+    margin: 0 0 10px 0;
+}
+.vocab-card-body p:last-child {
+    margin: 0;
+}
+
+.vocab-card-body ul, .vocab-card-body ol {
+    margin: 0 !important;
+    padding-left: 20px !important;
+}
+
+.vocab-card-body li {
+    margin-bottom: 6px !important;
+}
+.vocab-card-body li:last-child {
+    margin-bottom: 0 !important;
+}
+
+.vocab-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.root-capsule-container-new {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.vocab-root-part-chip {
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 6px 12px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 60px;
+}
+
+.vocab-root-part-chip .root-subtext {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    font-weight: normal;
+}
+
+.vocab-root-joiner {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.2);
+}

@@ -14515,12 +14515,20 @@
                                 const aiData = await callGemini(payload, loadingOverlay, generateExamplesBtn, { contextScope: "vocab", taskType: "examples" });
                                 if (aiData && aiData.new_examples && aiData.new_examples.length > 0) {
                                     const examplesUl = viewModeContentDiv.querySelector(".examples-view ul");
+                                    const newExamplesUl = document.getElementById("vocab-examples-list-ul");
                                     const wordToHighlight = String(item.englishData || item.word || item.english || "").trim();
                                     aiData.new_examples.forEach((ex) => {
-                                        const li = document.createElement("li");
-                                        li.innerHTML = highlightWordInSentence(escapeHtml(ex), wordToHighlight);
-                                        li.style.color = "var(--success-color)";
-                                        examplesUl.appendChild(li);
+                                        const li1 = document.createElement("li");
+                                        li1.innerHTML = highlightWordInSentence(escapeHtml(ex), wordToHighlight);
+                                        li1.style.color = "var(--success-color)";
+                                        examplesUl.appendChild(li1);
+
+                                        if (newExamplesUl) {
+                                            const li2 = document.createElement("li");
+                                            li2.innerHTML = highlightWordInSentence(escapeHtml(ex), wordToHighlight);
+                                            li2.style.color = "var(--success-color)";
+                                            newExamplesUl.appendChild(li2);
+                                        }
                                     });
                                     viewModeActions.style.display = "block";
                                     showToast2("\u0E2A\u0E23\u0E49\u0E32\u0E07\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!", "success");
@@ -17854,6 +17862,180 @@
                                             viewModeExamplesUl.innerHTML = itemToDisplay.examples && itemToDisplay.examples.length > 0 ? itemToDisplay.examples.map((ex) => `<li>${highlightWordInSentence(escapeHtml(ex), wordToHighlight)}</li>`).join("") : "";
                                             viewModeExamplesAudioBtn.dataset.text = examplesText;
                                             checkAudioStatusForButton(viewModeExamplesAudioBtn);
+                                            // Redesigned UI Binding
+                                            // 1. Synonyms list
+                                            const newSynList = document.getElementById("vocab-synonyms-list");
+                                            if (newSynList) {
+                                                newSynList.innerHTML = itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0 
+                                                    ? itemToDisplay.synonyms.map(syn => `<li>${escapeHtml(syn)}</li>`).join("") 
+                                                    : "<li>-</li>";
+                                            }
+
+                                            // 2. Antonyms list
+                                            const newAntList = document.getElementById("vocab-antonyms-list");
+                                            if (newAntList) {
+                                                newAntList.innerHTML = itemToDisplay.antonyms && itemToDisplay.antonyms.length > 0 
+                                                    ? itemToDisplay.antonyms.map(ant => `<li>${escapeHtml(ant)}</li>`).join("") 
+                                                    : "<li>-</li>";
+                                            }
+
+                                            // 3. CEFR Level glow
+                                            const activeCefr = getVocabCefrLevel(itemToDisplay);
+                                            document.querySelectorAll(".cefr-spot").forEach(spot => {
+                                                spot.classList.toggle("active", spot.dataset.level === activeCefr);
+                                            });
+
+                                            // 4. Frequency & Formality SVG gauges
+                                            const freqScore = getVocabFrequencyLevel(itemToDisplay);
+                                            const formScore = getVocabFormalityLevel(itemToDisplay);
+                                            
+                                            // Set text labels
+                                            const freqLabelMap = { 1: "Very Rare", 2: "Uncommon", 3: "Moderate", 4: "Common", 5: "Extremely Common" };
+                                            const formLabelMap = { 1: "Very Informal", 2: "Informal", 3: "Neutral", 4: "Formal", 5: "Very Formal" };
+                                            
+                                            const freqLabelSub = document.getElementById("vocab-frequency-sub");
+                                            if (freqLabelSub) freqLabelSub.textContent = freqLabelMap[freqScore] || "-";
+                                            
+                                            const formLabelSub = document.getElementById("vocab-formality-sub");
+                                            if (formLabelSub) formLabelSub.textContent = formLabelMap[formScore] || "-";
+
+                                            // Trigger trigonometry calculation for gauges
+                                            const updateGaugeSVG = (gaugeFillId, pointerId, score) => {
+                                                const fillEl = document.getElementById(gaugeFillId);
+                                                const pointerEl = document.getElementById(pointerId);
+                                                if (!fillEl || !pointerEl) return;
+                                                
+                                                // Map score 1-5 to percentage (15% to 95%)
+                                                const scoreMap = { 1: 0.15, 2: 0.35, 3: 0.55, 4: 0.75, 5: 0.95 };
+                                                const percent = scoreMap[score] || 0.5;
+                                                
+                                                // Semicircle stroke-dashoffset: 110 max length
+                                                const maxOffset = 110;
+                                                const offset = maxOffset * (1 - percent);
+                                                fillEl.setAttribute("stroke-dashoffset", String(offset));
+                                                
+                                                // calculate pointer coordinate: centered around (50, 50), radius 35
+                                                const angleDeg = 180 - (180 * percent);
+                                                const angleRad = angleDeg * Math.PI / 180;
+                                                const cx = 50 + 35 * Math.cos(angleRad);
+                                                const cy = 50 - 35 * Math.sin(angleRad);
+                                                pointerEl.setAttribute("cx", String(cx));
+                                                pointerEl.setAttribute("cy", String(cy));
+                                            };
+                                            
+                                            updateGaugeSVG("vocab-frequency-gauge-fill", "vocab-frequency-gauge-pointer", freqScore);
+                                            updateGaugeSVG("vocab-formality-gauge-fill", "vocab-formality-gauge-pointer", formScore);
+
+                                            // Helper for escaping & formatting
+                                            const formatNoteContentNew = (text) => {
+                                                if (!text) return "";
+                                                return escapeHtml(text).replace(/(^|[^a-zA-Z0-9])(?:&#39;|`)([^&#\n`]+?)(?:&#39;|`)(?=[^a-zA-Z0-9]|$)/g, '$1<span class="question-focus-capsule">$2</span>');
+                                            };
+
+                                            // 5. วิธีใช้จริง (Usage notes)
+                                            const usageCard = document.getElementById("vocab-usage-note-card");
+                                            const usageContent = document.getElementById("vocab-usage-note-content");
+                                            if (usageCard && usageContent) {
+                                                if (itemToDisplay.usageNote) {
+                                                    usageContent.innerHTML = `<p>${formatNoteContentNew(itemToDisplay.usageNote)}</p>`;
+                                                    usageCard.style.display = "block";
+                                                } else {
+                                                    usageCard.style.display = "none";
+                                                }
+                                            }
+
+                                            // 6. ตัวอย่างประโยค (Examples)
+                                            const newExamplesCard = document.getElementById("vocab-examples-card");
+                                            const examplesListUl = document.getElementById("vocab-examples-list-ul");
+                                            if (newExamplesCard && examplesListUl) {
+                                                const wordToHighlight = String(itemToDisplay.englishData || itemToDisplay.word || itemToDisplay.english || "").trim();
+                                                if (itemToDisplay.examples && itemToDisplay.examples.length > 0) {
+                                                    examplesListUl.innerHTML = itemToDisplay.examples.map(ex => `<li>${highlightWordInSentence(escapeHtml(ex), wordToHighlight)}</li>`).join("");
+                                                    newExamplesCard.style.display = "block";
+                                                    
+                                                    // Bind buttons
+                                                    const examplesText = itemToDisplay.examples.join("\n");
+                                                    const newAudioBtn = document.getElementById("view-mode-examples-audio-btn-new");
+                                                    if (newAudioBtn) {
+                                                        newAudioBtn.dataset.text = examplesText;
+                                                        checkAudioStatusForButton(newAudioBtn);
+                                                    }
+                                                } else {
+                                                    newExamplesCard.style.display = "none";
+                                                }
+                                            }
+
+                                            // 7. คำที่มักใช้คู่กัน (Collocations)
+                                            const collocationsCard = document.getElementById("vocab-collocations-card");
+                                            const collocationsListUl = document.getElementById("vocab-collocations-list-ul");
+                                            if (collocationsCard && collocationsListUl) {
+                                                if (itemToDisplay.collocations && itemToDisplay.collocations.length > 0) {
+                                                    collocationsListUl.innerHTML = itemToDisplay.collocations.map(col => `<li>${escapeHtml(col)}</li>`).join("");
+                                                    collocationsCard.style.display = "block";
+                                                } else {
+                                                    collocationsCard.style.display = "none";
+                                                }
+                                            }
+
+                                            // 8. จุดที่มักพลาด (Common mistake)
+                                            const mistakeCard = document.getElementById("vocab-mistake-card");
+                                            const mistakeContent = document.getElementById("vocab-mistake-content");
+                                            if (mistakeCard && mistakeContent) {
+                                                if (itemToDisplay.commonMistake) {
+                                                    mistakeContent.innerHTML = `<p>${formatNoteContentNew(itemToDisplay.commonMistake)}</p>`;
+                                                    mistakeCard.style.display = "block";
+                                                } else {
+                                                    mistakeCard.style.display = "none";
+                                                }
+                                            }
+
+                                            // 9. ทิปจำ (Memory tip)
+                                            const tipCard = document.getElementById("vocab-tip-card");
+                                            const tipContent = document.getElementById("vocab-tip-content");
+                                            if (tipCard && tipContent) {
+                                                if (itemToDisplay.memoryTip) {
+                                                    tipContent.innerHTML = `<p>${formatNoteContentNew(itemToDisplay.memoryTip)}</p>`;
+                                                    tipCard.style.display = "block";
+                                                } else {
+                                                    tipCard.style.display = "none";
+                                                }
+                                            }
+
+                                            // 10. รากศัพท์ (Etymology / Root)
+                                            const rootCard = document.getElementById("vocab-root-card");
+                                            const rootContainer = document.getElementById("vocab-root-container");
+                                            if (rootCard && rootContainer) {
+                                                if (itemToDisplay.root) {
+                                                    const rootParts = itemToDisplay.root.split("+");
+                                                    let rootHtml = "";
+                                                    rootParts.forEach((part, index) => {
+                                                        const cleanPart = part.trim();
+                                                        let partName = cleanPart;
+                                                        let partSub = "";
+                                                        
+                                                        const parenMatch = cleanPart.match(/^([^(]+)\s*\(([^)]+)\)\s*("([^"]+)"|'([^']+)')?/);
+                                                        const simplerMatch = cleanPart.match(/^([^(]+)\s*\(([^)]+)\)/);
+                                                        
+                                                        if (parenMatch) {
+                                                            partName = parenMatch[1].trim();
+                                                            partSub = parenMatch[2].trim() + (parenMatch[3] ? " " + parenMatch[3].trim() : "");
+                                                        } else if (simplerMatch) {
+                                                            partName = simplerMatch[1].trim();
+                                                            partSub = simplerMatch[2].trim();
+                                                        }
+                                                        
+                                                        if (index > 0) {
+                                                            rootHtml += `<span class="vocab-root-joiner">+</span>`;
+                                                        }
+                                                        rootHtml += `<div class="vocab-root-part-chip">${escapeHtml(partName)}${partSub ? `<span class="root-subtext">${escapeHtml(partSub)}</span>` : ""}</div>`;
+                                                    });
+                                                    rootContainer.innerHTML = rootHtml;
+                                                    rootCard.style.display = "block";
+                                                } else {
+                                                    rootCard.style.display = "none";
+                                                }
+                                            }
+
                                             viewModePhoneticEl.style.display = "none";
                                             viewModeThaiExplanationEl.style.display = itemToDisplay.thaiExplanation ? "block" : "none";
                                             examplesViewDiv.style.display = itemToDisplay.examples && itemToDisplay.examples.length > 0 ? "block" : "none";
@@ -18053,11 +18235,35 @@
                                 englishDataStore[itemIndex] = normalizeVocabularyItem(englishDataStore[itemIndex]);
                                 viewModeExamplesAudioBtn.dataset.text = newExamples.join("\n");
                                 checkAudioStatusForButton(viewModeExamplesAudioBtn);
+
+                                const newAudioBtn = document.getElementById("view-mode-examples-audio-btn-new");
+                                if (newAudioBtn) {
+                                    newAudioBtn.dataset.text = newExamples.join("\n");
+                                    checkAudioStatusForButton(newAudioBtn);
+                                }
+
                                 saveData();
                                 showToast2("\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E15\u0E31\u0E27\u0E2D\u0E22\u0E48\u0E32\u0E07\u0E43\u0E2B\u0E21\u0E48\u0E41\u0E25\u0E49\u0E27!", "success");
                                 viewModeActions.style.display = "none";
                                 examplesUl.querySelectorAll("li").forEach((li) => li.style.color = "");
+
+                                const newExamplesUl = document.getElementById("vocab-examples-list-ul");
+                                if (newExamplesUl) {
+                                    newExamplesUl.querySelectorAll("li").forEach((li) => li.style.color = "");
+                                }
                             });
+
+                            const generateExamplesBtnNew = document.getElementById("generate-examples-btn-new");
+                            if (generateExamplesBtnNew) {
+                                generateExamplesBtnNew.addEventListener("click", handleGenerateExamples);
+                            }
+                            const viewModeExamplesAudioBtnNew = document.getElementById("view-mode-examples-audio-btn-new");
+                            if (viewModeExamplesAudioBtnNew) {
+                                viewModeExamplesAudioBtnNew.addEventListener("click", (e) => {
+                                    e.stopPropagation();
+                                    speak(e.currentTarget.dataset.text);
+                                });
+                            }
                             closeDataDialogBtn.addEventListener("click", () => {
                                 dialogHistoryStack = [];
                                 dataDetailsDialog.close();
