@@ -9910,30 +9910,48 @@
                                     finalPrompt = `${finalPrompt}, ${styleSuffix}`;
                                 }
                                 
-                                // Fallback models for image generation
-                                const modelsToTry = [
-                                    imageGenConfig.model || "gemini-2.5-flash-image",
-                                    "gemini-2.5-flash",
-                                    "gemini-2.0-flash"
+                                // Fallback models and methods for image generation
+                                const targets = [
+                                    { model: imageGenConfig.model || "gemini-2.5-flash-image", type: "generateContent" },
+                                    { model: "gemini-2.0-flash-exp-image-generation", type: "generateContent" },
+                                    { model: "imagen-3.0-generate-002", type: "predict" },
+                                    { model: "imagen-3.0-fast-generate-001", type: "predict" }
                                 ];
                                 
                                 let lastError = null;
                                 
-                                for (const targetModel of modelsToTry) {
+                                for (const target of targets) {
+                                    const targetModel = target.model;
                                     const apiVersion = targetModel.includes("2.") || targetModel.includes("3.") ? "v1beta" : "v1";
-                                    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:generateContent?key=${apiKey}`;
-                                    const payload = {
-                                        contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
-                                        generationConfig: { 
-                                            responseModalities: ["TEXT", "IMAGE"],
-                                            imageConfig: {
-                                                aspectRatio: aspectRatio,
-                                                imageSize: "1K"
-                                            }
-                                        }
-                                    };
                                     
-                                    console.log(`[generateAIImage] Attempting image generation using model: ${targetModel}`);
+                                    let url, payload;
+                                    if (target.type === "predict") {
+                                        url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:predict?key=${apiKey}`;
+                                        payload = {
+                                            instances: [
+                                                { prompt: finalPrompt }
+                                            ],
+                                            parameters: {
+                                                sampleCount: 1,
+                                                aspectRatio: aspectRatio === "1:1" ? "1:1" : "1:1",
+                                                outputMimeType: "image/jpeg"
+                                            }
+                                        };
+                                    } else {
+                                        url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:generateContent?key=${apiKey}`;
+                                        payload = {
+                                            contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
+                                            generationConfig: { 
+                                                responseModalities: ["TEXT", "IMAGE"],
+                                                imageConfig: {
+                                                    aspectRatio: aspectRatio,
+                                                    imageSize: "1K"
+                                                }
+                                            }
+                                        };
+                                    }
+                                    
+                                    console.log(`[generateAIImage] Attempting image generation using model: ${targetModel} (${target.type})`);
                                     
                                     let delay = 1000;
                                     for (let i = 0; i < 2; i++) { // Try 2 times per model
@@ -9945,11 +9963,20 @@
                                             });
                                             if (res.ok) {
                                                 const data = await res.json();
-                                                const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-                                                if (!part) {
-                                                    throw new Error(`API model ${targetModel} did not return image data in parts`);
+                                                if (target.type === "predict") {
+                                                    const base64Data = data.predictions?.[0]?.bytesBase64Encoded;
+                                                    if (!base64Data) {
+                                                        throw new Error(`API model ${targetModel} predict did not return bytesBase64Encoded`);
+                                                    }
+                                                    const mimeType = data.predictions?.[0]?.mimeType || "image/jpeg";
+                                                    return `data:${mimeType};base64,${base64Data}`;
+                                                } else {
+                                                    const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                                                    if (!part) {
+                                                        throw new Error(`API model ${targetModel} did not return image data in parts`);
+                                                    }
+                                                    return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
                                                 }
-                                                return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
                                             }
                                             if (res.status === 429) {
                                                 console.warn(`[generateAIImage] Rate limited (429) on model ${targetModel}, retrying...`);
