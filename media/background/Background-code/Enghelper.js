@@ -5613,6 +5613,10 @@
                                         currentKey = apiKey;
                                     }
 
+                                    const isCanvasEnv = typeof shouldTryEnvironmentInjectedGeminiKey === 'function'
+                                        ? shouldTryEnvironmentInjectedGeminiKey()
+                                        : (!window.location.hostname || !['localhost', '127.0.0.1', '::1'].includes(window.location.hostname));
+
                                     const keysToTry = [];
                                     if (isCanvasEnv) {
                                         keysToTry.push(""); // Try Canvas proxy first
@@ -10031,6 +10035,10 @@
                                     const apiVersion = targetModel.includes("2.") || targetModel.includes("3.") ? "v1beta" : "v1";
                                     
                                     // Set up keys to try for this model
+                                    const isCanvasEnv = typeof shouldTryEnvironmentInjectedGeminiKey === 'function'
+                                        ? shouldTryEnvironmentInjectedGeminiKey()
+                                        : (!window.location.hostname || !['localhost', '127.0.0.1', '::1'].includes(window.location.hostname));
+
                                     const keysToTry = [];
                                     if (isCanvasEnv) {
                                         keysToTry.push(""); // Try empty key first (Canvas proxy)
