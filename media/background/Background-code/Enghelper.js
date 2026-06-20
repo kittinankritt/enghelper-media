@@ -5613,16 +5613,18 @@
                                         currentKey = apiKey;
                                     }
 
-                                    const isCanvasEnv = typeof shouldTryEnvironmentInjectedGeminiKey === "function"
-                                        ? shouldTryEnvironmentInjectedGeminiKey()
-                                        : (!window.location.hostname || !["localhost", "127.0.0.1", "::1"].includes(window.location.hostname));
-
-                                    if ((!currentKey || currentKey.trim() === "") && !isCanvasEnv) {
-                                        throw new Error("No API key available");
+                                    const keysToTry = [];
+                                    if (isCanvasEnv) {
+                                        keysToTry.push(""); // Try Canvas proxy first
+                                    }
+                                    if (currentKey && currentKey.trim() !== "") {
+                                        keysToTry.push(currentKey); // Try user's custom key
+                                    }
+                                    if (keysToTry.length === 0) {
+                                        keysToTry.push("");
                                     }
 
                                     const voiceName = localStorage.getItem("GEMINI_TTS_VOICE") || "Aoede";
-                                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${currentKey}`;
                                     const payload = {
                                         contents: [{
                                             parts: [{ text: text }]
@@ -5640,11 +5642,26 @@
                                         model: "gemini-2.5-flash-preview-tts"
                                     };
 
-                                    const result = await fetchWithRetry(apiUrl, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(payload)
-                                    });
+                                    let result = null;
+                                    let lastTtsError = null;
+                                    for (const activeKey of keysToTry) {
+                                        try {
+                                            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${activeKey}`;
+                                            result = await fetchWithRetry(apiUrl, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(payload)
+                                            });
+                                            if (result) break;
+                                        } catch (e) {
+                                            lastTtsError = e;
+                                            console.warn(`[generateAudioAndCache] TTS generation failed with key: ${activeKey ? "Custom" : "Canvas Proxy"}`, e);
+                                        }
+                                    }
+
+                                    if (!result) {
+                                        throw lastTtsError || new Error("ล้มเหลวในการสร้างเสียงอ่าน");
+                                    }
                     
                                     const candidate = result.candidates?.[0];
                                     const inlineData = candidate?.content?.parts?.[0]?.inlineData;
