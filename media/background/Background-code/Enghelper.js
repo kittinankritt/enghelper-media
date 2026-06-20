@@ -1620,7 +1620,7 @@
                         Object.defineProperty(window, 'englishDataStore', { get() { return englishDataStore; }, set(v) { englishDataStore = v; }, configurable: true });
                         
                         var imageGenConfig = {
-                            model: "gemini-2.5-flash-image",
+                            model: "gemini-2.5-flash-image-preview",
                             defaultStyle: "anime",
                             autoEnhancePrompt: true,
                             autoGenerateForNewVocab: true
@@ -9912,7 +9912,9 @@
                                 
                                 // Fallback models and methods for image generation
                                 const targets = [
-                                    { model: imageGenConfig.model || "gemini-2.5-flash-image", type: "generateContent" },
+                                    { model: imageGenConfig.model || "gemini-2.5-flash-image-preview", type: "generateContent" },
+                                    { model: "gemini-2.5-flash-image-preview", type: "generateContent" },
+                                    { model: "gemini-2.5-flash-image", type: "generateContent" },
                                     { model: "gemini-2.0-flash-exp-image-generation", type: "generateContent" },
                                     { model: "imagen-3.0-generate-002", type: "predict" },
                                     { model: "imagen-3.0-fast-generate-001", type: "predict" }
@@ -9942,7 +9944,7 @@
                                         payload = {
                                             contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
                                             generationConfig: { 
-                                                responseModalities: ["TEXT", "IMAGE"],
+                                                responseModalities: ["IMAGE"],
                                                 imageConfig: {
                                                     aspectRatio: aspectRatio,
                                                     imageSize: "1K"
