@@ -1618,6 +1618,25 @@
                         }
                         var englishDataStore = [];
                         Object.defineProperty(window, 'englishDataStore', { get() { return englishDataStore; }, set(v) { englishDataStore = v; }, configurable: true });
+                        
+                        var imageGenConfig = {
+                            model: "gemini-2.5-flash-image",
+                            defaultStyle: "anime",
+                            autoEnhancePrompt: true,
+                            autoGenerateForNewVocab: true
+                        };
+                        window.imageGenConfig = imageGenConfig;
+
+                        var imageStylePrompts = {
+                            cinematic: "cinematic lighting, photorealistic, 8k resolution, highly detailed, professional photography, clean background",
+                            anime: "vibrant 3D anime style, clean lines, colorful, educational, cute illustration, simple background",
+                            watercolor: "beautiful watercolor painting style, soft colors, artistic texture, clean white background",
+                            cyberpunk: "neon lights, futuristic cyberpunk, tech vibe, high contrast illustration",
+                            fantasy: "magical fantasy concept art, mystical atmosphere, glowing elements, dreamlike style",
+                            none: "simple educational graphic, clear illustration, clean vector style, solid background"
+                        };
+                        window.imageStylePrompts = imageStylePrompts;
+
                         var currentSessionResults = [];
                         Object.defineProperty(window, 'currentSessionResults', { get() { return currentSessionResults; }, set(v) { currentSessionResults = v; }, configurable: true });
                         var deletedDataStore = [];
@@ -2642,6 +2661,9 @@
                             const vocabLibraryDialog = document.getElementById("vocab-library-dialog");
                             const addVocabDialog = document.getElementById("add-vocab-dialog");
                             const openAiVocabPackBtn = document.getElementById("open-ai-vocab-pack-btn");
+                            const viewModeGenerateImageBtn = document.getElementById("view-mode-generate-image-btn");
+                            const viewModeImageContainer = document.getElementById("view-mode-image-container");
+                            const viewModeImage = document.getElementById("view-mode-image");
                             const openImageToVocabBtn = document.getElementById("open-image-to-vocab-btn");
                             const openUrlToVocabBtn = document.getElementById("open-url-to-vocab-btn");
                             const addVocabSearchInput = document.getElementById("add-vocab-search-input");
@@ -3003,6 +3025,7 @@
                             }
                             function normalizeVocabularyItem(item) {
                                 if (!item || typeof item !== "object") return item;
+                                item.imageB64 = typeof item.imageB64 === "string" ? item.imageB64.trim() : "";
                                 item.englishData = String(item.englishData || item.word || item.english || "").trim().toUpperCase();
                                 item.phonetic = sanitizePhoneticString(String(item.phonetic || "").trim());
                                 item.pos = String(item.pos || "").trim();
@@ -3582,6 +3605,21 @@
                                 }
                                 return getStoredGeminiApiKeys()[0] || getFileConfiguredGeminiApiKeys()[0] || "";
                             }
+                            function setVocabularyImage(id, imageB64) {
+                                const cleanId = String(id || "").trim();
+                                const cleanImage = String(imageB64 || "").trim();
+                                if (!cleanId || !cleanImage) return null;
+                                const itemIndex = englishDataStore.findIndex((item) => item.id === cleanId);
+                                if (itemIndex < 0) return null;
+                                englishDataStore[itemIndex].imageB64 = cleanImage;
+                                englishDataStore[itemIndex].updatedAt = (/* @__PURE__ */ new Date()).toISOString();
+                                englishDataStore[itemIndex] = normalizeVocabularyItem(englishDataStore[itemIndex]);
+                                setTemporaryItem(getScopedDataKey("hasUnsyncedData"), true);
+                                applyFilterAndRender();
+                                saveData();
+                                return englishDataStore[itemIndex];
+                            }
+                            window.setVocabularyImage = setVocabularyImage;
                             const synth = window.speechSynthesis;
                             let audioContext = null;
                             function getAudioContext() {
@@ -8824,6 +8862,21 @@
                                     resetDialectFields();
                                     populateDialectFormFields(aiData.dialects, aiData.wordDialects);
                                     showToast2("\u0E40\u0E15\u0E34\u0E21\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E14\u0E49\u0E27\u0E22 AI \u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!", "success");
+
+                                    if (window.imageGenConfig && window.imageGenConfig.autoGenerateForNewVocab) {
+                                        (async () => {
+                                            try {
+                                                const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${aiData.thaiExplanation || ''}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                                const b64 = await window.generateAIImage(prompt, "1:1");
+                                                if (b64) {
+                                                    currentVocabLearningDetails.imageB64 = b64;
+                                                    showToast2("สร้างรูปภาพ AI สำเร็จและพร้อมบันทึก!", "success");
+                                                }
+                                            } catch (e) {
+                                                console.warn("Background auto image generation failed:", e);
+                                            }
+                                        })();
+                                    }
                                 }
                             }
                             async function handleAutofill() {
@@ -9821,6 +9874,116 @@
                                 }
                             }
                             window.callGemini = callGemini;
+
+                            async function generateAIImage(prompt, aspectRatio = "1:1") {
+                                const apiKey = typeof selectAvailableGeminiApiKey === "function"
+                                    ? selectAvailableGeminiApiKey()
+                                    : (typeof getGeminiApiKey === "function" ? getGeminiApiKey() : (localStorage.getItem("GEMINI_API_KEY") || ""));
+                                    
+                                const isCanvasEnv = typeof shouldTryEnvironmentInjectedGeminiKey === "function"
+                                    ? shouldTryEnvironmentInjectedGeminiKey()
+                                    : (!window.location.hostname || !["localhost", "127.0.0.1", "::1"].includes(window.location.hostname));
+
+                                if (!apiKey && !isCanvasEnv) {
+                                    throw new Error("ไม่พบ Gemini API Key ในระบบ กรุณากรอกคีย์ก่อนเรียกใช้งานสร้างภาพ");
+                                }
+                                
+                                let finalPrompt = prompt;
+                                if (imageGenConfig.autoEnhancePrompt && /[\u0E00-\u0E7F]/.test(prompt)) {
+                                    try {
+                                        const translatePayload = {
+                                            contents: [{ parts: [{ text: `Original: "${prompt}"` }] }],
+                                            systemInstruction: { parts: [{ text: "Translate user prompt to English if needed and enhance it into a highly descriptive 1-2 sentence prompt for Imagen. Focus on lighting, mood, camera angle, and details. Return ONLY the final English prompt string." }] }
+                                        };
+                                        const tempRes = await callGemini(translatePayload, null, null, { contextScope: "vocab", isSilent: true });
+                                        if (tempRes && tempRes.text) {
+                                            finalPrompt = tempRes.text.trim();
+                                        }
+                                    } catch (e) {
+                                        console.warn("Failed to translate/enhance prompt, using original:", e);
+                                    }
+                                }
+                                
+                                const currentStyle = imageGenConfig.defaultStyle || "none";
+                                const styleSuffix = imageStylePrompts[currentStyle] || "";
+                                if (styleSuffix) {
+                                    finalPrompt = `${finalPrompt}, ${styleSuffix}`;
+                                }
+                                
+                                const url = `https://generativelanguage.googleapis.com/v1beta/models/${imageGenConfig.model}:generateContent?key=${apiKey}`;
+                                const payload = {
+                                    contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
+                                    generationConfig: { 
+                                        responseModalities: ["TEXT", "IMAGE"],
+                                        imageConfig: {
+                                            aspectRatio: aspectRatio,
+                                            imageSize: "1K"
+                                        }
+                                    }
+                                };
+                                
+                                let delay = 1000;
+                                for (let i = 0; i < 3; i++) {
+                                    try {
+                                        const res = await fetch(url, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify(payload)
+                                        });
+                                        if (res.ok) {
+                                            const data = await res.json();
+                                            const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                                            if (!part) throw new Error("API ไม่ได้ส่งรูปภาพกลับมา");
+                                            return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                        }
+                                        if (res.status === 429) {
+                                            await new Promise(r => setTimeout(r, delay));
+                                            delay *= 2;
+                                            continue;
+                                        }
+                                        const err = await res.json().catch(() => ({}));
+                                        throw new Error(err.error?.message || res.statusText);
+                                    } catch (e) {
+                                        if (i === 2) throw e;
+                                        await new Promise(r => setTimeout(r, delay));
+                                        delay *= 2;
+                                    }
+                                }
+                            }
+                            window.generateAIImage = generateAIImage;
+
+                            async function generateAIImageForVocab(id, word, thaiExplanation) {
+                                const index = englishDataStore.findIndex((item) => item.id === id);
+                                if (index === -1) return;
+                                if (englishDataStore[index].imageB64) return;
+
+                                try {
+                                    const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thaiExplanation || ""}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                    const b64 = await window.generateAIImage(prompt, "1:1");
+                                    if (b64) {
+                                        englishDataStore[index].imageB64 = b64;
+                                        saveData();
+
+                                        if (typeof currentViewingItemId !== "undefined" && currentViewingItemId === id) {
+                                            const viewModeImageContainer = document.getElementById("view-mode-image-container");
+                                            const heroBg = document.querySelector(".view-mode-hero-bg");
+                                            const dialog = document.getElementById("data-details-dialog");
+                                            if (dialog) {
+                                                dialog.classList.add("has-image");
+                                            }
+                                            if (heroBg) {
+                                                heroBg.style.backgroundImage = `url(${b64})`;
+                                            }
+                                            if (viewModeImageContainer) {
+                                                viewModeImageContainer.style.display = "none";
+                                            }
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.warn("Background auto image generation failed:", e);
+                                }
+                            }
+                            window.generateAIImageForVocab = generateAIImageForVocab;
                             window.openDataDetailsDialog = openDataDetailsDialog;
                             let currentVocabLearningDetails = {};
                             function normalizeVocabLearningDetails(details = {}) {
@@ -9841,7 +10004,8 @@
                                     usageNote: String(details.usageNote || "").trim(),
                                     posVariations: Array.isArray(details.posVariations) ? details.posVariations : [],
                                     dialects,
-                                    wordDialects: Array.isArray(details.wordDialects) ? details.wordDialects : []
+                                    wordDialects: Array.isArray(details.wordDialects) ? details.wordDialects : [],
+                                    imageB64: details.imageB64 || ""
                                 };
                             }
                             const bulkAddVocabDialog = document.getElementById("bulk-add-vocab-dialog");
@@ -17235,6 +17399,11 @@
                                 viewModeContentDiv.style.display = isViewMode ? "block" : "none";
                                 dataDetailsDialog.classList.toggle("data-details-view-mode", Boolean(isViewMode));
                                 dataDetailsDialog.classList.toggle("data-details-form-mode", !isViewMode);
+                                if (!isViewMode) {
+                                    dataDetailsDialog.classList.remove("has-image");
+                                    const heroBg = document.querySelector(".view-mode-hero-bg");
+                                    if (heroBg) heroBg.style.backgroundImage = "";
+                                }
                                 const viewModeHeaderActions = document.getElementById("view-mode-header-actions");
                                 if (viewModeHeaderActions) {
                                     viewModeHeaderActions.style.display = isViewMode ? "flex" : "none";
@@ -17296,6 +17465,25 @@
                                             const cleanPhonetic = typeof sanitizePhoneticString === "function" ? sanitizePhoneticString(itemToDisplay.phonetic || "") : (itemToDisplay.phonetic || "");
                                             document.getElementById("view-mode-word-mic-btn").dataset.phonetic = cleanPhonetic;
                                             checkAudioStatusForButton(viewModeWordAudioBtn);
+                                            if (viewModeGenerateImageBtn) {
+                                                viewModeGenerateImageBtn.dataset.word = displayWord;
+                                                viewModeGenerateImageBtn.dataset.id = itemToDisplay.id;
+                                                viewModeGenerateImageBtn.dataset.thai = itemToDisplay.thaiExplanation || "";
+                                            }
+                                            const heroBg = document.querySelector(".view-mode-hero-bg");
+                                            if (itemToDisplay.imageB64) {
+                                                dataDetailsDialog.classList.add("has-image");
+                                                if (heroBg) {
+                                                    heroBg.style.backgroundImage = `url(${itemToDisplay.imageB64})`;
+                                                }
+                                                if (viewModeImageContainer) viewModeImageContainer.style.display = "none";
+                                            } else {
+                                                dataDetailsDialog.classList.remove("has-image");
+                                                if (heroBg) {
+                                                    heroBg.style.backgroundImage = "";
+                                                }
+                                                if (viewModeImageContainer) viewModeImageContainer.style.display = "none";
+                                            }
 
                                             let hasDialectPhonetics = false;
                                             if (viewModeMultiPosCapsuleContainerEl) {
@@ -18484,6 +18672,11 @@
                                 if (!item) {
                                     currentFlashcardItem = null;
                                     fcEnglishDataEl.textContent = "\u0E44\u0E21\u0E48\u0E21\u0E35\u0E01\u0E32\u0E23\u0E4C\u0E14";
+                                    const fcWordImage = flashcardContent.querySelector(".fc-word-image");
+                                    if (fcWordImage) {
+                                        fcWordImage.src = "";
+                                        fcWordImage.style.display = "none";
+                                    }
                                     [fcPhoneticEl, fcPosEl, fcSynonymEl, fcExplanationEl, fcThaiExplanationEl, fcAntonymEl, fcRootEl].forEach((el) => {
                                         el.textContent = "";
                                         el.style.display = "none";
@@ -18499,6 +18692,11 @@
                                 currentFlashcardIndex = index;
                                 currentFlashcardItem = item;
                                 isFlashcardExplanationFlipperActive = false;
+                                const fcWordImage = flashcardContent.querySelector(".fc-word-image");
+                                if (fcWordImage) {
+                                    fcWordImage.src = item.imageB64 || "";
+                                    fcWordImage.style.display = item.imageB64 ? "block" : "none";
+                                }
                                 if (currentAudioPlayer) {
                                     currentAudioPlayer.pause();
                                     currentAudioPlayer = null;
@@ -21789,6 +21987,40 @@
                                     synonymNuanceExplanationArea.innerHTML = "<p>AI \u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22\u0E04\u0E27\u0E32\u0E21\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E44\u0E14\u0E49</p>";
                                 }
                             });
+                            if (viewModeGenerateImageBtn) {
+                                viewModeGenerateImageBtn.addEventListener("click", async () => {
+                                    const word = viewModeGenerateImageBtn.dataset.word;
+                                    const id = viewModeGenerateImageBtn.dataset.id;
+                                    const thai = viewModeGenerateImageBtn.dataset.thai;
+                                    if (!word) return;
+
+                                    const originalHTML = viewModeGenerateImageBtn.innerHTML;
+                                    viewModeGenerateImageBtn.disabled = true;
+                                    viewModeGenerateImageBtn.innerHTML = "<i class=\"fi fi-rr-picture animate-spin\" style=\"margin-right: 5px;\"></i> กำลังสร้างรูปภาพ...";
+
+                                    try {
+                                        const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thai}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                        const b64Image = await window.generateAIImage(prompt, "1:1");
+                                        if (b64Image) {
+                                            if (viewModeImage && viewModeImageContainer) {
+                                                viewModeImage.src = b64Image;
+                                                viewModeImageContainer.style.display = "block";
+                                            }
+                                            const updatedItem = setVocabularyImage(id, b64Image);
+                                            if (!updatedItem) throw new Error("ไม่พบคำศัพท์สำหรับบันทึกรูปภาพ");
+                                            showToast2("สร้างรูปภาพประกอบคำศัพท์เรียบร้อยแล้ว", "success");
+                                        } else {
+                                            showToast2("ไม่สามารถสร้างรูปภาพได้", "error");
+                                        }
+                                    } catch (err) {
+                                        console.error("Error generating image:", err);
+                                        showToast2(err.message || "เกิดข้อผิดพลาดในการสร้างภาพประกอบ", "error");
+                                    } finally {
+                                        viewModeGenerateImageBtn.disabled = false;
+                                        viewModeGenerateImageBtn.innerHTML = originalHTML;
+                                    }
+                                });
+                            }
                             explainAntonymsNuanceBtn.addEventListener("click", async (e) => {
                                 const mainWord = e.target.dataset.word;
                                 const antonyms = JSON.parse(e.target.dataset.antonyms || "[]");
@@ -25162,6 +25394,11 @@
                                 const fcSynonymEl2 = flashcardContent.querySelector(".fc-synonym");
                                 const flashcardFront2 = flashcardContent.querySelector(".flashcard-front");
                                 const flashcardBack2 = flashcardContent.querySelector(".flashcard-back");
+                                const fcWordImage2 = flashcardContent.querySelector(".fc-word-image");
+                                if (fcWordImage2) {
+                                    fcWordImage2.src = item.imageB64 || "";
+                                    fcWordImage2.style.display = item.imageB64 ? "block" : "none";
+                                }
                                 fcEnglishDataEl2.textContent = item.englishData;
                                 const audioBtn = flashcardContent.querySelector(".dialog-audio-btn");
                                 if (audioBtn) {
