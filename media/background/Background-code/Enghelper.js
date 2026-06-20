@@ -6527,12 +6527,73 @@
                             let cloudSyncTimeout = null;
                             let lastSavedDataMap = null;
 
+                            function compressBase64Image(base64Str, maxWidth = 300, maxHeight = 300, quality = 0.7) {
+                                return new Promise((resolve) => {
+                                    if (typeof base64Str !== "string" || !base64Str.startsWith("data:image/")) {
+                                        resolve(base64Str);
+                                        return;
+                                    }
+                                    const img = new Image();
+                                    img.src = base64Str;
+                                    img.onload = () => {
+                                        const canvas = document.createElement("canvas");
+                                        let width = img.width;
+                                        let height = img.height;
+                                        if (width > height) {
+                                            if (width > maxWidth) {
+                                                height = Math.round((height * maxWidth) / width);
+                                                width = maxWidth;
+                                            }
+                                        } else {
+                                            if (height > maxHeight) {
+                                                width = Math.round((width * maxHeight) / height);
+                                                height = maxHeight;
+                                            }
+                                        }
+                                        canvas.width = width;
+                                        canvas.height = height;
+                                        const ctx = canvas.getContext("2d");
+                                        ctx.drawImage(img, 0, 0, width, height);
+                                        const compressed = canvas.toDataURL("image/jpeg", quality);
+                                        resolve(compressed);
+                                    };
+                                    img.onerror = () => {
+                                        resolve(base64Str);
+                                    };
+                                });
+                            }
+                            window.compressBase64Image = compressBase64Image;
+
                             async function performCloudSync() {
                                 if (!currentUser || !db || !lastSavedDataMap) return;
                                 if (cloudSyncTimeout) {
                                     clearTimeout(cloudSyncTimeout);
                                     cloudSyncTimeout = null;
                                 }
+                                
+                                // Auto-compress large images in englishDataStore before sync to prevent Firestore 1MB document limit error
+                                let needsSave = false;
+                                for (let i = 0; i < englishDataStore.length; i++) {
+                                    const item = englishDataStore[i];
+                                    if (item.imageB64 && item.imageB64.startsWith("data:image/") && item.imageB64.length > 50000) {
+                                        console.log(`[CloudSync] Auto-compressing large image for word: ${item.english} (${item.imageB64.length} chars)`);
+                                        try {
+                                            const compressed = await compressBase64Image(item.imageB64);
+                                            if (compressed && compressed.length < item.imageB64.length) {
+                                                item.imageB64 = compressed;
+                                                needsSave = true;
+                                            }
+                                        } catch (compressErr) {
+                                            console.warn("[CloudSync] Failed to compress image for word:", item.english, compressErr);
+                                        }
+                                    }
+                                }
+                                if (needsSave) {
+                                    console.log("[CloudSync] Large images compressed, updating local snapshot...");
+                                    lastSavedDataMap.englishDataStore = englishDataStore;
+                                    saveTemporaryDataSnapshot(lastSavedDataMap);
+                                }
+                                
                                 const dataMap = lastSavedDataMap;
                                 const isSyncOn = true;
                                 if (navigator.onLine && isSyncOn) {
@@ -10010,13 +10071,13 @@
                                                             throw new Error(`API model ${targetModel} predict did not return bytesBase64Encoded`);
                                                         }
                                                         const mimeType = data.predictions?.[0]?.mimeType || "image/jpeg";
-                                                        return `data:${mimeType};base64,${base64Data}`;
+                                                        return await compressBase64Image(`data:${mimeType};base64,${base64Data}`);
                                                     } else {
                                                         const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
                                                         if (!part) {
                                                             throw new Error(`API model ${targetModel} did not return image data in parts`);
                                                         }
-                                                        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                                        return await compressBase64Image(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
                                                     }
                                                 }
                                                 if (res.status === 429) {
