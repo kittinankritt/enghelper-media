@@ -9921,6 +9921,7 @@
                                 ];
                                 
                                 let lastError = null;
+                                const errors = [];
                                 
                                 for (const target of targets) {
                                     const targetModel = target.model;
@@ -9946,8 +9947,7 @@
                                             generationConfig: { 
                                                 responseModalities: ["IMAGE"],
                                                 imageConfig: {
-                                                    aspectRatio: aspectRatio,
-                                                    imageSize: "1K"
+                                                    aspectRatio: aspectRatio
                                                 }
                                             }
                                         };
@@ -9987,18 +9987,22 @@
                                                 continue;
                                             }
                                             const err = await res.json().catch(() => ({}));
-                                            throw new Error(err.error?.message || `HTTP ${res.status}: ${res.statusText}`);
+                                            const errMsg = err.error?.message || `HTTP ${res.status}: ${res.statusText}`;
+                                            console.error(`[generateAIImage] Model ${targetModel} failed: ${errMsg}`);
+                                            throw new Error(errMsg);
                                         } catch (e) {
-                                            console.warn(`[generateAIImage] Model ${targetModel} attempt ${i + 1} failed:`, e);
-                                            lastError = e;
-                                            if (i === 1) break; // Go to next model
+                                            console.error(`[generateAIImage] Model ${targetModel} attempt ${i + 1} failed:`, e);
+                                            if (i === 1) {
+                                                errors.push(`${targetModel} (${target.type}): ${e.message || e}`);
+                                                lastError = e;
+                                            }
                                             await new Promise(r => setTimeout(r, delay));
                                             delay *= 2;
                                         }
                                     }
                                 }
                                 
-                                throw lastError || new Error("ล้มเหลวในการสร้างภาพด้วยทุกโมเดลที่เกี่ยวข้อง");
+                                throw new Error("ล้มเหลวในการสร้างภาพด้วยทุกโมเดล:\n" + errors.join("\n"));
                             }
                             window.generateAIImage = generateAIImage;
 
