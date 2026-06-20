@@ -9910,45 +9910,66 @@
                                     finalPrompt = `${finalPrompt}, ${styleSuffix}`;
                                 }
                                 
-                                const url = `https://generativelanguage.googleapis.com/v1beta/models/${imageGenConfig.model}:generateContent?key=${apiKey}`;
-                                const payload = {
-                                    contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
-                                    generationConfig: { 
-                                        responseModalities: ["TEXT", "IMAGE"],
-                                        imageConfig: {
-                                            aspectRatio: aspectRatio,
-                                            imageSize: "1K"
-                                        }
-                                    }
-                                };
+                                // Fallback models for image generation
+                                const modelsToTry = [
+                                    imageGenConfig.model || "gemini-2.5-flash-image",
+                                    "gemini-2.5-flash",
+                                    "gemini-2.0-flash"
+                                ];
                                 
-                                let delay = 1000;
-                                for (let i = 0; i < 3; i++) {
-                                    try {
-                                        const res = await fetch(url, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify(payload)
-                                        });
-                                        if (res.ok) {
-                                            const data = await res.json();
-                                            const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-                                            if (!part) throw new Error("API ไม่ได้ส่งรูปภาพกลับมา");
-                                            return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                let lastError = null;
+                                
+                                for (const targetModel of modelsToTry) {
+                                    const apiVersion = targetModel.includes("2.") || targetModel.includes("3.") ? "v1beta" : "v1";
+                                    const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:generateContent?key=${apiKey}`;
+                                    const payload = {
+                                        contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
+                                        generationConfig: { 
+                                            responseModalities: ["TEXT", "IMAGE"],
+                                            imageConfig: {
+                                                aspectRatio: aspectRatio,
+                                                imageSize: "1K"
+                                            }
                                         }
-                                        if (res.status === 429) {
+                                    };
+                                    
+                                    console.log(`[generateAIImage] Attempting image generation using model: ${targetModel}`);
+                                    
+                                    let delay = 1000;
+                                    for (let i = 0; i < 2; i++) { // Try 2 times per model
+                                        try {
+                                            const res = await fetch(url, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify(payload)
+                                            });
+                                            if (res.ok) {
+                                                const data = await res.json();
+                                                const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                                                if (!part) {
+                                                    throw new Error(`API model ${targetModel} did not return image data in parts`);
+                                                }
+                                                return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                            }
+                                            if (res.status === 429) {
+                                                console.warn(`[generateAIImage] Rate limited (429) on model ${targetModel}, retrying...`);
+                                                await new Promise(r => setTimeout(r, delay));
+                                                delay *= 2;
+                                                continue;
+                                            }
+                                            const err = await res.json().catch(() => ({}));
+                                            throw new Error(err.error?.message || `HTTP ${res.status}: ${res.statusText}`);
+                                        } catch (e) {
+                                            console.warn(`[generateAIImage] Model ${targetModel} attempt ${i + 1} failed:`, e);
+                                            lastError = e;
+                                            if (i === 1) break; // Go to next model
                                             await new Promise(r => setTimeout(r, delay));
                                             delay *= 2;
-                                            continue;
                                         }
-                                        const err = await res.json().catch(() => ({}));
-                                        throw new Error(err.error?.message || res.statusText);
-                                    } catch (e) {
-                                        if (i === 2) throw e;
-                                        await new Promise(r => setTimeout(r, delay));
-                                        delay *= 2;
                                     }
                                 }
+                                
+                                throw lastError || new Error("ล้มเหลวในการสร้างภาพด้วยทุกโมเดลที่เกี่ยวข้อง");
                             }
                             window.generateAIImage = generateAIImage;
 
