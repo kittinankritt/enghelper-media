@@ -9522,25 +9522,50 @@
                                 return !host || !["localhost", "127.0.0.1", "::1"].includes(host);
                             }
                             async function callPrimaryGeminiDirect(payload) {
-                                // Direct Gemini path like ตัวอย่าง.html: customApiKey || "" -> apiUrl -> fetch(apiUrl).
                                 const directApiKey = getPrimaryGeminiApiKey() || "";
                                 if (!directApiKey && !shouldTryEnvironmentInjectedGeminiKey()) {
                                     throw new Error("ไม่พบ Gemini API Key สำหรับทางตรง");
                                 }
                                 const directModel = getConfiguredGeminiTextModel() || "gemini-2.5-flash";
-                                const directApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${directModel}:generateContent?key=${directApiKey}`;
-                                const response = await fetch(directApiUrl, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(payload)
-                                });
-                                const responseText = await response.text();
-                                if (!response.ok) {
+                                
+                                // Try with custom directApiKey first if present
+                                if (directApiKey) {
+                                    try {
+                                        const directApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${directModel}:generateContent?key=${directApiKey}`;
+                                        const response = await fetch(directApiUrl, {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify(payload)
+                                        });
+                                        if (response.ok) {
+                                            const result = await response.json();
+                                            localStorage.setItem("WORKING_GEMINI_MODEL", directModel);
+                                            return parseGeminiGenerateContentResult(payload, result);
+                                        }
+                                        console.warn(`[callPrimaryGeminiDirect] Custom key failed (Status: ${response.status}), trying Canvas proxy...`);
+                                    } catch (e) {
+                                        console.warn("[callPrimaryGeminiDirect] Custom key fetch error, trying Canvas proxy...", e);
+                                    }
+                                }
+                                
+                                // Try with empty key (Canvas proxy fallback)
+                                if (shouldTryEnvironmentInjectedGeminiKey()) {
+                                    const directApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${directModel}:generateContent?key=`;
+                                    const response = await fetch(directApiUrl, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify(payload)
+                                    });
+                                    if (response.ok) {
+                                        const result = await response.json();
+                                        localStorage.setItem("WORKING_GEMINI_MODEL", directModel);
+                                        return parseGeminiGenerateContentResult(payload, result);
+                                    }
+                                    const responseText = await response.text();
                                     throw new Error(`API Error: ${response.status} - ${responseText.slice(0, 400)}`);
                                 }
-                                const result = JSON.parse(responseText);
-                                localStorage.setItem("WORKING_GEMINI_MODEL", directModel);
-                                return parseGeminiGenerateContentResult(payload, result);
+                                
+                                throw new Error("การเชื่อมต่อตรงล้มเหลว");
                             }
                             window.callPrimaryGeminiDirect = callPrimaryGeminiDirect;
                             async function callGeminiProvider(payload, apiKey) {
@@ -9927,77 +9952,92 @@
                                     const targetModel = target.model;
                                     const apiVersion = targetModel.includes("2.") || targetModel.includes("3.") ? "v1beta" : "v1";
                                     
-                                    let url, payload;
-                                    if (target.type === "predict") {
-                                        url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:predict?key=${apiKey}`;
-                                        payload = {
-                                            instances: [
-                                                { prompt: finalPrompt }
-                                            ],
-                                            parameters: {
-                                                sampleCount: 1,
-                                                aspectRatio: aspectRatio === "1:1" ? "1:1" : "1:1",
-                                                outputMimeType: "image/jpeg"
-                                            }
-                                        };
-                                    } else {
-                                        url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:generateContent?key=${apiKey}`;
-                                        payload = {
-                                            contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
-                                            generationConfig: { 
-                                                responseModalities: ["IMAGE"],
-                                                imageConfig: {
-                                                    aspectRatio: aspectRatio
-                                                }
-                                            }
-                                        };
+                                    // Set up keys to try for this model
+                                    const keysToTry = [];
+                                    if (isCanvasEnv) {
+                                        keysToTry.push(""); // Try empty key first (Canvas proxy)
+                                    }
+                                    if (apiKey) {
+                                        keysToTry.push(apiKey); // Try custom API key
+                                    }
+                                    if (keysToTry.length === 0) {
+                                        keysToTry.push("");
                                     }
                                     
-                                    console.log(`[generateAIImage] Attempting image generation using model: ${targetModel} (${target.type})`);
-                                    
-                                    let delay = 1000;
-                                    for (let i = 0; i < 2; i++) { // Try 2 times per model
-                                        try {
-                                            const res = await fetch(url, {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify(payload)
-                                            });
-                                            if (res.ok) {
-                                                const data = await res.json();
-                                                if (target.type === "predict") {
-                                                    const base64Data = data.predictions?.[0]?.bytesBase64Encoded;
-                                                    if (!base64Data) {
-                                                        throw new Error(`API model ${targetModel} predict did not return bytesBase64Encoded`);
-                                                    }
-                                                    const mimeType = data.predictions?.[0]?.mimeType || "image/jpeg";
-                                                    return `data:${mimeType};base64,${base64Data}`;
-                                                } else {
-                                                    const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-                                                    if (!part) {
-                                                        throw new Error(`API model ${targetModel} did not return image data in parts`);
-                                                    }
-                                                    return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                    for (const activeKey of keysToTry) {
+                                        let url, payload;
+                                        if (target.type === "predict") {
+                                            url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:predict?key=${activeKey}`;
+                                            payload = {
+                                                instances: [
+                                                    { prompt: finalPrompt }
+                                                ],
+                                                parameters: {
+                                                    sampleCount: 1,
+                                                    aspectRatio: aspectRatio === "1:1" ? "1:1" : "1:1",
+                                                    outputMimeType: "image/jpeg"
                                                 }
-                                            }
-                                            if (res.status === 429) {
-                                                console.warn(`[generateAIImage] Rate limited (429) on model ${targetModel}, retrying...`);
+                                            };
+                                        } else {
+                                            url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${targetModel}:generateContent?key=${activeKey}`;
+                                            payload = {
+                                                contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
+                                                generationConfig: { 
+                                                    responseModalities: ["IMAGE"],
+                                                    imageConfig: {
+                                                        aspectRatio: aspectRatio
+                                                    }
+                                                }
+                                            };
+                                        }
+                                        
+                                        const keyLabel = activeKey ? "Custom Key" : "Canvas Proxy";
+                                        console.log(`[generateAIImage] Attempting image generation using model: ${targetModel} (${target.type}) via ${keyLabel}`);
+                                        
+                                        let delay = 1000;
+                                        for (let i = 0; i < 2; i++) { // Try 2 times per model/key combination
+                                            try {
+                                                const res = await fetch(url, {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify(payload)
+                                                });
+                                                if (res.ok) {
+                                                    const data = await res.json();
+                                                    if (target.type === "predict") {
+                                                        const base64Data = data.predictions?.[0]?.bytesBase64Encoded;
+                                                        if (!base64Data) {
+                                                            throw new Error(`API model ${targetModel} predict did not return bytesBase64Encoded`);
+                                                        }
+                                                        const mimeType = data.predictions?.[0]?.mimeType || "image/jpeg";
+                                                        return `data:${mimeType};base64,${base64Data}`;
+                                                    } else {
+                                                        const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                                                        if (!part) {
+                                                            throw new Error(`API model ${targetModel} did not return image data in parts`);
+                                                        }
+                                                        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                                                    }
+                                                }
+                                                if (res.status === 429) {
+                                                    console.warn(`[generateAIImage] Rate limited (429) on model ${targetModel} via ${keyLabel}, retrying...`);
+                                                    await new Promise(r => setTimeout(r, delay));
+                                                    delay *= 2;
+                                                    continue;
+                                                }
+                                                const err = await res.json().catch(() => ({}));
+                                                const errMsg = err.error?.message || `HTTP ${res.status}: ${res.statusText}`;
+                                                console.error(`[generateAIImage] Model ${targetModel} via ${keyLabel} failed: ${errMsg}`);
+                                                throw new Error(errMsg);
+                                            } catch (e) {
+                                                console.error(`[generateAIImage] Model ${targetModel} via ${keyLabel} attempt ${i + 1} failed:`, e);
+                                                if (i === 1) {
+                                                    errors.push(`${targetModel} (${target.type}) [${keyLabel}]: ${e.message || e}`);
+                                                    lastError = e;
+                                                }
                                                 await new Promise(r => setTimeout(r, delay));
                                                 delay *= 2;
-                                                continue;
                                             }
-                                            const err = await res.json().catch(() => ({}));
-                                            const errMsg = err.error?.message || `HTTP ${res.status}: ${res.statusText}`;
-                                            console.error(`[generateAIImage] Model ${targetModel} failed: ${errMsg}`);
-                                            throw new Error(errMsg);
-                                        } catch (e) {
-                                            console.error(`[generateAIImage] Model ${targetModel} attempt ${i + 1} failed:`, e);
-                                            if (i === 1) {
-                                                errors.push(`${targetModel} (${target.type}): ${e.message || e}`);
-                                                lastError = e;
-                                            }
-                                            await new Promise(r => setTimeout(r, delay));
-                                            delay *= 2;
                                         }
                                     }
                                 }
