@@ -4422,6 +4422,11 @@
             gap: 15px;
         }
 
+        [data-theme="dark"] .loading-overlay {
+            background-color: rgba(15, 15, 26, 0.85);
+            color: var(--text-color);
+        }
+
         /* ========================================= */
         /* 🚀 NEW JUMPING DOTS LOADER (Unified Theme) */
         /* ========================================= */

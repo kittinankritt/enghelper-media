@@ -6554,7 +6554,7 @@
                             let cloudSyncTimeout = null;
                             let lastSavedDataMap = null;
 
-                            function compressBase64Image(base64Str, maxWidth = 300, maxHeight = 300, quality = 0.7) {
+                            function compressBase64Image(base64Str, maxWidth = 512, maxHeight = 512, quality = 0.75) {
                                 return new Promise((resolve) => {
                                     if (typeof base64Str !== "string" || !base64Str.startsWith("data:image/")) {
                                         resolve(base64Str);
@@ -6570,25 +6570,28 @@
                                             if (width > maxWidth) {
                                                 height = Math.round((height * maxWidth) / width);
                                                 width = maxWidth;
-                                            }
-                                        } else {
-                                            if (height > maxHeight) {
-                                                width = Math.round((width * maxHeight) / height);
-                                                height = maxHeight;
-                                            }
-                                        }
-                                        canvas.width = width;
-                                        canvas.height = height;
-                                        const ctx = canvas.getContext("2d");
-                                        ctx.drawImage(img, 0, 0, width, height);
-                                        const compressed = canvas.toDataURL("image/jpeg", quality);
-                                        resolve(compressed);
-                                    };
-                                    img.onerror = () => {
-                                        resolve(base64Str);
-                                    };
-                                });
-                            }
+                                             }
+                                         } else {
+                                             if (height > maxHeight) {
+                                                 width = Math.round((width * maxHeight) / height);
+                                                 height = maxHeight;
+                                             }
+                                         }
+                                         canvas.width = width;
+                                         canvas.height = height;
+                                         const ctx = canvas.getContext("2d");
+                                         ctx.drawImage(img, 0, 0, width, height);
+                                         let compressed = canvas.toDataURL("image/webp", quality);
+                                         if (!compressed.startsWith("data:image/webp")) {
+                                             compressed = canvas.toDataURL("image/jpeg", quality);
+                                         }
+                                         resolve(compressed);
+                                     };
+                                     img.onerror = () => {
+                                         resolve(base64Str);
+                                     };
+                                 });
+                             }
                             window.compressBase64Image = compressBase64Image;
 
                             async function performCloudSync() {
