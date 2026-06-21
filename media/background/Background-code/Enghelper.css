@@ -2445,8 +2445,7 @@
             background-color: rgba(239, 68, 68, 0.1);
         }
 
-        #data-details-dialog[open],
-        #add-vocab-dialog[open] {
+        #data-details-dialog[open] {
             display: flex;
             flex-direction: column;
             overflow: hidden !important;
@@ -30349,18 +30348,7 @@
             padding-bottom: 30px;
         }
 
-        #vocab-library-dialog .dialog-content-wrapper::-webkit-scrollbar {
-            width: 6px;
-        }
 
-        #vocab-library-dialog .dialog-content-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        #vocab-library-dialog .dialog-content-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(var(--theme-rgb), 0.2);
-            border-radius: 10px;
-        }
 
         #vocab-library-dialog .vocab-library-toolbar {
             display: flex;
@@ -41324,13 +41312,11 @@
             padding-top: 0 !important;
         }
 
-        #data-details-dialog,
-        #add-vocab-dialog {
+        #data-details-dialog {
             padding: 0 !important;
         }
 
-        #data-details-dialog .vocab-dialog-header,
-        #add-vocab-dialog .dialog-header-with-action {
+        #data-details-dialog .vocab-dialog-header {
             padding: 25px 25px 0 25px !important;
             margin-bottom: 20px !important;
         }
@@ -42059,8 +42045,9 @@
             display: flex !important;
             flex-direction: column !important;
             overflow: hidden !important;
-            scrollbar-gutter: stable !important;
         }
+
+
 
         #story-dialog[open],
         #ai-roleplay-dialog[open],
@@ -47352,13 +47339,12 @@
         }
 
         #add-vocab-dialog.popup-fixed-layout[open] {
-            padding: 0 !important;
             box-sizing: border-box !important;
             gap: 0 !important;
         }
 
         #add-vocab-dialog.popup-fixed-layout[open] .dialog-header-with-action {
-            padding: 25px 25px 0 25px !important;
+            padding: 0 !important;
             margin: 0 0 20px 0 !important;
         }
 
