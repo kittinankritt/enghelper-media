@@ -2272,6 +2272,7 @@
                                 }
                             });
                             let dialogHistoryStack = [];
+                            let vocabDialogHistoryStack = [];
                             const pageContainer = document.querySelector(".page-container");
                             if (splashScreen && pageContainer) {
                                 pageContainer.style.display = "none";
@@ -17601,6 +17602,17 @@
                             });
 
                             function openDataDetailsDialog(idToEdit = null, viewMode = false) {
+                                if (idToEdit) {
+                                    if (!dataDetailsDialog.open) {
+                                        vocabDialogHistoryStack = [];
+                                    }
+                                    if (vocabDialogHistoryStack.length === 0 || vocabDialogHistoryStack[vocabDialogHistoryStack.length - 1] !== idToEdit) {
+                                        if (currentViewingItemId !== idToEdit) {
+                                            vocabDialogHistoryStack.push(idToEdit);
+                                        }
+                                    }
+                                }
+
                                 dataDetailsForm.reset();
                                 currentImageData = null;
                                 dataIdInput.value = "";
@@ -17624,6 +17636,10 @@
                                 const viewModeHeaderActions = document.getElementById("view-mode-header-actions");
                                 if (viewModeHeaderActions) {
                                     viewModeHeaderActions.style.display = isViewMode ? "flex" : "none";
+                                }
+                                const viewModeBackBtn = document.getElementById("view-mode-back-btn");
+                                if (viewModeBackBtn) {
+                                    viewModeBackBtn.style.display = (isViewMode && vocabDialogHistoryStack.length > 1) ? "inline-flex" : "none";
                                 }
                                 if (clearDataDialogBtn) {
                                     clearDataDialogBtn.style.display = isViewMode ? "none" : "flex";
@@ -17803,7 +17819,7 @@
 
                                                     badge.innerHTML = `<span class="dialect-emoji" style="font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 14px; transform: translateY(1.5px);">${info.flag}</span>
                                                  <span class="dialect-text" style="font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 14px; margin-right: 4px;">${info.name}</span>
-                                                 ${formattedDPhonetic ? `<span class="dialect-phonetic" style="font-family: monospace; font-size: 0.85rem; opacity: 0.9; font-weight: normal; margin-left: 2px;">: ${formattedDPhonetic}</span>` : ""}`;
+                                                 ${formattedDPhonetic ? `<span class="dialect-phonetic" style="font-family: monospace; font-size: 0.85rem; opacity: 0.9; font-weight: normal; margin-left: 2px; display: inline-flex; align-items: center; justify-content: center; height: 14px; line-height: 1;">: ${formattedDPhonetic}</span>` : ""}`;
                                                     viewModeDialectCapsuleContainerEl.appendChild(badge);
                                                 });
                                             }
@@ -17892,7 +17908,7 @@
                                             const newSynList = document.getElementById("vocab-synonyms-list");
                                             if (newSynList) {
                                                 newSynList.innerHTML = itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0 
-                                                    ? itemToDisplay.synonyms.map(syn => `<li>${escapeHtml(syn)}</li>`).join("") 
+                                                    ? itemToDisplay.synonyms.map(syn => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: underline; color: var(--primary-color);" data-word="${escapeHtml(syn)}">${escapeHtml(syn)}</li>`).join("") 
                                                     : "<li>-</li>";
                                             }
 
@@ -17900,7 +17916,7 @@
                                             const newAntList = document.getElementById("vocab-antonyms-list");
                                             if (newAntList) {
                                                 newAntList.innerHTML = itemToDisplay.antonyms && itemToDisplay.antonyms.length > 0 
-                                                    ? itemToDisplay.antonyms.map(ant => `<li>${escapeHtml(ant)}</li>`).join("") 
+                                                    ? itemToDisplay.antonyms.map(ant => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: underline; color: var(--accent-color);" data-word="${escapeHtml(ant)}">${escapeHtml(ant)}</li>`).join("") 
                                                     : "<li>-</li>";
                                             }
 
@@ -18401,10 +18417,59 @@
                                     speak(e.currentTarget.dataset.text);
                                 });
                             }
+                            function goBackVocabHistory() {
+                                if (vocabDialogHistoryStack.length > 0 && vocabDialogHistoryStack[vocabDialogHistoryStack.length - 1] === currentViewingItemId) {
+                                    vocabDialogHistoryStack.pop();
+                                }
+                                if (vocabDialogHistoryStack.length > 0) {
+                                    const prevId = vocabDialogHistoryStack.pop();
+                                    openDataDetailsDialog(prevId, true);
+                                } else {
+                                    dataDetailsDialog.close();
+                                }
+                            }
                             closeDataDialogBtn.addEventListener("click", () => {
-                                dialogHistoryStack = [];
-                                dataDetailsDialog.close();
+                                goBackVocabHistory();
                             });
+                            const viewModeBackBtnEl = document.getElementById("view-mode-back-btn");
+                            if (viewModeBackBtnEl) {
+                                viewModeBackBtnEl.addEventListener("click", (e) => {
+                                    e.stopPropagation();
+                                    goBackVocabHistory();
+                                });
+                            }
+                            const viewModeCloseBtnEl = document.getElementById("view-mode-close-btn");
+                            if (viewModeCloseBtnEl) {
+                                viewModeCloseBtnEl.addEventListener("click", (e) => {
+                                    e.stopPropagation();
+                                    goBackVocabHistory();
+                                });
+                            }
+                            dataDetailsDialog.addEventListener("cancel", (e) => {
+                                e.preventDefault();
+                                goBackVocabHistory();
+                            });
+                            const handleRelatedWordClick = (e) => {
+                                const li = e.target.closest(".vocab-related-word-clickable");
+                                if (!li) return;
+                                const wordText = li.dataset.word;
+                                if (!wordText) return;
+                                const searchWord = wordText.trim().toLowerCase();
+                                const foundItem = englishDataStore.find(d => String(d.englishData || d.word || "").trim().toLowerCase() === searchWord);
+                                if (foundItem) {
+                                    openDataDetailsDialog(foundItem.id, true);
+                                } else {
+                                    showToast2(`ไม่พบคำศัพท์ "${wordText}" ในคลังของคุณ`, "info");
+                                }
+                            };
+                            const vocabSynonymsList = document.getElementById("vocab-synonyms-list");
+                            if (vocabSynonymsList) {
+                                vocabSynonymsList.addEventListener("click", handleRelatedWordClick);
+                            }
+                            const vocabAntonymsList = document.getElementById("vocab-antonyms-list");
+                            if (vocabAntonymsList) {
+                                vocabAntonymsList.addEventListener("click", handleRelatedWordClick);
+                            }
                             if (clearDataDialogBtn) {
                                 clearDataDialogBtn.addEventListener("click", () => {
                                     dialogEnglishDataInput.value = "";
