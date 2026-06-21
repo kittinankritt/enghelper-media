@@ -53107,9 +53107,23 @@
             z-index: 1;
             transform: scale(1.035);
             filter: saturate(1.08) contrast(1.02);
-            /* Add mask to fade the background image to transparent at the bottom */
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,0) 100%);
+            /* Gradual multi-stop mask for seamless fade into background */
+            -webkit-mask-image: linear-gradient(to bottom,
+                rgba(0,0,0,1) 30%,
+                rgba(0,0,0,0.95) 40%,
+                rgba(0,0,0,0.8) 50%,
+                rgba(0,0,0,0.55) 60%,
+                rgba(0,0,0,0.3) 70%,
+                rgba(0,0,0,0.12) 80%,
+                rgba(0,0,0,0) 90%);
+            mask-image: linear-gradient(to bottom,
+                rgba(0,0,0,1) 30%,
+                rgba(0,0,0,0.95) 40%,
+                rgba(0,0,0,0.8) 50%,
+                rgba(0,0,0,0.55) 60%,
+                rgba(0,0,0,0.3) 70%,
+                rgba(0,0,0,0.12) 80%,
+                rgba(0,0,0,0) 90%);
         }
 
         /* Glassmorphic blur overlay at the bottom of the hero image */
@@ -53122,17 +53136,20 @@
             height: 100%;
             background:
                 linear-gradient(to bottom,
-                    rgba(var(--theme-rgb), 0.02) 0%,
-                    rgba(var(--theme-rgb), 0.01) 38%,
-                    color-mix(in srgb, var(--surface-color) 10%, transparent) 50%,
-                    color-mix(in srgb, var(--surface-color) 34%, transparent) 62%,
-                    color-mix(in srgb, var(--surface-color) 68%, transparent) 76%,
-                    color-mix(in srgb, var(--hero-fade-color) 50%, transparent) 92%,
-                    transparent 100%),
-                radial-gradient(ellipse at center 92%,
-                    rgba(var(--theme-rgb), 0.2) 0%,
-                    rgba(var(--theme-rgb), 0.1) 34%,
-                    transparent 66%);
+                    transparent 0%,
+                    transparent 28%,
+                    rgba(var(--theme-rgb), 0.03) 36%,
+                    color-mix(in srgb, var(--surface-color) 8%, transparent) 42%,
+                    color-mix(in srgb, var(--surface-color) 22%, transparent) 50%,
+                    color-mix(in srgb, var(--surface-color) 45%, transparent) 58%,
+                    color-mix(in srgb, var(--surface-color) 68%, transparent) 66%,
+                    color-mix(in srgb, var(--surface-color) 85%, transparent) 74%,
+                    color-mix(in srgb, var(--surface-color) 94%, transparent) 82%,
+                    var(--surface-color) 90%),
+                radial-gradient(ellipse at center 70%,
+                    rgba(var(--theme-rgb), 0.15) 0%,
+                    rgba(var(--theme-rgb), 0.08) 30%,
+                    transparent 60%);
             z-index: 2;
             pointer-events: none;
         }
@@ -53144,18 +53161,20 @@
         #data-details-dialog.has-image .hero-bottom-blur::before {
             content: "";
             position: absolute;
-            inset: 46% 0 0;
+            inset: 34% 0 0;
             background:
                 linear-gradient(to bottom,
                     transparent 0%,
-                    color-mix(in srgb, var(--surface-color) 16%, transparent) 28%,
-                    color-mix(in srgb, var(--surface-color) 50%, transparent) 64%,
-                    transparent 100%);
-            backdrop-filter: blur(8px) saturate(112%);
-            -webkit-backdrop-filter: blur(8px) saturate(112%);
-            /* Mask the blur filter itself so it fades to transparent at the bottom */
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,1) 56%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,1) 56%, rgba(0,0,0,0) 100%);
+                    color-mix(in srgb, var(--surface-color) 10%, transparent) 18%,
+                    color-mix(in srgb, var(--surface-color) 30%, transparent) 38%,
+                    color-mix(in srgb, var(--surface-color) 55%, transparent) 56%,
+                    color-mix(in srgb, var(--surface-color) 75%, transparent) 72%,
+                    var(--surface-color) 88%);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            /* Smooth mask for the blur filter - fades in gradually */
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 12%, rgba(0,0,0,0.6) 28%, rgba(0,0,0,0.85) 44%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 12%, rgba(0,0,0,0.6) 28%, rgba(0,0,0,0.85) 44%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 100%);
         }
 
         /* Smooth gradient shading the top/middle of the image for text readability */
@@ -53173,9 +53192,11 @@
                     transparent 42%),
                 linear-gradient(to bottom,
                     transparent 0%,
-                    transparent 50%,
-                    rgba(0, 0, 0, 0.14) 62%,
-                    rgba(0, 0, 0, 0.48) 84%,
+                    transparent 45%,
+                    rgba(0, 0, 0, 0.06) 55%,
+                    rgba(0, 0, 0, 0.18) 65%,
+                    rgba(0, 0, 0, 0.35) 76%,
+                    rgba(0, 0, 0, 0.25) 88%,
                     transparent 100%);
             z-index: 3;
             pointer-events: none;
@@ -53262,20 +53283,22 @@
 #data-details-dialog.has-image .vocab-top-metrics-row::before {
     content: "";
     position: absolute;
-    top: -125px;
+    top: -160px;
     right: -25px;
     left: -25px;
-    height: 220px;
+    height: 260px;
     background:
         linear-gradient(to bottom,
             transparent 0%,
-            rgba(var(--theme-rgb), 0.05) 30%,
-            rgba(var(--theme-rgb), 0.02) 70%,
-            transparent 100%);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 75%, transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 75%, transparent 100%);
+            color-mix(in srgb, var(--surface-color) 15%, transparent) 20%,
+            color-mix(in srgb, var(--surface-color) 40%, transparent) 40%,
+            color-mix(in srgb, var(--surface-color) 70%, transparent) 60%,
+            color-mix(in srgb, var(--surface-color) 90%, transparent) 80%,
+            var(--surface-color) 100%);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 100%);
     pointer-events: none;
     z-index: 0;
 }
