@@ -53090,9 +53090,9 @@
         #data-details-dialog.has-image .view-mode-hero-wrapper {
             margin: -5px -25px -6px -25px;
             min-height: 455px;
-            background: transparent; /* Seamless transparent background to show the theme background */
+            background: transparent;
             position: relative;
-            overflow: hidden;
+            overflow: hidden; /* Clips at boundary - safe because gradients reach surface-color before edge */
         }
 
         #data-details-dialog.has-image .view-mode-hero-bg {
@@ -53107,49 +53107,53 @@
             z-index: 1;
             transform: scale(1.035);
             filter: saturate(1.08) contrast(1.02);
-            /* Gradual multi-stop mask for seamless fade into background */
+            /* Image fades out completely by 70% - well before the wrapper edge */
             -webkit-mask-image: linear-gradient(to bottom,
-                rgba(0,0,0,1) 30%,
-                rgba(0,0,0,0.95) 40%,
-                rgba(0,0,0,0.8) 50%,
-                rgba(0,0,0,0.55) 60%,
-                rgba(0,0,0,0.3) 70%,
-                rgba(0,0,0,0.12) 80%,
-                rgba(0,0,0,0) 90%);
+                rgba(0,0,0,1) 15%,
+                rgba(0,0,0,0.95) 25%,
+                rgba(0,0,0,0.85) 35%,
+                rgba(0,0,0,0.65) 45%,
+                rgba(0,0,0,0.4) 53%,
+                rgba(0,0,0,0.18) 60%,
+                rgba(0,0,0,0.05) 66%,
+                rgba(0,0,0,0) 72%);
             mask-image: linear-gradient(to bottom,
-                rgba(0,0,0,1) 30%,
-                rgba(0,0,0,0.95) 40%,
-                rgba(0,0,0,0.8) 50%,
-                rgba(0,0,0,0.55) 60%,
-                rgba(0,0,0,0.3) 70%,
-                rgba(0,0,0,0.12) 80%,
-                rgba(0,0,0,0) 90%);
+                rgba(0,0,0,1) 15%,
+                rgba(0,0,0,0.95) 25%,
+                rgba(0,0,0,0.85) 35%,
+                rgba(0,0,0,0.65) 45%,
+                rgba(0,0,0,0.4) 53%,
+                rgba(0,0,0,0.18) 60%,
+                rgba(0,0,0,0.05) 66%,
+                rgba(0,0,0,0) 72%);
         }
 
-        /* Glassmorphic blur overlay at the bottom of the hero image */
         .hero-bottom-blur {
             display: none;
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            bottom: 0;
+            height: auto;
+            /* Subtle dark tint that fades to TRANSPARENT - dialog bg shows through */
             background:
                 linear-gradient(to bottom,
                     transparent 0%,
-                    transparent 28%,
-                    rgba(var(--theme-rgb), 0.03) 36%,
-                    color-mix(in srgb, var(--surface-color) 8%, transparent) 42%,
-                    color-mix(in srgb, var(--surface-color) 22%, transparent) 50%,
-                    color-mix(in srgb, var(--surface-color) 45%, transparent) 58%,
-                    color-mix(in srgb, var(--surface-color) 68%, transparent) 66%,
-                    color-mix(in srgb, var(--surface-color) 85%, transparent) 74%,
-                    color-mix(in srgb, var(--surface-color) 94%, transparent) 82%,
-                    var(--surface-color) 90%),
-                radial-gradient(ellipse at center 70%,
-                    rgba(var(--theme-rgb), 0.15) 0%,
-                    rgba(var(--theme-rgb), 0.08) 30%,
-                    transparent 60%);
+                    transparent 20%,
+                    rgba(0, 0, 0, 0.03) 30%,
+                    rgba(0, 0, 0, 0.08) 38%,
+                    rgba(0, 0, 0, 0.15) 46%,
+                    rgba(0, 0, 0, 0.22) 54%,
+                    rgba(0, 0, 0, 0.18) 62%,
+                    rgba(0, 0, 0, 0.10) 72%,
+                    rgba(0, 0, 0, 0.03) 82%,
+                    transparent 92%,
+                    transparent 100%),
+                radial-gradient(ellipse at center 42%,
+                    rgba(var(--theme-rgb), 0.08) 0%,
+                    rgba(var(--theme-rgb), 0.03) 20%,
+                    transparent 45%);
             z-index: 2;
             pointer-events: none;
         }
@@ -53161,23 +53165,19 @@
         #data-details-dialog.has-image .hero-bottom-blur::before {
             content: "";
             position: absolute;
-            inset: 34% 0 0;
-            background:
-                linear-gradient(to bottom,
-                    transparent 0%,
-                    color-mix(in srgb, var(--surface-color) 10%, transparent) 18%,
-                    color-mix(in srgb, var(--surface-color) 30%, transparent) 38%,
-                    color-mix(in srgb, var(--surface-color) 55%, transparent) 56%,
-                    color-mix(in srgb, var(--surface-color) 75%, transparent) 72%,
-                    var(--surface-color) 88%);
-            backdrop-filter: blur(20px) saturate(120%);
-            -webkit-backdrop-filter: blur(20px) saturate(120%);
-            /* Smooth mask for the blur filter - fades in gradually */
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 12%, rgba(0,0,0,0.6) 28%, rgba(0,0,0,0.85) 44%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 100%);
-            mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 12%, rgba(0,0,0,0.6) 28%, rgba(0,0,0,0.85) 44%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 100%);
+            top: 25%;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Pure blur only - NO color overlay. Dialog bg shows through. */
+            background: transparent;
+            backdrop-filter: blur(28px) saturate(130%);
+            -webkit-backdrop-filter: blur(28px) saturate(130%);
+            /* Blur fades in from top AND fades out at bottom - so clip edge is invisible */
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.6) 24%, rgba(0,0,0,1) 40%, rgba(0,0,0,1) 65%, rgba(0,0,0,0.5) 82%, transparent 95%);
+            mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.6) 24%, rgba(0,0,0,1) 40%, rgba(0,0,0,1) 65%, rgba(0,0,0,0.5) 82%, transparent 95%);
         }
 
-        /* Smooth gradient shading the top/middle of the image for text readability */
         #data-details-dialog.has-image .view-mode-hero-wrapper::after {
             content: "";
             position: absolute;
@@ -53185,18 +53185,12 @@
             left: 0;
             width: 100%;
             height: 100%;
+            /* Only top dark overlay for text readability - no bottom overlay */
             background:
                 linear-gradient(to bottom,
                     rgba(0,0,0,0.42) 0%,
                     rgba(0,0,0,0.08) 26%,
-                    transparent 42%),
-                linear-gradient(to bottom,
-                    transparent 0%,
-                    transparent 45%,
-                    rgba(0, 0, 0, 0.06) 55%,
-                    rgba(0, 0, 0, 0.18) 65%,
-                    rgba(0, 0, 0, 0.35) 76%,
-                    rgba(0, 0, 0, 0.25) 88%,
+                    transparent 42%,
                     transparent 100%);
             z-index: 3;
             pointer-events: none;
@@ -53236,17 +53230,20 @@
             left: 0 !important;
             width: 100% !important;
             z-index: 10 !important;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent) !important;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 60%, transparent 100%) !important;
             border-bottom: none !important;
             box-sizing: border-box !important;
             padding: 20px 25px !important;
         }
 
         #data-details-dialog.has-image .vocab-dialog-header .dialog-main-title {
-            background: #ffffff !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            background-clip: initial !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-fill-color: #ffffff !important;
+            color: #ffffff !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
         }
 
         #data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn {
@@ -53277,31 +53274,11 @@
 }
 
 #data-details-dialog.has-image .vocab-top-metrics-row {
-    margin-top: -86px;
+    margin-top: -120px;
 }
 
-#data-details-dialog.has-image .vocab-top-metrics-row::before {
-    content: "";
-    position: absolute;
-    top: -160px;
-    right: -25px;
-    left: -25px;
-    height: 260px;
-    background:
-        linear-gradient(to bottom,
-            transparent 0%,
-            color-mix(in srgb, var(--surface-color) 15%, transparent) 20%,
-            color-mix(in srgb, var(--surface-color) 40%, transparent) 40%,
-            color-mix(in srgb, var(--surface-color) 70%, transparent) 60%,
-            color-mix(in srgb, var(--surface-color) 90%, transparent) 80%,
-            var(--surface-color) 100%);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,1) 30%, rgba(0,0,0,1) 100%);
-    pointer-events: none;
-    z-index: 0;
-}
+/* Removed: vocab-top-metrics-row::before blur backdrop is no longer needed.
+   The hero-bottom-blur inside the wrapper fully handles the transition. */
 
 #data-details-dialog:not(.has-image) .view-mode-hero-wrapper {
     padding-bottom: 28px;
