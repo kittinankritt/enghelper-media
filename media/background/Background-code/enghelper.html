@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="theme-engine"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enghelper</title>
@@ -24,7 +24,7 @@
         href="https://kittinankritt.github.io/enghelper-media/media/webicon/favicon-16x16.png">
     <!-- Removed manifest for single HTML -->
 
-    <link rel="stylesheet" href="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.css">
+    <link rel="stylesheet" href="./Enghelper.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css'
         crossorigin="anonymous">
     <!-- localForage for offline storage -->
@@ -46,7 +46,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js" crossorigin="anonymous"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="tailwind-config"></script>
 </head>
 
@@ -1389,26 +1389,12 @@
                     </button>
                 </div>
                 <div class="action-buttons vocab-dialog-action-buttons">
-                    <button class="dialog-audio-btn" id="vocab-nav-prev-btn" title="คำก่อนหน้า"
-                        style="margin-right: -4px; padding: 4px;">
-                        <i class="fi fi-rr-angle-left"></i>
-                    </button>
-                    <button class="dialog-audio-btn" id="vocab-nav-next-btn" title="คำถัดไป"
-                        style="margin-left: -4px; padding: 4px;">
-                        <i class="fi fi-rr-angle-right"></i>
-                    </button>
-                    <div class="nav-separator"
-                        style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></div>
                     <button class="dialog-audio-btn highlight" id="view-mode-word-audio-btn" title="เล่นเสียงคำศัพท์">
                         <i class="fi fi-rr-volume"></i>
                     </button>
                     <button class="dialog-audio-btn" id="view-mode-word-mic-btn" title="ฝึกออกเสียง"
                         style="color: var(--accent-color);">
                         <i class="fi fi-rr-microphone"></i>
-                    </button>
-                    <button class="dialog-audio-btn" id="view-mode-generate-image-btn" title="สร้างภาพประกอบด้วย AI"
-                        style="color: var(--primary-color);">
-                        <i class="fi fi-rr-picture"></i>
                     </button>
                     <button class="dialog-audio-btn" id="view-mode-edit-btn" title="แก้ไขข้อมูล">
                         <i class="fi fi-rr-text-box-edit"></i>
@@ -1433,6 +1419,7 @@
 
             <div class="view-mode-hero-wrapper">
                 <div class="view-mode-hero-bg"></div>
+                <div class="hero-bottom-blur"></div>
                 <div class="view-mode-main-display" style="text-align: center; margin-bottom: 20px;">
                     <span class="view-mode-english-data-text"
                         style="display: block; font-size: 3rem; font-weight: 800; color: var(--primary-color); line-height: 1.2;"></span>
@@ -1486,6 +1473,7 @@
                                     </defs>
                                     <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
                                     <path id="vocab-frequency-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
+                                    <line id="vocab-frequency-gauge-needle" x1="50" y1="50" x2="50" y2="28" stroke="#c084fc" stroke-width="7" stroke-linecap="round"/>
                                     <circle id="vocab-frequency-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
                                 </svg>
                             </div>
@@ -1497,6 +1485,7 @@
                                 <svg class="vocab-radial-gauge" viewBox="0 0 100 55">
                                     <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
                                     <path id="vocab-formality-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
+                                    <line id="vocab-formality-gauge-needle" x1="50" y1="50" x2="50" y2="28" stroke="#c084fc" stroke-width="7" stroke-linecap="round"/>
                                     <circle id="vocab-formality-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
                                 </svg>
                             </div>
@@ -1932,8 +1921,15 @@
                 <button type="button" id="back-to-view-btn" class="game-close-btn ghost" style="display: none;">
                     <i class="fi fi-rr-arrow-small-left"></i> กลับไปโหมดดู
                 </button>
-                <button type="button" id="close-data-dialog-btn" class="game-close-btn ghost">ยกเลิก</button>
-                <button type="button" id="clear-data-dialog-btn" class="game-close-btn ghost">ล้างฟอร์ม</button>
+                <button type="button" id="close-data-dialog-btn" class="game-close-btn ghost">
+                    <i class="fi fi-rr-cross"></i> ยกเลิก
+                </button>
+                <button type="button" id="clear-data-dialog-btn" class="game-close-btn ghost">
+                    <i class="fi fi-rr-trash"></i> ล้างฟอร์ม
+                </button>
+                <button type="button" id="edit-mode-generate-image-btn" class="ai-feature-btn" style="color: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fi fi-rr-picture"></i> สร้างรูปภาพใหม่
+                </button>
                 <button type="submit" form="data-details-form" id="save-data-btn" class="ai-feature-btn primary-glow">
                     <i class="fi fi-rr-disk"></i><span id="save-data-btn-label">บันทึกคำศัพท์</span>
                 </button>
@@ -6080,12 +6076,12 @@
         </div>
     </dialog>
 
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="main-module" defer></script>
 
     <!-- Capacitor Core -->
 
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="capacitor-polyfill"></script>
 
     <!-- Haptics Feedback -->
@@ -6096,7 +6092,7 @@
     <!-- Biometric Auth -->
     <!-- Removed biometric-auth.js (native only) -->
     <!-- Mobile App Logic -->
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="mobile-app"></script>
 
     <!-- =========================================
@@ -6157,7 +6153,7 @@
         </div>
     </dialog>
 
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="service-worker-skip"></script>
     <!-- ======================= PERSONAL CONTEXT DIALOG (ONBOARDING) ======================= -->
     <dialog id="personal-context-dialog" class="context-dialog">
@@ -6860,7 +6856,7 @@
 
 
     <!-- ======================= LUEUM SALAB PHASA (FORGOT TO SWITCH LANGUAGE) ======================= -->
-    <script src="https://kittinankritt.github.io/enghelper-media/media/background/Background-code/Enghelper.js"
+    <script src="./Enghelper.js"
         data-enghelper-script="language-switch-helper"></script>
 </body>
 

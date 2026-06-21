@@ -2661,7 +2661,7 @@
                             const vocabLibraryDialog = document.getElementById("vocab-library-dialog");
                             const addVocabDialog = document.getElementById("add-vocab-dialog");
                             const openAiVocabPackBtn = document.getElementById("open-ai-vocab-pack-btn");
-                            const viewModeGenerateImageBtn = document.getElementById("view-mode-generate-image-btn");
+                            const editModeGenerateImageBtn = document.getElementById("edit-mode-generate-image-btn");
                             const viewModeImageContainer = document.getElementById("view-mode-image-container");
                             const viewModeImage = document.getElementById("view-mode-image");
                             const openImageToVocabBtn = document.getElementById("open-image-to-vocab-btn");
@@ -3025,7 +3025,7 @@
                             }
                             function normalizeVocabularyItem(item) {
                                 if (!item || typeof item !== "object") return item;
-                                item.imageB64 = typeof item.imageB64 === "string" ? item.imageB64.trim() : "";
+                                item.imageB64 = typeof item.imageB64 === "string" && item.imageB64.trim() ? item.imageB64.trim() : (typeof item.imageData === "string" ? item.imageData.trim() : "");
                                 item.englishData = String(item.englishData || item.word || item.english || "").trim().toUpperCase();
                                 item.phonetic = sanitizePhoneticString(String(item.phonetic || "").trim());
                                 item.pos = String(item.pos || "").trim();
@@ -17653,11 +17653,7 @@
                                             const cleanPhonetic = typeof sanitizePhoneticString === "function" ? sanitizePhoneticString(itemToDisplay.phonetic || "") : (itemToDisplay.phonetic || "");
                                             document.getElementById("view-mode-word-mic-btn").dataset.phonetic = cleanPhonetic;
                                             checkAudioStatusForButton(viewModeWordAudioBtn);
-                                            if (viewModeGenerateImageBtn) {
-                                                viewModeGenerateImageBtn.dataset.word = displayWord;
-                                                viewModeGenerateImageBtn.dataset.id = itemToDisplay.id;
-                                                viewModeGenerateImageBtn.dataset.thai = itemToDisplay.thaiExplanation || "";
-                                            }
+
                                             const heroBg = document.querySelector(".view-mode-hero-bg");
                                             if (itemToDisplay.imageB64) {
                                                 dataDetailsDialog.classList.add("has-image");
@@ -17904,6 +17900,7 @@
                                                 const fillEl = document.getElementById(gaugeFillId);
                                                 const pointerEl = document.getElementById(pointerId);
                                                 if (!fillEl || !pointerEl) return;
+                                                const needleEl = document.getElementById(pointerId.replace("-pointer", "-needle"));
                                                 
                                                 // Map score 1-5 to percentage (15% to 95%)
                                                 const scoreMap = { 1: 0.15, 2: 0.35, 3: 0.55, 4: 0.75, 5: 0.95 };
@@ -17921,6 +17918,14 @@
                                                 const cy = 50 - 35 * Math.sin(angleRad);
                                                 pointerEl.setAttribute("cx", String(cx));
                                                 pointerEl.setAttribute("cy", String(cy));
+                                                if (needleEl) {
+                                                    const needleEndX = 50 + 29 * Math.cos(angleRad);
+                                                    const needleEndY = 50 - 29 * Math.sin(angleRad);
+                                                    needleEl.setAttribute("x1", "50");
+                                                    needleEl.setAttribute("y1", "50");
+                                                    needleEl.setAttribute("x2", String(needleEndX));
+                                                    needleEl.setAttribute("y2", String(needleEndY));
+                                                }
                                             };
                                             
                                             updateGaugeSVG("vocab-frequency-gauge-fill", "vocab-frequency-gauge-pointer", freqScore);
@@ -18036,12 +18041,40 @@
                                                 }
                                             }
 
+                                            const balanceVocabDetailCards = () => {
+                                                const leftCol = document.querySelector(".vocab-bottom-left-col");
+                                                const rightCol = document.querySelector(".vocab-bottom-right-col");
+                                                if (!leftCol || !rightCol) return;
+
+                                                const cards = [
+                                                    usageCard,
+                                                    newExamplesCard,
+                                                    collocationsCard,
+                                                    mistakeCard,
+                                                    tipCard,
+                                                    rootCard
+                                                ].filter((card) => card && card.style.display !== "none");
+
+                                                leftCol.innerHTML = "";
+                                                rightCol.innerHTML = "";
+
+                                                cards.forEach((card, index) => {
+                                                    const preferLeft = card === usageCard || card === newExamplesCard;
+                                                    const target = index < 2 && preferLeft
+                                                        ? leftCol
+                                                        : (leftCol.offsetHeight <= rightCol.offsetHeight ? leftCol : rightCol);
+                                                    target.appendChild(card);
+                                                });
+                                            };
+                                            requestAnimationFrame(balanceVocabDetailCards);
+
                                             viewModePhoneticEl.style.display = "none";
                                             viewModeThaiExplanationEl.style.display = itemToDisplay.thaiExplanation ? "block" : "none";
                                             examplesViewDiv.style.display = itemToDisplay.examples && itemToDisplay.examples.length > 0 ? "block" : "none";
                                             updateDifficultWordToggleButton(itemToDisplay, true);
                                         } else {
                                             dataIdInput.value = itemToDisplay.id;
+                                            currentImageData = itemToDisplay.imageB64 || itemToDisplay.imageData || null;
                                             dialogEnglishDataInput.value = String(itemToDisplay.englishData || itemToDisplay.word || itemToDisplay.english || "").trim().toUpperCase();
                                             dialogPhoneticInput.value = typeof sanitizePhoneticString === "function" ? sanitizePhoneticString(itemToDisplay.phonetic || "") : (itemToDisplay.phonetic || "");
                                             dialogPosSelect.value = itemToDisplay.pos || "";
@@ -18102,8 +18135,52 @@
                                     openDataDetailsDialog(nextId, true);
                                 }
                             }
-                            document.getElementById("vocab-nav-prev-btn")?.addEventListener("click", () => navigateVocabDetails(-1));
-                            document.getElementById("vocab-nav-next-btn")?.addEventListener("click", () => navigateVocabDetails(1));
+                            // Mouse drag events for navigation
+                            let vocabMouseStartX = 0;
+                            let vocabMouseStartY = 0;
+                            let isVocabMouseDown = false;
+                            let isVocabDragging = false;
+
+                            dataDetailsDialog.addEventListener("mousedown", (e) => {
+                                if (!dataDetailsDialog.classList.contains("data-details-view-mode")) return;
+                                if (e.target.closest("button, input, select, textarea, a, .dialect-popover")) return;
+                                isVocabMouseDown = true;
+                                isVocabDragging = false;
+                                vocabMouseStartX = e.screenX;
+                                vocabMouseStartY = e.screenY;
+                            });
+
+                            dataDetailsDialog.addEventListener("mousemove", (e) => {
+                                if (!isVocabMouseDown) return;
+                                const diffX = e.screenX - vocabMouseStartX;
+                                const diffY = e.screenY - vocabMouseStartY;
+                                if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+                                    isVocabDragging = true;
+                                    // Prevent text selection during drag
+                                    if (window.getSelection) {
+                                        window.getSelection().removeAllRanges();
+                                    }
+                                }
+                            });
+
+                            dataDetailsDialog.addEventListener("mouseup", (e) => {
+                                if (!isVocabMouseDown) return;
+                                isVocabMouseDown = false;
+                                if (!isVocabDragging) return;
+
+                                const diffX = e.screenX - vocabMouseStartX;
+                                const diffY = e.screenY - vocabMouseStartY;
+                                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+                                    if (diffX < 0) navigateVocabDetails(1);
+                                    else navigateVocabDetails(-1);
+                                }
+                            });
+
+                            dataDetailsDialog.addEventListener("mouseleave", () => {
+                                isVocabMouseDown = false;
+                            });
+
+                            // Touch event listeners for navigation (swipe)
                             let vocabTouchStartX = 0;
                             let vocabTouchStartY = 0;
                             dataDetailsDialog.addEventListener("touchstart", (e) => {
@@ -18122,6 +18199,20 @@
                                     else navigateVocabDetails(-1);
                                 }
                             }, { passive: true });
+
+                            // Keyboard shortcuts (Alt/Option + Left/Right Arrow)
+                            window.addEventListener("keydown", (e) => {
+                                if (!dataDetailsDialog.open || !dataDetailsDialog.classList.contains("data-details-view-mode")) return;
+                                if (e.altKey && !e.ctrlKey && !e.metaKey) {
+                                    if (e.key === "ArrowLeft") {
+                                        e.preventDefault();
+                                        navigateVocabDetails(-1);
+                                    } else if (e.key === "ArrowRight") {
+                                        e.preventDefault();
+                                        navigateVocabDetails(1);
+                                    }
+                                }
+                            });
                             document.getElementById("back-to-view-btn").addEventListener("click", () => {
                                 if (currentViewingItemId) {
                                     openDataDetailsDialog(currentViewingItemId, true);
@@ -18282,6 +18373,8 @@
                                     if (dialogFrequencyInput) dialogFrequencyInput.value = "";
                                     if (dialogFormalityInput) dialogFormalityInput.value = "";
                                     currentVocabLearningDetails = {};
+                                    currentImageData = null;
+                                    if (dataDetailsForm) dataDetailsForm.dataset.contextHint = "";
                                     resetDialectFields();
                                 });
                             }
@@ -22373,37 +22466,42 @@
                                     synonymNuanceExplanationArea.innerHTML = "<p>AI \u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22\u0E04\u0E27\u0E32\u0E21\u0E41\u0E15\u0E01\u0E15\u0E48\u0E32\u0E07\u0E44\u0E14\u0E49</p>";
                                 }
                             });
-                            if (viewModeGenerateImageBtn) {
-                                viewModeGenerateImageBtn.addEventListener("click", async () => {
-                                    const word = viewModeGenerateImageBtn.dataset.word;
-                                    const id = viewModeGenerateImageBtn.dataset.id;
-                                    const thai = viewModeGenerateImageBtn.dataset.thai;
-                                    if (!word) return;
+                            if (editModeGenerateImageBtn) {
+                                editModeGenerateImageBtn.addEventListener("click", async () => {
+                                    const word = dialogEnglishDataInput ? dialogEnglishDataInput.value.trim() : "";
+                                    const thai = dialogThaiExplanationTextarea ? dialogThaiExplanationTextarea.value.trim() : "";
+                                    if (!word) {
+                                        showToast2("กรุณากรอกคำศัพท์ภาษาอังกฤษก่อนสร้างรูปภาพ", "error");
+                                        return;
+                                    }
 
-                                    const originalHTML = viewModeGenerateImageBtn.innerHTML;
-                                    viewModeGenerateImageBtn.disabled = true;
-                                    viewModeGenerateImageBtn.innerHTML = "<i class=\"fi fi-rr-picture animate-spin\" style=\"margin-right: 5px;\"></i> กำลังสร้างรูปภาพ...";
+                                    const originalHTML = editModeGenerateImageBtn.innerHTML;
+                                    editModeGenerateImageBtn.disabled = true;
+                                    editModeGenerateImageBtn.innerHTML = "<i class=\"fi fi-rr-picture animate-spin\" style=\"margin-right: 5px;\"></i> กำลังสร้างรูปภาพ...";
 
                                     try {
-                                        const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thai}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                        const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thai || ""}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
                                         const b64Image = await window.generateAIImage(prompt, "1:1");
                                         if (b64Image) {
-                                            if (viewModeImage && viewModeImageContainer) {
-                                                viewModeImage.src = b64Image;
-                                                viewModeImageContainer.style.display = "block";
+                                            currentImageData = b64Image; // Store it so it will be saved on form submit
+
+                                            // Update the dialog background immediately so the user can see it!
+                                            const heroBg = document.querySelector(".view-mode-hero-bg");
+                                            if (heroBg) {
+                                                heroBg.style.backgroundImage = `url(${b64Image})`;
                                             }
-                                            const updatedItem = setVocabularyImage(id, b64Image);
-                                            if (!updatedItem) throw new Error("ไม่พบคำศัพท์สำหรับบันทึกรูปภาพ");
-                                            showToast2("สร้างรูปภาพประกอบคำศัพท์เรียบร้อยแล้ว", "success");
+                                            dataDetailsDialog.classList.add("has-image");
+
+                                            showToast2("สร้างรูปภาพประกอบคำศัพท์เรียบร้อยแล้ว อย่าลืมกดบันทึกคำศัพท์เพื่อบันทึกข้อมูลลงฐานข้อมูล", "success");
                                         } else {
                                             showToast2("ไม่สามารถสร้างรูปภาพได้", "error");
                                         }
                                     } catch (err) {
-                                        console.error("Error generating image:", err);
+                                        console.error("Error generating image in edit mode:", err);
                                         showToast2(err.message || "เกิดข้อผิดพลาดในการสร้างภาพประกอบ", "error");
                                     } finally {
-                                        viewModeGenerateImageBtn.disabled = false;
-                                        viewModeGenerateImageBtn.innerHTML = originalHTML;
+                                        editModeGenerateImageBtn.disabled = false;
+                                        editModeGenerateImageBtn.innerHTML = originalHTML;
                                     }
                                 });
                             }
