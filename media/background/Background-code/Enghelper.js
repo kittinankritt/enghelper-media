@@ -6560,38 +6560,87 @@
                                         resolve(base64Str);
                                         return;
                                     }
+
+                                    // Safety limit for Firestore document (1MB limit).
+                                    // 800,000 base64 chars is ~600KB, leaving 400KB for other text fields.
+                                    const SIZE_LIMIT = 800000;
+
+                                    // If already under size limit, and it is a compressed format (JPEG/WebP), keep as-is.
+                                    const isCompressedFormat = base64Str.startsWith("data:image/jpeg") || base64Str.startsWith("data:image/webp");
+                                    if (isCompressedFormat && base64Str.length <= SIZE_LIMIT) {
+                                        resolve(base64Str);
+                                        return;
+                                    }
+
                                     const img = new Image();
                                     img.src = base64Str;
                                     img.onload = () => {
-                                        const canvas = document.createElement("canvas");
-                                        let width = img.width;
-                                        let height = img.height;
-                                        if (width > height) {
-                                            if (width > maxWidth) {
-                                                height = Math.round((height * maxWidth) / width);
-                                                width = maxWidth;
-                                             }
-                                         } else {
-                                             if (height > maxHeight) {
-                                                 width = Math.round((width * maxHeight) / height);
-                                                 height = maxHeight;
-                                             }
-                                         }
-                                         canvas.width = width;
-                                         canvas.height = height;
-                                         const ctx = canvas.getContext("2d");
-                                         ctx.drawImage(img, 0, 0, width, height);
-                                         let compressed = canvas.toDataURL("image/webp", quality);
-                                         if (!compressed.startsWith("data:image/webp")) {
-                                             compressed = canvas.toDataURL("image/jpeg", quality);
-                                         }
-                                         resolve(compressed);
-                                     };
-                                     img.onerror = () => {
-                                         resolve(base64Str);
-                                     };
-                                 });
-                             }
+                                        // Helper to scale dimensions
+                                        function getDimensions(maxDim) {
+                                            let w = img.width;
+                                            let h = img.height;
+                                            if (w > h) {
+                                                if (w > maxDim) {
+                                                    h = Math.round((h * maxDim) / w);
+                                                    w = maxDim;
+                                                }
+                                            } else {
+                                                if (h > maxDim) {
+                                                    w = Math.round((w * maxDim) / h);
+                                                    h = maxDim;
+                                                }
+                                            }
+                                            return { width: w, height: h };
+                                        }
+
+                                        // Helper to render on canvas (WebP preferred, JPEG fallback)
+                                        function render(targetWidth, targetHeight, q) {
+                                            const canvas = document.createElement("canvas");
+                                            canvas.width = targetWidth;
+                                            canvas.height = targetHeight;
+                                            const ctx = canvas.getContext("2d");
+                                            if (!ctx) return null;
+                                            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                                            let res = canvas.toDataURL("image/webp", q);
+                                            if (!res.startsWith("data:image/webp")) {
+                                                res = canvas.toDataURL("image/jpeg", q);
+                                            }
+                                            return res;
+                                        }
+
+                                        // Step 1: Try high resolution (1024 max) at high quality (0.90)
+                                        let dims = getDimensions(1024);
+                                        let compressed = render(dims.width, dims.height, 0.90);
+                                        if (compressed && compressed.length <= SIZE_LIMIT) {
+                                            resolve(compressed);
+                                            return;
+                                        }
+
+                                        // Step 2: Try high resolution (1024 max) at moderate quality (0.80)
+                                        compressed = render(dims.width, dims.height, 0.80);
+                                        if (compressed && compressed.length <= SIZE_LIMIT) {
+                                            resolve(compressed);
+                                            return;
+                                        }
+
+                                        // Step 3: Try medium resolution (768 max) at moderate quality (0.80)
+                                        dims = getDimensions(768);
+                                        compressed = render(dims.width, dims.height, 0.80);
+                                        if (compressed && compressed.length <= SIZE_LIMIT) {
+                                            resolve(compressed);
+                                            return;
+                                        }
+
+                                        // Step 4: Fallback - standard resolution (512 max) at standard quality (0.75)
+                                        dims = getDimensions(512);
+                                        compressed = render(dims.width, dims.height, 0.75);
+                                        resolve(compressed || base64Str);
+                                    };
+                                    img.onerror = () => {
+                                        resolve(base64Str);
+                                    };
+                                });
+                            }
                             window.compressBase64Image = compressBase64Image;
 
                             async function performCloudSync() {
