@@ -1482,7 +1482,7 @@
 
                         // www/script.js
                         var firebaseConfig = {
-                            apiKey: "",
+                            apiKey: "AIzaSyA95GDmTXYaID5aqQxifYSUzb3msJ2V32I",
                             authDomain: "enghelper-web.firebaseapp.com",
                             projectId: "enghelper-web",
                             storageBucket: "enghelper-web.firebasestorage.app",
