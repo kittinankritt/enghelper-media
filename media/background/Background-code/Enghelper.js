@@ -8933,37 +8933,61 @@
                                         }
                                     }
                                 };
-                                const aiData = await callGemini(payload, loadingOverlay, autofillAiBtn, { contextScope: "vocab", taskType: "autofill" });
-                                if (aiData) {
-                                    dialogPosSelect.value = aiData.pos || "";
-                                    dialogPhoneticInput.value = "";
-                                    dialogThaiExplanationTextarea.value = aiData.thaiExplanation || "";
-                                    dialogSynonymInput.value = (aiData.synonyms || []).join(", ");
-                                    dialogAntonymInput.value = (aiData.antonyms || []).join(", ");
-                                    dialogRootInput.value = aiData.root || "";
-                                    dialogExampleTextarea.value = (aiData.examples || []).join("\n");
-                                    if (dialogCefrInput) dialogCefrInput.value = aiData.cefr || "";
-                                    if (dialogFrequencyInput) dialogFrequencyInput.value = aiData.frequency ?? "";
-                                    if (dialogFormalityInput) dialogFormalityInput.value = aiData.formality ?? "";
-                                    currentVocabLearningDetails = normalizeVocabLearningDetails(aiData);
-                                    resetDialectFields();
-                                    populateDialectFormFields(aiData.dialects, aiData.wordDialects);
-                                    showToast2("\u0E40\u0E15\u0E34\u0E21\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E14\u0E49\u0E27\u0E22 AI \u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08!", "success");
+                                if (loadingOverlay) {
+                                    loadingOverlay.style.display = "flex";
+                                    const loadingTextEl = loadingOverlay.querySelector("p");
+                                    if (loadingTextEl) loadingTextEl.textContent = "กำลังวิเคราะห์ข้อมูลคำศัพท์ด้วย AI...";
+                                }
+                                if (autofillAiBtn) autofillAiBtn.disabled = true;
 
-                                    if (window.imageGenConfig && window.imageGenConfig.autoGenerateForNewVocab) {
-                                        (async () => {
-                                            try {
-                                                const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${aiData.thaiExplanation || ''}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
-                                                const b64 = await window.generateAIImage(prompt, "1:1");
-                                                if (b64) {
-                                                    currentVocabLearningDetails.imageB64 = b64;
-                                                    showToast2("สร้างรูปภาพ AI สำเร็จและพร้อมบันทึก!", "success");
-                                                }
-                                            } catch (e) {
-                                                console.warn("Background auto image generation failed:", e);
+                                try {
+                                    const aiData = await callGemini(payload, null, null, { contextScope: "vocab", taskType: "autofill" });
+                                    if (aiData) {
+                                        dialogPosSelect.value = aiData.pos || "";
+                                        dialogPhoneticInput.value = "";
+                                        dialogThaiExplanationTextarea.value = aiData.thaiExplanation || "";
+                                        dialogSynonymInput.value = (aiData.synonyms || []).join(", ");
+                                        dialogAntonymInput.value = (aiData.antonyms || []).join(", ");
+                                        dialogRootInput.value = aiData.root || "";
+                                        dialogExampleTextarea.value = (aiData.examples || []).join("\n");
+                                        if (dialogCefrInput) dialogCefrInput.value = aiData.cefr || "";
+                                        if (dialogFrequencyInput) dialogFrequencyInput.value = aiData.frequency ?? "";
+                                        if (dialogFormalityInput) dialogFormalityInput.value = aiData.formality ?? "";
+                                        currentVocabLearningDetails = normalizeVocabLearningDetails(aiData);
+                                        resetDialectFields();
+                                        populateDialectFormFields(aiData.dialects, aiData.wordDialects);
+
+                                        if (loadingOverlay) {
+                                            const loadingTextEl = loadingOverlay.querySelector("p");
+                                            if (loadingTextEl) loadingTextEl.textContent = "กำลังสร้างรูปภาพและเสียงอ่านคำศัพท์...";
+                                        }
+
+                                        const audioPromise = generateAudioAndCache(word).catch(e => {
+                                            console.warn("Background auto voice generation failed:", e);
+                                            return null;
+                                        });
+
+                                        const imagePrompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${aiData.thaiExplanation || ''}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                        const imagePromise = window.generateAIImage(imagePrompt, "1:1").then(b64 => {
+                                            if (b64) {
+                                                currentVocabLearningDetails.imageB64 = b64;
+                                                showToast2("สร้างรูปภาพ AI สำเร็จและพร้อมบันทึก!", "success");
                                             }
-                                        })();
+                                            return b64;
+                                        }).catch(e => {
+                                            console.warn("Background auto image generation failed:", e);
+                                            return null;
+                                        });
+
+                                        await Promise.all([audioPromise, imagePromise]);
+                                        showToast2("เติมข้อมูลและสร้างสื่อด้วย AI สำเร็จ!", "success");
                                     }
+                                } catch (e) {
+                                    console.error("Autofill failed:", e);
+                                    showToast2("เกิดข้อผิดพลาดในการเติมข้อมูลด้วย AI", "error");
+                                } finally {
+                                    if (loadingOverlay) loadingOverlay.style.display = "none";
+                                    if (autofillAiBtn) autofillAiBtn.disabled = false;
                                 }
                             }
                             async function handleAutofill() {
@@ -18335,7 +18359,7 @@
                                 }
                                 addOrUpdateEnglishData(data);
                                 dialogHistoryStack = [];
-                                dataDetailsDialog.close();
+                                openDataDetailsDialog(data.id, true);
                             });
                             generateExamplesBtn.addEventListener("click", handleGenerateExamples);
                             saveNewExamplesBtn.addEventListener("click", () => {
