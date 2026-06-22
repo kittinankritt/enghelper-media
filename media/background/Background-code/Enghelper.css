@@ -13,7 +13,7 @@
 
    | # | Name       | Primary   | Secondary | Bg Start | Bg End   | Card End | Background Image        |
    |---|------------|-----------|-----------|----------|----------|----------|-------------------------|
-   | 1 | Pink       | #F92B7E   | #9F2BFF   | #FAD7E8  | #E9D5FF  | #FFE0E9  | ping.png                |
+   | 1 | Pink       | #F92B7E   | #9F2BFF   | #FAD7E8  | #E9D5FF  | #FFE0E9  | pink.png                |
    | 2 | Beige      | #C89F81   | #8D6E63   | #FDF5E6  | #FAEBD7  | #FEF8F0  | beige.png               |
    | 3 | Yellow     | #F59E0B   | #EF4444   | #FEF3C7  | #FEE2E2  | #FFFBEB  | yellow.png              |
    | 4 | Green      | #10B981   | #3B82F6   | #D1FAE5  | #DBEAFE  | #ECFDF5  | green.png               |
@@ -54032,7 +54032,7 @@ dialog {
 }
 
 .bento-grid-dashboard .banner-content {
-    border-radius: var(--clay-radius) !important;
+    border-radius: var(--clay-radius) var(--clay-radius) 0 0 !important;
     box-shadow: inset 3px 3px 8px rgba(255, 255, 255, 0.15), inset -2px -2px 6px rgba(0, 0, 0, 0.08) !important;
     transition: var(--clay-transition) !important;
 }
@@ -54041,10 +54041,16 @@ dialog {
     border-radius: var(--clay-radius) var(--clay-radius) 0 0 !important;
 }
 
+.bento-grid-dashboard .banner-top-section .banner-slide,
+.bento-grid-dashboard .banner-top-section .banner-content {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
 .bento-grid-dashboard .banner-bottom-section {
     border-radius: 0 0 var(--clay-radius) var(--clay-radius) !important;
-    box-shadow: var(--clay-shadow-small) !important;
-    border: var(--clay-border) !important;
+    box-shadow: none !important;
+    border: none !important;
     border-top: none !important;
 }
 
@@ -54103,6 +54109,24 @@ dialog {
     box-shadow: var(--clay-shadow-sphere) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     transition: var(--clay-transition) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    text-align: center !important;
+    line-height: 1 !important;
+}
+
+/* Fix icon centering inside WOTD buttons */
+.bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"] i,
+.bento-grid-dashboard #word-of-the-day-card button[id*="mic-btn"] i {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    text-align: center !important;
 }
 
 .bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"]:hover,
@@ -54442,8 +54466,8 @@ dialog {
 }
 
 [data-theme="dark"] .bento-grid-dashboard .banner-bottom-section {
-    box-shadow: var(--clay-shadow-small) !important;
-    border: var(--clay-border) !important;
+    box-shadow: none !important;
+    border: none !important;
     border-top: none !important;
 }
 
@@ -54620,5 +54644,453 @@ dialog {
 }
 
 /* =========================================================================
-   END OF CLAYMORPHISM DASHBOARD OVERRIDE
+   CLAYMORPHISM — CHAT BOX OVERRIDE
    ========================================================================= */
+
+/* Chat Box Container — Clay Surface */
+#ai-companion-chat-box {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined), 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+    border: var(--clay-border) !important;
+    overflow: hidden !important;
+}
+
+/* Chat Header — Clay Raised */
+#ai-companion-chat-box .chat-header {
+    border-bottom: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.03) !important;
+    border-radius: var(--clay-radius) var(--clay-radius) 0 0 !important;
+}
+
+/* Chat Header Buttons — Clay Spheres */
+#ai-companion-chat-box .chat-header button,
+#ai-companion-chat-box .chat-header .mascot-face-small {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#ai-companion-chat-box .chat-header button:hover {
+    transform: scale(1.08) !important;
+}
+
+#ai-companion-chat-box .chat-header button:active {
+    transform: scale(0.93) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Mascot Face — Clay Sphere */
+#ai-companion-chat-box .mascot-face-small {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Chat Messages Area — Clay Inset */
+#ai-companion-chat-box .chat-messages {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 4px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* AI Message Bubble — Clay Soft */
+#ai-companion-chat-box .message.ai {
+    border-radius: var(--clay-radius-small) var(--clay-radius-small) var(--clay-radius-small) 4px !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+/* User Message Bubble — Clay Gradient */
+#ai-companion-chat-box .message.user {
+    border-radius: var(--clay-radius-small) var(--clay-radius-small) 4px var(--clay-radius-small) !important;
+    box-shadow: 3px 3px 8px rgba(var(--theme-rgb), 0.15), -2px -2px 5px rgba(255, 255, 255, 0.3), inset 1px 1px 3px rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Chat Input Area — Clay Bottom Bar */
+#ai-companion-chat-box .chat-input-area {
+    border-top: none !important;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0 0 var(--clay-radius) var(--clay-radius) !important;
+}
+
+/* Chat Input Field — Clay Inset */
+#ai-companion-chat-box #ai-command-input,
+#ai-companion-chat-box .chat-input-area input,
+#ai-companion-chat-box .chat-input-area textarea {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#ai-companion-chat-box #ai-command-input:focus,
+#ai-companion-chat-box .chat-input-area input:focus,
+#ai-companion-chat-box .chat-input-area textarea:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* Chat Send / Mic Buttons — Clay Sphere */
+#ai-companion-chat-box .chat-input-area button {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#ai-companion-chat-box .chat-input-area button:hover {
+    transform: scale(1.08) !important;
+}
+
+#ai-companion-chat-box .chat-input-area button:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* AI Suggestion Card — Clay */
+#ai-companion-chat-box .ai-suggestion-card {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-left: 3px solid var(--primary-color) !important;
+}
+
+/* Mascot FAB Button — Clay Sphere */
+#ai-mascot-btn {
+    box-shadow: var(--clay-shadow-sphere), 0 6px 20px rgba(var(--theme-rgb), 0.25) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#ai-mascot-btn:hover {
+    box-shadow: 6px 6px 16px rgba(var(--theme-rgb), 0.3), -3px -3px 10px rgba(255, 255, 255, 0.5), inset 3px 3px 6px rgba(255, 255, 255, 0.3), inset -2px -2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+#ai-mascot-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Notification Badge on Mascot */
+#ai-companion-wrapper .notification-badge,
+#ai-mascot-btn .notification-badge {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── CHAT DARK MODE ── */
+[data-theme="dark"] #ai-companion-chat-box {
+    box-shadow: var(--clay-shadow-combined), 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .chat-header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .chat-messages {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.03) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .message.ai {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .message.user {
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.25), -2px -2px 5px rgba(var(--theme-rgb), 0.08), inset 1px 1px 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .chat-input-area {
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box #ai-command-input,
+[data-theme="dark"] #ai-companion-chat-box .chat-input-area input,
+[data-theme="dark"] #ai-companion-chat-box .chat-input-area textarea {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #ai-companion-chat-box .chat-header button,
+[data-theme="dark"] #ai-companion-chat-box .chat-header .mascot-face-small {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #ai-mascot-btn {
+    box-shadow: var(--clay-shadow-sphere), 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — TOAST NOTIFICATION OVERRIDE
+   ========================================================================= */
+
+/* Toast Card — Clay Surface */
+.toast-message {
+    border-radius: 22px !important;
+    border-bottom-right-radius: 6px !important;
+    box-shadow: var(--clay-shadow-combined), 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    border: var(--clay-border) !important;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.toast-message.show {
+    transform: translateY(0) scale(1) !important;
+}
+
+.toast-message:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.1), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05), 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.toast-message:active {
+    transform: translateY(0) scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Toast Icon — Clay Sphere */
+.toast-icon-box {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+}
+
+/* Toast Batch — Clay */
+.toast-message.notification-batch {
+    border-radius: var(--clay-radius) !important;
+    border-bottom-right-radius: 12px !important;
+}
+
+/* ── TOAST DARK MODE ── */
+[data-theme="dark"] .toast-message {
+    box-shadow: var(--clay-shadow-combined), 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .toast-message:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 5px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-theme="dark"] .toast-icon-box {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — SPLASH SCREEN OVERRIDE
+   ========================================================================= */
+
+/* Logo Circle — Clay Sphere */
+.logo-circle {
+    box-shadow: var(--clay-shadow-sphere), 0 15px 35px rgba(var(--theme-rgb), 0.18) !important;
+    border: 4px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Logo Pulse Ring — Softer */
+.logo-pulse {
+    border: 2px solid rgba(var(--theme-rgb), 0.3) !important;
+}
+
+/* Splash Title Text — Clay Emboss */
+.rotating-text-modern .dynamic-wrapper span {
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.04)) drop-shadow(-1px -1px 0px rgba(255, 255, 255, 0.3));
+}
+
+/* Progress Track — Clay Inset */
+.progress-track {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.06), inset -1px -1px 3px rgba(255, 255, 255, 0.5) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    height: 8px !important;
+}
+
+/* Progress Fill — Clay Raised Bar */
+.progress-fill {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 0 6px rgba(var(--theme-rgb), 0.3), inset 1px 1px 3px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Splash Copyright — Subtle */
+.splash-copyright {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── SPLASH DARK MODE ── */
+[data-theme="dark"] .logo-circle {
+    box-shadow: var(--clay-shadow-sphere), 0 15px 35px rgba(0, 0, 0, 0.3) !important;
+    border: 4px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .progress-track {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -1px -1px 3px rgba(255, 255, 255, 0.04) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .progress-fill {
+    box-shadow: 2px 0 6px rgba(var(--theme-rgb), 0.3), inset 1px 1px 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — LOGIN CARD OVERRIDE
+   ========================================================================= */
+
+/* Login Card — Clay Surface */
+.splash-login-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined), 0 28px 70px rgba(var(--theme-rgb), 0.08) !important;
+    border: var(--clay-border) !important;
+}
+
+/* Login Input Fields — Clay Inset */
+.splash-field input {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.splash-field input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 4px rgba(var(--theme-rgb), 0.1) !important;
+    border-color: rgba(var(--theme-rgb), 0.3) !important;
+}
+
+/* Login Input Icon — Subtle Clay */
+.splash-field > i {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Password Toggle — Clay Sphere */
+.splash-password-toggle {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.splash-password-toggle:hover {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    transform: scale(1.06) !important;
+}
+
+.splash-password-toggle:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Primary Login Button — Clay Raised */
+.splash-primary-login-btn {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: 4px 4px 12px rgba(var(--theme-rgb), 0.2), -2px -2px 6px rgba(255, 255, 255, 0.3), inset 2px 2px 4px rgba(255, 255, 255, 0.2), inset -1px -1px 3px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.splash-primary-login-btn:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 6px 6px 16px rgba(var(--theme-rgb), 0.25), -3px -3px 8px rgba(255, 255, 255, 0.4), inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -1px -1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.splash-primary-login-btn:active {
+    transform: scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Google Login Button — Clay */
+.modern-login-btn {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.modern-login-btn:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.08), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.modern-login-btn:active {
+    transform: scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Auth Tab Buttons — Clay Pills */
+.auth-tab {
+    border-radius: 14px !important;
+    transition: var(--clay-transition) !important;
+}
+
+.auth-tab.active {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.auth-tab:hover:not(.active) {
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.04), -1px -1px 3px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Auth Tabs Container — Clay Inset */
+.splash-auth-tabs {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.04), inset -1px -1px 3px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Login Security Note — Soft */
+.login-note {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Auth Divider — Softer */
+.splash-auth-divider::before {
+    border-radius: 10px !important;
+    height: 1.5px !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── LOGIN DARK MODE ── */
+[data-theme="dark"] .splash-login-card {
+    box-shadow: var(--clay-shadow-combined), 0 28px 70px rgba(0, 0, 0, 0.3) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .splash-field input {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .splash-field input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.22), inset -2px -2px 5px rgba(255, 255, 255, 0.05), 0 0 0 4px rgba(var(--theme-rgb), 0.15) !important;
+}
+
+[data-theme="dark"] .splash-password-toggle {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .splash-primary-login-btn {
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3), -2px -2px 6px rgba(var(--theme-rgb), 0.08), inset 2px 2px 4px rgba(255, 255, 255, 0.08), inset -1px -1px 3px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .modern-login-btn {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .auth-tab.active {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .splash-auth-tabs {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -1px -1px 3px rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] .splash-auth-divider::before {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* =========================================================================
+   END OF CLAYMORPHISM OVERRIDE
+   ========================================================================= */
+

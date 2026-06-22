@@ -17813,7 +17813,7 @@
                                                                 return;
                                                             }
 
-                                                            let html = '<div class="dialect-popover-title">หน้าที่ของคำ (Part of Speech)</div><div class="dialect-popover-list">';
+                                                            let html = '<div class="dialect-popover-list">';
                                                             if (itemToDisplay.pos) {
                                                                 const primaryPhonetic = itemToDisplay.phonetic ? (typeof formatPhoneticForDisplay === "function" ? formatPhoneticForDisplay(itemToDisplay.phonetic) : `/${itemToDisplay.phonetic}/`) : "";
                                                                 html += `
@@ -18690,7 +18690,6 @@
                                     });
 
                                     const contentHtml = `
-                        <div class="dialect-popover-title">สำเนียงและรูปสะกด</div>
                         <div class="dialect-popover-list">
                           ${itemsHtml}
                         </div>
