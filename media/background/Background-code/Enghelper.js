@@ -26116,7 +26116,6 @@
                                 });
                                 newFcNextBtn.addEventListener("click", () => {
                                     displaySRSFlashcard(cards, index + 1);
-                                });
                                 newFcPrevBtn.addEventListener("click", () => {
                                     if (index > 0) displaySRSFlashcard(cards, index - 1);
                                 });
