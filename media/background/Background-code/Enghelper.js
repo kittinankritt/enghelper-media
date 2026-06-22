@@ -18006,7 +18006,15 @@
                                             const activeCefr = getVocabCefrLevel(itemToDisplay);
                                             const cefrBadge = document.getElementById("vocab-cefr-value-badge");
                                             if (cefrBadge) {
-                                                cefrBadge.textContent = activeCefr || "-";
+                                                const cefrLabelMap = {
+                                                    "A1": "A1 - Elementary",
+                                                    "A2": "A2 - Pre-Intermediate",
+                                                    "B1": "B1 - Intermediate",
+                                                    "B2": "B2 - Upper-Intermediate",
+                                                    "C1": "C1 - Advanced",
+                                                    "C2": "C2 - Proficient"
+                                                };
+                                                cefrBadge.textContent = cefrLabelMap[activeCefr] || activeCefr || "-";
                                             }
 
                                             // 4. Frequency & Formality SVG gauges
