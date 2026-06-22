@@ -21637,8 +21637,7 @@
                                             { icon: "fi fi-rr-brain", text: "\u0E08\u0E33\u0E41\u0E21\u0E48\u0E19\u0E02\u0E36\u0E49\u0E19 2 \u0E40\u0E17\u0E48\u0E32" }
                                         ],
                                         meta: [
-                                            { icon: "fi fi-rr-flame", text: "\u0E23\u0E31\u0E01\u0E29\u0E32\u0E2A\u0E16\u0E34\u0E15\u0E34" },
-                                            { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 3 \u0E19\u0E32\u0E17\u0E35" }
+                                            { icon: "fi fi-rr-flame", text: "\u0E23\u0E31\u0E01\u0E29\u0E32\u0E2A\u0E16\u0E34\u0E15\u0E34" }
                                         ]
                                     }));
                                 }
@@ -21656,8 +21655,7 @@
                                             { icon: "fi fi-rr-magic-wand", text: "AI \u0E27\u0E34\u0E40\u0E04\u0E23\u0E32\u0E30\u0E2B\u0E4C" }
                                         ],
                                         meta: [
-                                            { icon: "fi fi-rr-sparkles", text: "Level Up" },
-                                            { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 2 \u0E19\u0E32\u0E17\u0E35" }
+                                            { icon: "fi fi-rr-sparkles", text: "Level Up" }
                                         ]
                                     }));
                                 }
@@ -21676,8 +21674,7 @@
                                             { icon: "fi fi-rr-graduation-cap", text: smartWord.pos || "Vocabulary" }
                                         ],
                                         meta: [
-                                            { icon: "fi fi-rr-calendar", text: "Daily" },
-                                            { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 1 \u0E19\u0E32\u0E17\u0E35" }
+                                            { icon: "fi fi-rr-calendar", text: "Daily" }
                                         ],
                                         wordData: smartWord
                                     }));
@@ -21698,8 +21695,7 @@
                                             { icon: "fi fi-rr-flame", text: "Streak Saver" }
                                         ],
                                         meta: [
-                                            { icon: "fi fi-rr-target", text: "\u0E40\u0E1B\u0E49\u0E32\u0E2B\u0E21\u0E32\u0E22\u0E27\u0E31\u0E19\u0E19\u0E35\u0E49" },
-                                            { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 2 \u0E19\u0E32\u0E17\u0E35" }
+                                            { icon: "fi fi-rr-target", text: "\u0E40\u0E1B\u0E49\u0E32\u0E2B\u0E21\u0E32\u0E22\u0E27\u0E31\u0E19\u0E19\u0E35\u0E49" }
                                         ]
                                     }));
                                 }
@@ -21719,8 +21715,7 @@
                                         { icon: "fi fi-rr-rocket", text: "\u0E02\u0E22\u0E32\u0E22\u0E17\u0E31\u0E01\u0E29\u0E30" }
                                     ],
                                     meta: [
-                                        { icon: "fi fi-rr-search-alt", text: "Explore" },
-                                        { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 3 \u0E19\u0E32\u0E17\u0E35" }
+                                        { icon: "fi fi-rr-search-alt", text: "Explore" }
                                     ]
                                 }));
                                 return candidates.filter(Boolean).sort((a, b) => b.score - a.score);

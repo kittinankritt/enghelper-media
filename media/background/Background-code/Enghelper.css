@@ -55301,7 +55301,7 @@ dialog {
 /* Sliders (Range inputs) */
 #settings-dialog input[type="range"] {
     -webkit-appearance: none;
-    background: rgba(0, 0, 0, 0.06) !important;
+    background: rgba(0, 0, 0, 0.06);
     border-radius: 10px !important;
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1), 
                 inset -1px -1px 2px rgba(255, 255, 255, 0.5) !important;
@@ -55794,11 +55794,13 @@ dialog {
 
 .popup-gradient-theme .sort-buttons button.active,
 .popup-gradient-theme .vocab-sort-buttons button.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: #ffffff !important;
     box-shadow:
-        inset 2px 2px 5px rgba(0, 0, 0, 0.1),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.2),
-        3px 3px 8px rgba(var(--theme-rgb), 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        inset 2px 2px 5px rgba(255, 255, 255, 0.4),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.25),
+        3px 3px 8px rgba(var(--theme-rgb), 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Feature Launch Options — Clay Option Cards */
@@ -55856,9 +55858,9 @@ dialog {
     margin: 12px 0 !important;
 }
 
-.popup-gradient-theme .empty-state i,
-.popup-fixed-layout .empty-state i,
-.feature-launch-dialog .empty-state i {
+.popup-gradient-theme .empty-state i:not(button i):not(.btn i),
+.popup-fixed-layout .empty-state i:not(button i):not(.btn i),
+.feature-launch-dialog .empty-state i:not(button i):not(.btn i) {
     width: 72px !important;
     height: 72px !important;
     border-radius: 50% !important;
@@ -55900,27 +55902,16 @@ dialog {
         inset 3px 3px 8px rgba(0, 0, 0, 0.04),
         inset -2px -2px 6px rgba(255, 255, 255, 0.6),
         3px 3px 10px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden !important;
 }
 
-/* History Card Items — Clay Raised Cards */
+/* History Card Items — Clay Raised Cards (Standalone) */
 .popup-gradient-theme .feature-history-card,
 .popup-gradient-theme .history-item-card,
-.popup-gradient-theme .test-history-item,
-.popup-gradient-theme .game-history-item,
-.popup-gradient-theme .story-history-item,
-.popup-gradient-theme .roleplay-history-item,
-.popup-gradient-theme .grammar-history-item,
-.popup-gradient-theme .add-vocab-history-item,
 .feature-launch-dialog .feature-history-card,
-.feature-launch-dialog .history-item-card,
-.feature-launch-dialog .test-history-item,
-.feature-launch-dialog .game-history-item,
-.feature-launch-dialog .story-history-item,
-.feature-launch-dialog .roleplay-history-item,
-.feature-launch-dialog .grammar-history-item,
-.feature-launch-dialog .add-vocab-history-item {
+.feature-launch-dialog .history-item-card {
     border-radius: var(--clay-radius-small) !important;
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.55) !important;
     border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow:
         inset 2px 2px 4px rgba(255, 255, 255, 0.5),
@@ -55934,22 +55925,75 @@ dialog {
 
 .popup-gradient-theme .feature-history-card:hover,
 .popup-gradient-theme .history-item-card:hover,
-.popup-gradient-theme .test-history-item:hover,
-.popup-gradient-theme .game-history-item:hover,
-.popup-gradient-theme .story-history-item:hover,
-.popup-gradient-theme .roleplay-history-item:hover,
-.popup-gradient-theme .grammar-history-item:hover,
-.popup-gradient-theme .add-vocab-history-item:hover,
 .feature-launch-dialog .feature-history-card:hover,
-.feature-launch-dialog .history-item-card:hover,
-.feature-launch-dialog .test-history-item:hover,
-.feature-launch-dialog .game-history-item:hover {
+.feature-launch-dialog .history-item-card:hover {
     transform: translateY(-2px) scale(1.01) !important;
     box-shadow:
         inset 2px 2px 5px rgba(255, 255, 255, 0.6),
         inset -1px -1px 3px rgba(0, 0, 0, 0.04),
         5px 5px 14px rgba(0, 0, 0, 0.06),
         -3px -3px 8px rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Contiguous History List Items inside Inset Containers */
+.popup-gradient-theme .test-history-item,
+.popup-gradient-theme .game-history-item,
+.popup-gradient-theme .story-history-item,
+.popup-gradient-theme .roleplay-history-item,
+.popup-gradient-theme .grammar-history-item,
+.popup-gradient-theme .add-vocab-history-item,
+.popup-gradient-theme .common-history-item,
+.feature-launch-dialog .test-history-item,
+.feature-launch-dialog .game-history-item,
+.feature-launch-dialog .story-history-item,
+.feature-launch-dialog .roleplay-history-item,
+.feature-launch-dialog .grammar-history-item,
+.feature-launch-dialog .add-vocab-history-item,
+.feature-launch-dialog .common-history-item {
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 16px 20px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.popup-gradient-theme .test-history-item:hover,
+.popup-gradient-theme .game-history-item:hover,
+.popup-gradient-theme .story-history-item:hover,
+.popup-gradient-theme .roleplay-history-item:hover,
+.popup-gradient-theme .grammar-history-item:hover,
+.popup-gradient-theme .add-vocab-history-item:hover,
+.popup-gradient-theme .common-history-item:hover,
+.feature-launch-dialog .test-history-item:hover,
+.feature-launch-dialog .game-history-item:hover,
+.feature-launch-dialog .story-history-item:hover,
+.feature-launch-dialog .roleplay-history-item:hover,
+.feature-launch-dialog .grammar-history-item:hover,
+.feature-launch-dialog .add-vocab-history-item:hover,
+.feature-launch-dialog .common-history-item:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.popup-gradient-theme .test-history-item:last-child,
+.popup-gradient-theme .game-history-item:last-child,
+.popup-gradient-theme .story-history-item:last-child,
+.popup-gradient-theme .roleplay-history-item:last-child,
+.popup-gradient-theme .grammar-history-item:last-child,
+.popup-gradient-theme .add-vocab-history-item:last-child,
+.popup-gradient-theme .common-history-item:last-child,
+.feature-launch-dialog .test-history-item:last-child,
+.feature-launch-dialog .game-history-item:last-child,
+.feature-launch-dialog .story-history-item:last-child,
+.feature-launch-dialog .roleplay-history-item:last-child,
+.feature-launch-dialog .grammar-history-item:last-child,
+.feature-launch-dialog .add-vocab-history-item:last-child,
+.feature-launch-dialog .common-history-item:last-child {
+    border-bottom: none !important;
 }
 
 /* ── 8. SEARCH INPUTS — CLAY INSET ── */
@@ -56017,11 +56061,13 @@ dialog {
 .popup-gradient-theme .vocab-library-tag-filter button.active,
 .feature-launch-dialog .history-filter-chip.active,
 .feature-launch-dialog .feature-history-tag-filter button.active {
+    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 15%, rgba(255, 255, 255, 0.6)) !important;
+    color: var(--tag-color, var(--primary-color)) !important;
     box-shadow:
         inset 2px 2px 5px rgba(0, 0, 0, 0.1),
         inset -2px -2px 4px rgba(255, 255, 255, 0.2),
         3px 3px 8px rgba(var(--theme-rgb), 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-color)) 30%, rgba(255, 255, 255, 0.4)) !important;
 }
 
 .popup-gradient-theme .history-filter-chip:active,
@@ -56491,17 +56537,12 @@ dialog {
     box-shadow:
         inset 3px 3px 8px rgba(0, 0, 0, 0.2),
         inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+    overflow: hidden !important;
 }
 
-/* History Cards in Dark Mode */
+/* History Cards in Dark Mode (Standalone) */
 [data-theme="dark"] .popup-gradient-theme .feature-history-card,
 [data-theme="dark"] .popup-gradient-theme .history-item-card,
-[data-theme="dark"] .popup-gradient-theme .test-history-item,
-[data-theme="dark"] .popup-gradient-theme .game-history-item,
-[data-theme="dark"] .popup-gradient-theme .story-history-item,
-[data-theme="dark"] .popup-gradient-theme .roleplay-history-item,
-[data-theme="dark"] .popup-gradient-theme .grammar-history-item,
-[data-theme="dark"] .popup-gradient-theme .add-vocab-history-item,
 [data-theme="dark"] .feature-launch-dialog .feature-history-card,
 [data-theme="dark"] .feature-launch-dialog .history-item-card {
     background: rgba(255, 255, 255, 0.06) !important;
@@ -56510,6 +56551,42 @@ dialog {
         inset 2px 2px 4px rgba(255, 255, 255, 0.04),
         inset -1px -1px 3px rgba(0, 0, 0, 0.2),
         3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Contiguous History List Items inside Inset Containers in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .test-history-item,
+[data-theme="dark"] .popup-gradient-theme .game-history-item,
+[data-theme="dark"] .popup-gradient-theme .story-history-item,
+[data-theme="dark"] .popup-gradient-theme .roleplay-history-item,
+[data-theme="dark"] .popup-gradient-theme .grammar-history-item,
+[data-theme="dark"] .popup-gradient-theme .add-vocab-history-item,
+[data-theme="dark"] .popup-gradient-theme .common-history-item,
+[data-theme="dark"] .feature-launch-dialog .test-history-item,
+[data-theme="dark"] .feature-launch-dialog .game-history-item,
+[data-theme="dark"] .feature-launch-dialog .story-history-item,
+[data-theme="dark"] .feature-launch-dialog .roleplay-history-item,
+[data-theme="dark"] .feature-launch-dialog .grammar-history-item,
+[data-theme="dark"] .feature-launch-dialog .add-vocab-history-item,
+[data-theme="dark"] .feature-launch-dialog .common-history-item {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .test-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .game-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .story-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .roleplay-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .grammar-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .add-vocab-history-item:hover,
+[data-theme="dark"] .popup-gradient-theme .common-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .test-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .game-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .story-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .roleplay-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .grammar-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .add-vocab-history-item:hover,
+[data-theme="dark"] .feature-launch-dialog .common-history-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Feature Launch Options in Dark Mode */
@@ -56538,6 +56615,18 @@ dialog {
         2px 2px 6px rgba(0, 0, 0, 0.12) !important;
 }
 
+[data-theme="dark"] .popup-gradient-theme .sort-buttons button.active,
+[data-theme="dark"] .popup-gradient-theme .vocab-sort-buttons button.active,
+[data-theme="dark"] .popup-gradient-theme .feature-history-filter-buttons button.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: #ffffff !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.3),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.4),
+        3px 3px 8px rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
 /* Tag Filter Chips in Dark Mode */
 [data-theme="dark"] .popup-gradient-theme .history-filter-chip,
 [data-theme="dark"] .popup-gradient-theme .feature-history-tag-filter button,
@@ -56556,8 +56645,9 @@ dialog {
 [data-theme="dark"] .popup-gradient-theme .feature-history-tag-filter button.active,
 [data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button.active,
 [data-theme="dark"] .feature-launch-dialog .history-filter-chip.active {
-    background: rgba(var(--theme-rgb), 0.2) !important;
-    border-color: var(--primary-color) !important;
+    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 20%, rgba(0, 0, 0, 0.2)) !important;
+    border-color: color-mix(in srgb, var(--tag-color, var(--primary-color)) 40%, rgba(255, 255, 255, 0.08)) !important;
+    color: color-mix(in srgb, var(--tag-color, var(--primary-color)), white 60%) !important;
     box-shadow:
         inset 2px 2px 5px rgba(0, 0, 0, 0.25),
         inset -2px -2px 4px rgba(255, 255, 255, 0.04) !important;
@@ -56597,9 +56687,9 @@ dialog {
         inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
 }
 
-[data-theme="dark"] .popup-gradient-theme .empty-state i,
-[data-theme="dark"] .popup-fixed-layout .empty-state i,
-[data-theme="dark"] .feature-launch-dialog .empty-state i {
+[data-theme="dark"] .popup-gradient-theme .empty-state i:not(button i):not(.btn i),
+[data-theme="dark"] .popup-fixed-layout .empty-state i:not(button i):not(.btn i),
+[data-theme="dark"] .feature-launch-dialog .empty-state i:not(button i):not(.btn i) {
     background: rgba(255, 255, 255, 0.08) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     box-shadow:
@@ -56823,21 +56913,39 @@ dialog {
     display: none !important;
 }
 
-#data-management-dialog .danger-zone-item {
-    background: #ffffff !important;
-    border: var(--clay-border) !important;
-    border-color: rgba(0, 0, 0, 0.04) !important;
-    box-shadow: var(--clay-shadow-small) !important;
+#data-management-dialog .danger-zone-items {
     border-radius: var(--clay-radius-small) !important;
-    margin-bottom: 10px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.7), 
+                var(--clay-shadow-small) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+
+#data-management-dialog .danger-zone-item {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
     padding: 12px 18px !important;
     transition: var(--clay-transition) !important;
+    display: flex !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+#data-management-dialog .danger-zone-item:last-child {
+    border-bottom: none !important;
 }
 
 #data-management-dialog .danger-zone-item:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12) !important;
-    background: #ffffff !important;
+    background: rgba(239, 68, 68, 0.06) !important;
 }
 
 #data-management-dialog .danger-item-icon {
@@ -56902,6 +57010,19 @@ dialog {
     box-shadow: var(--clay-shadow-pressed) !important;
 }
 
+/* Personal Context Dialog Layout Fixes (Close top gap between header and card) */
+#personal-context-dialog .context-container {
+    gap: 8px !important;
+}
+
+#personal-context-dialog .context-card-page {
+    padding-top: 0px !important;
+}
+
+#personal-context-dialog #context-header-desc:empty {
+    display: none !important;
+}
+
 /* =========================================================================
    DARK MODE OVERRIDES
    ========================================================================= */
@@ -56936,18 +57057,24 @@ dialog {
         5px 5px 14px rgba(0, 0, 0, 0.18) !important;
 }
 
-[data-theme="dark"] #data-management-dialog .danger-zone-item {
-    background: rgba(255, 255, 255, 0.05) !important;
+[data-theme="dark"] #data-management-dialog .danger-zone-items {
+    background: rgba(255, 255, 255, 0.04) !important;
     border-color: rgba(255, 255, 255, 0.06) !important;
-    box-shadow: 
-        inset 1px 1px 3px rgba(255, 255, 255, 0.03),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
-        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.03),
+                var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-zone-item {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 [data-theme="dark"] #data-management-dialog .danger-zone-item:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+    background: rgba(239, 68, 68, 0.12) !important;
 }
 
 [data-theme="dark"] #data-management-dialog .danger-item-icon {
