@@ -55091,6 +55091,1899 @@ dialog {
 }
 
 /* =========================================================================
+   CLAYMORPHISM — SYSTEM POPUPS OVERRIDE
+   ========================================================================= */
+
+/* 1. Base Dialog Windows — Clay Surfaces */
+#profile-dialog,
+#settings-dialog,
+#data-management-dialog,
+#personal-context-dialog {
+    border-radius: var(--clay-radius) !important;
+    border: var(--clay-border) !important;
+    background: radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.85), transparent 34%),
+                linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(var(--theme-rgb), 0.12)) !important;
+    box-shadow: var(--clay-shadow-combined), 0 24px 60px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#ai-provider-dialog {
+    border-radius: var(--clay-radius) !important;
+    border: var(--clay-border) !important;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.86) 48%, rgba(var(--theme-rgb), 0.09) 100%),
+                var(--surface-color) !important;
+    box-shadow: var(--clay-shadow-combined), 0 24px 60px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* 2. Nested Clay Cards / Panels (Raised and Inset plates) */
+#profile-dialog .profile-panel,
+#settings-dialog .settings-card-group,
+#data-management-dialog .dm-premium-big-card,
+#ai-provider-dialog .ai-provider-card {
+    background: rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.54) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.7), 
+                var(--clay-shadow-small) !important;
+    padding: 20px !important;
+    margin-bottom: 16px !important;
+}
+
+/* Personal Context Dialog Layout Fixes */
+#personal-context-dialog .context-card-panel {
+    background: rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.54) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.7), 
+                var(--clay-shadow-small) !important;
+}
+
+#personal-context-dialog .context-hero-card-progress {
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.5), 
+                inset -1px -1px 3px rgba(0, 0, 0, 0.03), 
+                var(--clay-shadow-small) !important;
+    padding: 0 16px !important;
+    min-height: 30px !important;
+    margin-bottom: 0 !important;
+}
+
+/* 3. Interactive Buttons / Quick Buttons / Options / Chips */
+#profile-dialog .profile-quick-btn,
+#profile-dialog .profile-action-chip,
+#settings-dialog .theme-select-btn,
+#settings-dialog .font-select-btn,
+#settings-dialog .layout-select-btn,
+#personal-context-dialog .context-step-btn,
+#ai-provider-dialog .ai-provider-action-btn {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#profile-dialog .profile-quick-btn:hover,
+#profile-dialog .profile-action-chip:hover,
+#settings-dialog .theme-select-btn:hover,
+#settings-dialog .font-select-btn:hover,
+#settings-dialog .layout-select-btn:hover,
+#ai-provider-dialog .ai-provider-action-btn:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+#profile-dialog .profile-quick-btn:active,
+#profile-dialog .profile-action-chip:active,
+#settings-dialog .theme-select-btn:active,
+#settings-dialog .font-select-btn:active,
+#settings-dialog .layout-select-btn:active,
+#ai-provider-dialog .ai-provider-action-btn:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Data Management Sync List (Items stacked together inside single container) */
+#data-management-dialog .dm-sync-container {
+    border-radius: var(--clay-radius-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.7), 
+                var(--clay-shadow-small) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    overflow: hidden !important;
+}
+
+#data-management-dialog .dm-sync-item {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transition: background 0.2s ease !important;
+}
+
+#data-management-dialog .dm-sync-item:last-child {
+    border-bottom: none !important;
+}
+
+#data-management-dialog .dm-sync-item:hover {
+    background: rgba(var(--theme-rgb), 0.06) !important;
+}
+
+#data-management-dialog .dm-sync-item:active {
+    background: rgba(var(--theme-rgb), 0.12) !important;
+}
+
+/* Active buttons / selector states */
+#settings-dialog .theme-select-btn.active,
+#settings-dialog .font-select-btn.active,
+#settings-dialog .layout-select-btn.active {
+    background: rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.35) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.08), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.5), 
+                var(--clay-shadow-pressed) !important;
+}
+
+/* 4. Inputs / Select fields / Textareas — Clay Inset */
+#profile-dialog input,
+#settings-dialog select,
+#settings-dialog input:not([type="range"]),
+#data-management-dialog input:not([type="checkbox"]),
+#personal-context-dialog input,
+#personal-context-dialog select,
+#personal-context-dialog textarea,
+#ai-provider-dialog select,
+#ai-provider-dialog input {
+    background: rgba(255, 255, 255, 0.55) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.7) !important;
+    color: var(--text-color) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#profile-dialog input:focus,
+#settings-dialog select:focus,
+#settings-dialog input:focus,
+#personal-context-dialog input:focus,
+#personal-context-dialog select:focus,
+#personal-context-dialog textarea:focus,
+#ai-provider-dialog select:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.8), 
+                0 0 0 3px rgba(var(--theme-rgb), 0.15) !important;
+    border-color: rgba(var(--theme-rgb), 0.25) !important;
+}
+
+/* 5. Custom Clay Switch / Toggle */
+#settings-dialog .switch .slider,
+#data-management-dialog .switch .slider {
+    border-radius: 34px !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), 
+                inset -2px -2px 5px rgba(255, 255, 255, 0.5) !important;
+}
+
+#settings-dialog .switch input:checked + .slider,
+#data-management-dialog .switch input:checked + .slider {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.15), 
+                inset -2px -2px 5px rgba(255, 255, 255, 0.2) !important;
+}
+
+#settings-dialog .switch .slider:before,
+#data-management-dialog .switch .slider:before {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    background: #ffffff !important;
+}
+
+/* 6. Spherical Elements (Avatars, icons, badges) */
+#profile-dialog .profile-avatar-large,
+#profile-dialog .avatar-option,
+#data-management-dialog .dm-premium-item-icon,
+#ai-provider-dialog .ai-provider-icon {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 50% !important;
+}
+
+/* Sliders (Range inputs) */
+#settings-dialog input[type="range"] {
+    -webkit-appearance: none;
+    background: rgba(0, 0, 0, 0.06) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1), 
+                inset -1px -1px 2px rgba(255, 255, 255, 0.5) !important;
+    height: 8px !important;
+}
+
+#settings-dialog input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    cursor: pointer;
+    transition: var(--clay-transition) !important;
+}
+
+#settings-dialog input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1) !important;
+}
+
+/* Progress bar inside context settings */
+#personal-context-dialog .context-progress-track {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.08), 
+                inset -1px -1px 3px rgba(255, 255, 255, 0.5) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+
+#personal-context-dialog .context-progress-track span {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 0 6px rgba(var(--theme-rgb), 0.3), 
+                inset 1px 1px 3px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 7. DARK MODE SYSTEM POPUPS OVERRIDE */
+[data-theme="dark"] #profile-dialog,
+[data-theme="dark"] #settings-dialog,
+[data-theme="dark"] #data-management-dialog,
+[data-theme="dark"] #personal-context-dialog {
+    background: radial-gradient(circle at 16% 8%, rgba(var(--theme-rgb), 0.22), transparent 34%),
+                linear-gradient(145deg, rgba(37, 31, 56, 0.96), rgba(22, 18, 34, 0.98)) !important;
+    box-shadow: 18px 18px 46px rgba(0, 0, 0, 0.42),
+                -8px -8px 24px rgba(255, 255, 255, 0.035),
+                inset 4px 4px 10px rgba(255, 255, 255, 0.045),
+                inset -5px -5px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+[data-theme="dark"] #ai-provider-dialog {
+    background: linear-gradient(140deg, rgba(31, 31, 53, 0.96) 0%, rgba(20, 20, 34, 0.96) 62%, rgba(var(--theme-rgb), 0.16) 100%),
+                #151525 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 18px 18px 46px rgba(0, 0, 0, 0.42),
+                -8px -8px 24px rgba(255, 255, 255, 0.035),
+                inset 4px 4px 10px rgba(255, 255, 255, 0.045),
+                inset -5px -5px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+[data-theme="dark"] #profile-dialog .profile-panel,
+[data-theme="dark"] #settings-dialog .settings-card-group,
+[data-theme="dark"] #data-management-dialog .dm-premium-big-card,
+[data-theme="dark"] #ai-provider-dialog .ai-provider-card {
+    background: linear-gradient(145deg, rgba(48, 40, 70, 0.85), rgba(var(--theme-rgb), 0.12)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.04), 
+                inset -2px -2px 5px rgba(0, 0, 0, 0.25), 
+                var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #personal-context-dialog .context-card-panel {
+    background: linear-gradient(145deg, rgba(48, 40, 70, 0.85), rgba(var(--theme-rgb), 0.12)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.04), 
+                inset -2px -2px 5px rgba(0, 0, 0, 0.25), 
+                var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #personal-context-dialog .context-hero-card-progress {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.05), 
+                inset -1px -1px 3px rgba(0, 0, 0, 0.2), 
+                var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #profile-dialog .profile-quick-btn,
+[data-theme="dark"] #profile-dialog .profile-action-chip,
+[data-theme="dark"] #settings-dialog .theme-select-btn,
+[data-theme="dark"] #settings-dialog .font-select-btn,
+[data-theme="dark"] #settings-dialog .layout-select-btn,
+[data-theme="dark"] #ai-provider-dialog .ai-provider-action-btn {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #settings-dialog .theme-select-btn.active,
+[data-theme="dark"] #settings-dialog .font-select-btn.active,
+[data-theme="dark"] #settings-dialog .layout-select-btn.active {
+    background: rgba(var(--theme-rgb), 0.2) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.25), 
+                inset -2px -2px 4px rgba(255, 255, 255, 0.06), 
+                var(--clay-shadow-pressed) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .dm-sync-container {
+    background: linear-gradient(145deg, rgba(48, 40, 70, 0.85), rgba(var(--theme-rgb), 0.12)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.04), 
+                inset -2px -2px 5px rgba(0, 0, 0, 0.25), 
+                var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .dm-sync-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .dm-sync-item:last-child {
+    border-bottom: none !important;
+}
+
+[data-theme="dark"] #data-management-dialog .dm-sync-item:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] #profile-dialog input,
+[data-theme="dark"] #settings-dialog select,
+[data-theme="dark"] #settings-dialog input:not([type="range"]),
+[data-theme="dark"] #data-management-dialog input:not([type="checkbox"]),
+[data-theme="dark"] #personal-context-dialog input,
+[data-theme="dark"] #personal-context-dialog select,
+[data-theme="dark"] #personal-context-dialog textarea,
+[data-theme="dark"] #ai-provider-dialog select,
+[data-theme="dark"] #ai-provider-dialog input {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.26), 
+                inset -2px -2px 6px rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] #settings-dialog .switch .slider,
+[data-theme="dark"] #data-management-dialog .switch .slider {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), 
+                inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] #settings-dialog .switch .slider:before,
+[data-theme="dark"] #data-management-dialog .switch .slider:before {
+    background: #e2d9f3 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] #profile-dialog .profile-avatar-large,
+[data-theme="dark"] #profile-dialog .avatar-option,
+[data-theme="dark"] #data-management-dialog .dm-premium-item-icon,
+[data-theme="dark"] #ai-provider-dialog .ai-provider-icon {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #personal-context-dialog .context-progress-track {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.25), 
+                inset -1px -1px 3px rgba(255, 255, 255, 0.04) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM — FEATURE POPUPS OVERRIDE
+   คลังคำศัพท์ · ทดสอบความรู้ · เกม · สร้างเรื่องราว · เพิ่มคำศัพท์
+   AI Roleplay · เรียนรู้ไวยากรณ์ · ผลลัพธ์เกม
+   ========================================================================= */
+
+/* ── 1. BASE FEATURE POPUP DIALOGS — CLAY SURFACE ── */
+#vocab-library-dialog,
+#test-me-dialog,
+#test-active-dialog,
+#game-selection-dialog,
+#story-dialog,
+#add-vocab-dialog,
+#ai-roleplay-dialog,
+#learn-grammar-dialog,
+#flashcard-dialog,
+#swipe-game-dialog,
+#match-game-dialog,
+#typing-game-dialog,
+#today-learning-dialog,
+#vocab-pack-dialog,
+#bulk-add-vocab-dialog,
+#detailed-import-dialog,
+#image-to-vocab-dialog,
+#url-to-vocab-dialog,
+#text-to-vocab-dialog,
+#smart-streak-dialog,
+#data-details-dialog,
+#notification-history-dialog,
+#mini-games-dialog {
+    border-radius: 32px !important;
+    border: var(--clay-border) !important;
+    background:
+        radial-gradient(circle at 15% 8%, rgba(255, 255, 255, 0.88), transparent 36%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(var(--theme-rgb), 0.10)) !important;
+    box-shadow:
+        var(--clay-shadow-combined),
+        0 24px 64px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* Backdrop — Frosted */
+#vocab-library-dialog::backdrop,
+#test-me-dialog::backdrop,
+#test-active-dialog::backdrop,
+#game-selection-dialog::backdrop,
+#story-dialog::backdrop,
+#add-vocab-dialog::backdrop,
+#ai-roleplay-dialog::backdrop,
+#learn-grammar-dialog::backdrop,
+#flashcard-dialog::backdrop,
+#swipe-game-dialog::backdrop,
+#match-game-dialog::backdrop,
+#typing-game-dialog::backdrop,
+#today-learning-dialog::backdrop,
+#data-details-dialog::backdrop,
+#mini-games-dialog::backdrop {
+    background: rgba(25, 20, 40, 0.45) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* ── 2. DIALOG HEADER — CLAY STYLE ── */
+.popup-gradient-theme .dialog-header-with-action,
+.popup-gradient-theme .dialog-header-unified {
+    border-bottom: none !important;
+    padding: 24px 28px 12px !important;
+    position: relative;
+}
+
+.popup-gradient-theme .dialog-main-title,
+.popup-gradient-theme .dialog-header-unified h2 {
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.4), -1px -1px 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+.popup-gradient-theme .dialog-main-title i {
+    filter: drop-shadow(2px 2px 4px rgba(var(--theme-rgb), 0.2)) !important;
+}
+
+/* ── 3. SMART CARD / INTRO CARD — CLAY RAISED PANEL ── */
+.vocab-smart-card,
+.add-vocab-intro-card,
+#smart-add-vocab-recommendation-card,
+.smart-streak-hero-card,
+.test-smart-card {
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.22), transparent 36%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(var(--theme-rgb), 0.08)) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 7px rgba(255, 255, 255, 0.6),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.04),
+        6px 6px 18px rgba(0, 0, 0, 0.07),
+        -3px -3px 10px rgba(255, 255, 255, 0.7) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* Smart card visual orbit — Clay sphere */
+.vocab-smart-visual-inner {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.vocab-smart-visual-orbit {
+    border: 2px dashed rgba(var(--theme-rgb), 0.15) !important;
+}
+
+/* Smart card footer actions */
+.vocab-smart-card-footer,
+.smart-card-action-row {
+    border-radius: var(--clay-radius-small) !important;
+}
+
+.vocab-smart-primary-btn,
+.ai-feature-btn.primary-glow {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow:
+        4px 4px 10px rgba(var(--theme-rgb), 0.18),
+        -2px -2px 6px rgba(255, 255, 255, 0.5),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.35),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.vocab-smart-primary-btn:hover,
+.ai-feature-btn.primary-glow:hover {
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow:
+        6px 6px 16px rgba(var(--theme-rgb), 0.25),
+        -3px -3px 8px rgba(255, 255, 255, 0.6),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.4),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.vocab-smart-primary-btn:active,
+.ai-feature-btn.primary-glow:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Smart card select dropdown */
+.vocab-smart-select {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.05),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Smart card refresh button */
+.smart-card-refresh-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.smart-card-refresh-btn:hover {
+    transform: rotate(180deg) scale(1.08) !important;
+}
+
+.smart-card-refresh-btn:active {
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Smart card meta capsules / chips */
+.smart-card-meta-capsules .smart-card-meta-chip {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ── 4. DATA LIST CONTAINER & DATA CAPSULES — CLAY ── */
+.popup-gradient-theme .data-list-container,
+.popup-gradient-theme .vocab-library-list-shell {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.04),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.65),
+        3px 3px 10px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.popup-gradient-theme .data-list-container .data-capsule {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.5),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.03),
+        3px 3px 8px rgba(0, 0, 0, 0.04),
+        -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    margin: 6px 8px !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .data-list-container .data-capsule:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.6),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.04),
+        5px 5px 14px rgba(0, 0, 0, 0.06),
+        -3px -3px 8px rgba(255, 255, 255, 0.7) !important;
+}
+
+.popup-gradient-theme .data-list-container .data-capsule:active {
+    transform: scale(0.99) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Data capsule POS badge */
+.popup-gradient-theme .data-capsule-header .pos {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.05),
+        -1px -1px 3px rgba(255, 255, 255, 0.4),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Data capsule action buttons */
+.popup-gradient-theme .data-capsule-actions button {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .data-capsule-actions button:hover {
+    transform: scale(1.12) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.popup-gradient-theme .data-capsule-actions button:active {
+    transform: scale(0.9) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 5. BUTTONS — CLAY STYLE ── */
+
+/* Primary Buttons inside popups */
+.popup-gradient-theme .btn-primary,
+.popup-fixed-layout .btn-primary {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow:
+        4px 4px 12px rgba(var(--theme-rgb), 0.2),
+        -2px -2px 6px rgba(255, 255, 255, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.35),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .btn-primary:hover,
+.popup-fixed-layout .btn-primary:hover {
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow:
+        6px 6px 18px rgba(var(--theme-rgb), 0.3),
+        -3px -3px 8px rgba(255, 255, 255, 0.5),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.4),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+.popup-gradient-theme .btn-primary:active,
+.popup-fixed-layout .btn-primary:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Secondary Buttons inside popups */
+.popup-gradient-theme .btn-secondary,
+.popup-fixed-layout .btn-secondary {
+    border-radius: var(--clay-radius-pill) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .btn-secondary:hover,
+.popup-fixed-layout .btn-secondary:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+.popup-gradient-theme .btn-secondary:active,
+.popup-fixed-layout .btn-secondary:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Sort Buttons — Clay Pills */
+.popup-gradient-theme .sort-buttons button,
+.popup-gradient-theme .vocab-sort-buttons button,
+.popup-gradient-theme .feature-history-filter-buttons button {
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .sort-buttons button:hover,
+.popup-gradient-theme .vocab-sort-buttons button:hover,
+.popup-gradient-theme .feature-history-filter-buttons button:hover {
+    transform: translateY(-2px) scale(1.06) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.popup-gradient-theme .sort-buttons button:active,
+.popup-gradient-theme .vocab-sort-buttons button:active,
+.popup-gradient-theme .feature-history-filter-buttons button:active {
+    transform: scale(0.94) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+.popup-gradient-theme .sort-buttons button.active,
+.popup-gradient-theme .vocab-sort-buttons button.active {
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.1),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.2),
+        3px 3px 8px rgba(var(--theme-rgb), 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Feature Launch Options — Clay Option Cards */
+.popup-gradient-theme .feature-launch-option,
+.feature-launch-dialog .feature-launch-option {
+    border-radius: var(--clay-radius) !important;
+    background:
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.3), transparent 40%),
+        rgba(255, 255, 255, 0.5) !important;
+    box-shadow:
+        inset 3px 3px 6px rgba(255, 255, 255, 0.55),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.04),
+        5px 5px 14px rgba(0, 0, 0, 0.06),
+        -3px -3px 8px rgba(255, 255, 255, 0.65) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .feature-launch-option:hover,
+.feature-launch-dialog .feature-launch-option:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow:
+        inset 3px 3px 7px rgba(255, 255, 255, 0.65),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.05),
+        8px 8px 22px rgba(0, 0, 0, 0.08),
+        -4px -4px 12px rgba(255, 255, 255, 0.75) !important;
+}
+
+.popup-gradient-theme .feature-launch-option:active,
+.feature-launch-dialog .feature-launch-option:active {
+    transform: scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Feature Launch Option Icon — Clay Float */
+.popup-gradient-theme .feature-launch-option i,
+.feature-launch-dialog .feature-launch-option i {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.12)) drop-shadow(-1px -1px 3px rgba(255, 255, 255, 0.5)) !important;
+}
+
+/* ── 6. EMPTY STATE — CLAY CONTAINER ── */
+.popup-gradient-theme .empty-state,
+.popup-fixed-layout .empty-state,
+.feature-launch-dialog .empty-state {
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent 50%),
+        rgba(255, 255, 255, 0.2) !important;
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.03),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+        3px 3px 10px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    padding: 40px 24px !important;
+    margin: 12px 0 !important;
+}
+
+.popup-gradient-theme .empty-state i,
+.popup-fixed-layout .empty-state i,
+.feature-launch-dialog .empty-state i {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 18px !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.45) !important;
+    opacity: 1 !important;
+    font-size: 2rem !important;
+    color: var(--primary-color) !important;
+}
+
+.popup-gradient-theme .empty-state .btn-primary {
+    margin-top: 10px !important;
+}
+
+/* ── 7. HISTORY LISTS / CONTAINERS — CLAY INSET ── */
+.popup-gradient-theme .feature-history-list,
+.popup-gradient-theme #test-history-container,
+.popup-gradient-theme #game-history-container,
+.popup-gradient-theme #story-history-list,
+.popup-gradient-theme #ai-roleplay-history-list,
+.popup-gradient-theme #grammar-history-container,
+.popup-gradient-theme #add-vocab-history-list,
+.feature-launch-dialog .feature-history-list,
+.feature-launch-dialog #test-history-container,
+.feature-launch-dialog #game-history-container,
+.feature-launch-dialog #story-history-list,
+.feature-launch-dialog #ai-roleplay-history-list,
+.feature-launch-dialog #grammar-history-container,
+.feature-launch-dialog #add-vocab-history-list {
+    border-radius: var(--clay-radius) !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.04),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+        3px 3px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* History Card Items — Clay Raised Cards */
+.popup-gradient-theme .feature-history-card,
+.popup-gradient-theme .history-item-card,
+.popup-gradient-theme .test-history-item,
+.popup-gradient-theme .game-history-item,
+.popup-gradient-theme .story-history-item,
+.popup-gradient-theme .roleplay-history-item,
+.popup-gradient-theme .grammar-history-item,
+.popup-gradient-theme .add-vocab-history-item,
+.feature-launch-dialog .feature-history-card,
+.feature-launch-dialog .history-item-card,
+.feature-launch-dialog .test-history-item,
+.feature-launch-dialog .game-history-item,
+.feature-launch-dialog .story-history-item,
+.feature-launch-dialog .roleplay-history-item,
+.feature-launch-dialog .grammar-history-item,
+.feature-launch-dialog .add-vocab-history-item {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.5),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.03),
+        3px 3px 8px rgba(0, 0, 0, 0.04),
+        -2px -2px 5px rgba(255, 255, 255, 0.55) !important;
+    margin: 6px 8px !important;
+    padding: 14px 16px !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .feature-history-card:hover,
+.popup-gradient-theme .history-item-card:hover,
+.popup-gradient-theme .test-history-item:hover,
+.popup-gradient-theme .game-history-item:hover,
+.popup-gradient-theme .story-history-item:hover,
+.popup-gradient-theme .roleplay-history-item:hover,
+.popup-gradient-theme .grammar-history-item:hover,
+.popup-gradient-theme .add-vocab-history-item:hover,
+.feature-launch-dialog .feature-history-card:hover,
+.feature-launch-dialog .history-item-card:hover,
+.feature-launch-dialog .test-history-item:hover,
+.feature-launch-dialog .game-history-item:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.6),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.04),
+        5px 5px 14px rgba(0, 0, 0, 0.06),
+        -3px -3px 8px rgba(255, 255, 255, 0.65) !important;
+}
+
+/* ── 8. SEARCH INPUTS — CLAY INSET ── */
+.popup-gradient-theme .feature-history-search input,
+.popup-gradient-theme .vocab-search-input-shell,
+.popup-gradient-theme .add-content-section input[type="text"],
+.feature-launch-dialog .feature-history-search input,
+.feature-launch-dialog .vocab-search-input-shell {
+    border-radius: var(--clay-radius-pill) !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.06),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.7) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .feature-history-search input:focus,
+.popup-gradient-theme .add-content-section input[type="text"]:focus,
+.feature-launch-dialog .feature-history-search input:focus {
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.07),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.8),
+        0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.25) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Vocab search shell (contains icon + input) */
+.popup-gradient-theme .vocab-search-input-shell {
+    border-radius: var(--clay-radius-pill) !important;
+    overflow: hidden !important;
+}
+
+.popup-gradient-theme .vocab-search-input-shell input {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* ── 9. TAG FILTER CHIPS — CLAY PILLS ── */
+.popup-gradient-theme .history-filter-chip,
+.popup-gradient-theme .feature-history-tag-filter button,
+.popup-gradient-theme .vocab-library-tag-filter button,
+.feature-launch-dialog .history-filter-chip,
+.feature-launch-dialog .feature-history-tag-filter button {
+    border-radius: var(--clay-radius-pill) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .history-filter-chip:hover,
+.popup-gradient-theme .feature-history-tag-filter button:hover,
+.popup-gradient-theme .vocab-library-tag-filter button:hover,
+.feature-launch-dialog .history-filter-chip:hover,
+.feature-launch-dialog .feature-history-tag-filter button:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.popup-gradient-theme .history-filter-chip.active,
+.popup-gradient-theme .feature-history-tag-filter button.active,
+.popup-gradient-theme .vocab-library-tag-filter button.active,
+.feature-launch-dialog .history-filter-chip.active,
+.feature-launch-dialog .feature-history-tag-filter button.active {
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.1),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.2),
+        3px 3px 8px rgba(var(--theme-rgb), 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.popup-gradient-theme .history-filter-chip:active,
+.popup-gradient-theme .feature-history-tag-filter button:active,
+.feature-launch-dialog .history-filter-chip:active {
+    transform: scale(0.94) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 10. WATERMARK ICONS IN POPUPS — SOFTER ── */
+.popup-gradient-theme > i[class*="fi-rr-"],
+.popup-fixed-layout > i[class*="fi-rr-"],
+.feature-launch-dialog > i[class*="fi-rr-"] {
+    opacity: 0.06 !important;
+    filter: blur(0.5px) !important;
+}
+
+/* ── 11. GAME SELECTION DIALOG — CLAY GAME CARDS ── */
+#game-selection-dialog .game-mode-card,
+#game-selection-dialog .mini-game-card,
+#mini-games-dialog .mini-game-card {
+    border-radius: var(--clay-radius) !important;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.28), transparent 38%),
+        rgba(255, 255, 255, 0.5) !important;
+    box-shadow:
+        inset 3px 3px 6px rgba(255, 255, 255, 0.55),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.04),
+        5px 5px 14px rgba(0, 0, 0, 0.06),
+        -3px -3px 8px rgba(255, 255, 255, 0.65) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#game-selection-dialog .game-mode-card:hover,
+#game-selection-dialog .mini-game-card:hover,
+#mini-games-dialog .mini-game-card:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow:
+        inset 3px 3px 7px rgba(255, 255, 255, 0.65),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.05),
+        8px 8px 22px rgba(0, 0, 0, 0.08),
+        -4px -4px 12px rgba(255, 255, 255, 0.75) !important;
+}
+
+#game-selection-dialog .game-mode-card:active,
+#game-selection-dialog .mini-game-card:active,
+#mini-games-dialog .mini-game-card:active {
+    transform: scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 12. GAME RESULT MODALS — CLAY ── */
+.game-result-modal,
+.uniform-result-dialog {
+    border-radius: 32px !important;
+    border: var(--clay-border) !important;
+    background:
+        radial-gradient(circle at 15% 8%, rgba(255, 255, 255, 0.88), transparent 36%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(var(--theme-rgb), 0.10)) !important;
+    box-shadow:
+        var(--clay-shadow-combined),
+        0 24px 64px rgba(0, 0, 0, 0.14) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+}
+
+/* Result Header Background */
+.game-result-modal .result-header-bg {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Result Pills — Clay */
+.game-result-modal .result-pill {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Result Action Buttons — Clay */
+.game-result-modal .result-actions-footer button,
+.uniform-result-dialog .result-actions-footer button {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow:
+        3px 3px 8px rgba(0, 0, 0, 0.08),
+        -2px -2px 5px rgba(255, 255, 255, 0.5),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.35),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.game-result-modal .result-actions-footer button:hover,
+.uniform-result-dialog .result-actions-footer button:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.game-result-modal .result-actions-footer button:active,
+.uniform-result-dialog .result-actions-footer button:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Swipe result overview stat cards */
+.game-result-modal .swipe-result-overview > div,
+.game-result-modal .result-stat-card {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Review section items */
+.game-result-modal .review-section {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.03),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.6) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── 13. FLASHCARD DIALOG — CLAY ── */
+#flashcard-dialog #flashcard-content {
+    border-radius: var(--clay-radius) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#flashcard-dialog #flashcard-content .fc-item-display {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.04),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Flashcard navigation buttons */
+#flashcard-dialog #fc-prev-btn,
+#flashcard-dialog #fc-next-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#flashcard-dialog #fc-prev-btn:hover,
+#flashcard-dialog #fc-next-btn:hover {
+    transform: scale(1.1) !important;
+}
+
+#flashcard-dialog #fc-prev-btn:active,
+#flashcard-dialog #fc-next-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Flashcard evaluation buttons */
+#flashcard-dialog #fc-repeat-btn,
+#flashcard-dialog #fc-got-it-btn,
+#flashcard-dialog #fc-know-well-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow:
+        3px 3px 8px rgba(0, 0, 0, 0.08),
+        -2px -2px 5px rgba(255, 255, 255, 0.5),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#flashcard-dialog #fc-repeat-btn:hover,
+#flashcard-dialog #fc-got-it-btn:hover,
+#flashcard-dialog #fc-know-well-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+}
+
+#flashcard-dialog #fc-repeat-btn:active,
+#flashcard-dialog #fc-got-it-btn:active,
+#flashcard-dialog #fc-know-well-btn:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 14. SWIPE / MATCH / TYPING GAME — CLAY IN-GAME ── */
+#swipe-game-dialog #swipe-game-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#match-game-dialog .memory-card .card-face {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#match-game-dialog .memory-card:hover .card-face {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    transform: scale(1.03) !important;
+}
+
+#typing-game-dialog #typing-game-area {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.05),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ── 15. STORY DIALOG INNER ELEMENTS — CLAY ── */
+#story-dialog #story-content-view {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.03),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.6) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── 16. AI ROLEPLAY INNER ELEMENTS — CLAY ── */
+#ai-roleplay-dialog .ai-bubble-user {
+    border-radius: 22px 22px 4px 22px !important;
+    box-shadow:
+        3px 3px 10px rgba(var(--theme-rgb), 0.15),
+        -2px -2px 5px rgba(255, 255, 255, 0.3),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+#ai-roleplay-dialog .ai-bubble-bot {
+    border-radius: 22px 22px 22px 4px !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.55),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.03),
+        3px 3px 10px rgba(0, 0, 0, 0.05),
+        -2px -2px 5px rgba(255, 255, 255, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+}
+
+/* ── 17. DATA DETAILS DIALOG — CLAY ── */
+#data-details-dialog .view-mode-item {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog .root-data-capsule {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+/* ── 18. CONFIRM DIALOG — CLAY ── */
+#confirm-dialog.standard-dialog {
+    border-radius: var(--clay-radius) !important;
+    border: var(--clay-border) !important;
+    background:
+        radial-gradient(circle at 15% 8%, rgba(255, 255, 255, 0.88), transparent 36%),
+        rgba(255, 255, 255, 0.9) !important;
+    box-shadow: var(--clay-shadow-combined), 0 20px 50px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* ── 19. NOTIFICATION HISTORY — CLAY ── */
+#notification-history-dialog .notification-item {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#notification-history-dialog .notification-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+/* ── 20. POPUP SCROLLBAR — CLAY THEMED ── */
+.popup-gradient-theme ::-webkit-scrollbar,
+.feature-launch-dialog ::-webkit-scrollbar,
+.popup-fixed-layout ::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+.popup-gradient-theme ::-webkit-scrollbar-track,
+.feature-launch-dialog ::-webkit-scrollbar-track,
+.popup-fixed-layout ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-radius: var(--clay-radius-pill) !important;
+}
+
+.popup-gradient-theme ::-webkit-scrollbar-thumb,
+.feature-launch-dialog ::-webkit-scrollbar-thumb,
+.popup-fixed-layout ::-webkit-scrollbar-thumb {
+    background: rgba(var(--theme-rgb), 0.25) !important;
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+.popup-gradient-theme ::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog ::-webkit-scrollbar-thumb:hover,
+.popup-fixed-layout ::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--theme-rgb), 0.4) !important;
+}
+
+/* ── 21. COUNT BADGES IN POPUPS — CLAY ── */
+.popup-gradient-theme .count-badge,
+.feature-launch-dialog .count-badge {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* ── 22. POPUP CLOSE BUTTONS (X) — CLAY SPHERE ── */
+.popup-gradient-theme .dialog-close-btn,
+.popup-gradient-theme button[aria-label*="ปิด"],
+.popup-fixed-layout .dialog-close-btn,
+.feature-launch-dialog .dialog-close-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    transition: var(--clay-transition) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+.popup-gradient-theme .dialog-close-btn:hover,
+.popup-fixed-layout .dialog-close-btn:hover,
+.feature-launch-dialog .dialog-close-btn:hover {
+    transform: scale(1.12) rotate(90deg) !important;
+}
+
+.popup-gradient-theme .dialog-close-btn:active,
+.popup-fixed-layout .dialog-close-btn:active,
+.feature-launch-dialog .dialog-close-btn:active {
+    transform: scale(0.9) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 23. LOADING OVERLAY IN POPUPS — CLAY ── */
+.popup-gradient-theme .loading-overlay {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-radius: var(--clay-radius) !important;
+}
+
+.popup-gradient-theme .loader .dot {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — FEATURE POPUPS — DARK MODE OVERRIDES
+   ========================================================================= */
+
+/* Base Dialog Windows in Dark Mode */
+[data-theme="dark"] #vocab-library-dialog,
+[data-theme="dark"] #test-me-dialog,
+[data-theme="dark"] #test-active-dialog,
+[data-theme="dark"] #game-selection-dialog,
+[data-theme="dark"] #story-dialog,
+[data-theme="dark"] #add-vocab-dialog,
+[data-theme="dark"] #ai-roleplay-dialog,
+[data-theme="dark"] #learn-grammar-dialog,
+[data-theme="dark"] #flashcard-dialog,
+[data-theme="dark"] #swipe-game-dialog,
+[data-theme="dark"] #match-game-dialog,
+[data-theme="dark"] #typing-game-dialog,
+[data-theme="dark"] #today-learning-dialog,
+[data-theme="dark"] #vocab-pack-dialog,
+[data-theme="dark"] #bulk-add-vocab-dialog,
+[data-theme="dark"] #detailed-import-dialog,
+[data-theme="dark"] #image-to-vocab-dialog,
+[data-theme="dark"] #url-to-vocab-dialog,
+[data-theme="dark"] #text-to-vocab-dialog,
+[data-theme="dark"] #smart-streak-dialog,
+[data-theme="dark"] #data-details-dialog,
+[data-theme="dark"] #notification-history-dialog,
+[data-theme="dark"] #mini-games-dialog,
+[data-theme="dark"] .game-result-modal,
+[data-theme="dark"] .uniform-result-dialog {
+    background:
+        radial-gradient(circle at 16% 8%, rgba(var(--theme-rgb), 0.22), transparent 34%),
+        linear-gradient(145deg, rgba(37, 31, 56, 0.96), rgba(22, 18, 34, 0.98)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        18px 18px 46px rgba(0, 0, 0, 0.42),
+        -8px -8px 24px rgba(255, 255, 255, 0.035),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.045),
+        inset -5px -5px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Dark mode confirm dialog */
+[data-theme="dark"] #confirm-dialog.standard-dialog {
+    background:
+        radial-gradient(circle at 16% 8%, rgba(var(--theme-rgb), 0.2), transparent 34%),
+        linear-gradient(145deg, rgba(37, 31, 56, 0.96), rgba(22, 18, 34, 0.98)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        18px 18px 46px rgba(0, 0, 0, 0.42),
+        -8px -8px 24px rgba(255, 255, 255, 0.035),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.045),
+        inset -5px -5px 14px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Smart Cards in Dark Mode */
+[data-theme="dark"] .vocab-smart-card,
+[data-theme="dark"] .add-vocab-intro-card,
+[data-theme="dark"] #smart-add-vocab-recommendation-card,
+[data-theme="dark"] .smart-streak-hero-card,
+[data-theme="dark"] .test-smart-card {
+    background:
+        linear-gradient(145deg, rgba(48, 40, 70, 0.85), rgba(var(--theme-rgb), 0.12)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.25),
+        6px 6px 18px rgba(0, 0, 0, 0.2),
+        -3px -3px 8px rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Data Capsules in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .data-list-container,
+[data-theme="dark"] .popup-gradient-theme .vocab-library-list-shell {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.2),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .data-list-container .data-capsule {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15),
+        -2px -2px 5px rgba(255, 255, 255, 0.02) !important;
+}
+
+/* History Lists in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .feature-history-list,
+[data-theme="dark"] .popup-gradient-theme #test-history-container,
+[data-theme="dark"] .popup-gradient-theme #game-history-container,
+[data-theme="dark"] .popup-gradient-theme #story-history-list,
+[data-theme="dark"] .popup-gradient-theme #ai-roleplay-history-list,
+[data-theme="dark"] .popup-gradient-theme #grammar-history-container,
+[data-theme="dark"] .popup-gradient-theme #add-vocab-history-list,
+[data-theme="dark"] .feature-launch-dialog .feature-history-list,
+[data-theme="dark"] .feature-launch-dialog #test-history-container,
+[data-theme="dark"] .feature-launch-dialog #game-history-container {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.2),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* History Cards in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .feature-history-card,
+[data-theme="dark"] .popup-gradient-theme .history-item-card,
+[data-theme="dark"] .popup-gradient-theme .test-history-item,
+[data-theme="dark"] .popup-gradient-theme .game-history-item,
+[data-theme="dark"] .popup-gradient-theme .story-history-item,
+[data-theme="dark"] .popup-gradient-theme .roleplay-history-item,
+[data-theme="dark"] .popup-gradient-theme .grammar-history-item,
+[data-theme="dark"] .popup-gradient-theme .add-vocab-history-item,
+[data-theme="dark"] .feature-launch-dialog .feature-history-card,
+[data-theme="dark"] .feature-launch-dialog .history-item-card {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Feature Launch Options in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .feature-launch-option,
+[data-theme="dark"] .feature-launch-dialog .feature-launch-option {
+    background:
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.06), transparent 40%),
+        rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.22),
+        5px 5px 14px rgba(0, 0, 0, 0.18),
+        -2px -2px 6px rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Buttons in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .sort-buttons button,
+[data-theme="dark"] .popup-gradient-theme .vocab-sort-buttons button,
+[data-theme="dark"] .popup-gradient-theme .feature-history-filter-buttons button {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Tag Filter Chips in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .history-filter-chip,
+[data-theme="dark"] .popup-gradient-theme .feature-history-tag-filter button,
+[data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button,
+[data-theme="dark"] .feature-launch-dialog .history-filter-chip,
+[data-theme="dark"] .feature-launch-dialog .feature-history-tag-filter button {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .history-filter-chip.active,
+[data-theme="dark"] .popup-gradient-theme .feature-history-tag-filter button.active,
+[data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button.active,
+[data-theme="dark"] .feature-launch-dialog .history-filter-chip.active {
+    background: rgba(var(--theme-rgb), 0.2) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.25),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Search Inputs in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .feature-history-search input,
+[data-theme="dark"] .popup-gradient-theme .vocab-search-input-shell,
+[data-theme="dark"] .popup-gradient-theme .add-content-section input[type="text"],
+[data-theme="dark"] .feature-launch-dialog .feature-history-search input {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.26),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.04) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .feature-history-search input:focus,
+[data-theme="dark"] .popup-gradient-theme .add-content-section input[type="text"]:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.28),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.05),
+        0 0 0 3px rgba(var(--theme-rgb), 0.15) !important;
+}
+
+/* Empty State in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .empty-state,
+[data-theme="dark"] .popup-fixed-layout .empty-state,
+[data-theme="dark"] .feature-launch-dialog .empty-state {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.18),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .empty-state i,
+[data-theme="dark"] .popup-fixed-layout .empty-state i,
+[data-theme="dark"] .feature-launch-dialog .empty-state i {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Game Cards in Dark Mode */
+[data-theme="dark"] #game-selection-dialog .game-mode-card,
+[data-theme="dark"] #game-selection-dialog .mini-game-card,
+[data-theme="dark"] #mini-games-dialog .mini-game-card {
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.06), transparent 38%),
+        rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.22),
+        5px 5px 14px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Flashcard in Dark Mode */
+[data-theme="dark"] #flashcard-dialog #flashcard-content {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.22),
+        6px 6px 14px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] #flashcard-dialog #flashcard-content .fc-item-display {
+    background: rgba(0, 0, 0, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(0, 0, 0, 0.2),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Game dialogs in dark mode */
+[data-theme="dark"] #swipe-game-dialog #swipe-game-card {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.22),
+        6px 6px 14px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] #match-game-dialog .memory-card .card-face {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="dark"] #typing-game-dialog #typing-game-area {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.25),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* AI Roleplay bubbles in Dark Mode */
+[data-theme="dark"] #ai-roleplay-dialog .ai-bubble-bot {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Data Details View Mode items in Dark Mode */
+[data-theme="dark"] #data-details-dialog .view-mode-item {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Story Content in Dark Mode */
+[data-theme="dark"] #story-dialog #story-content-view {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.2),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Result modals stat cards in dark mode */
+[data-theme="dark"] .game-result-modal .swipe-result-overview > div,
+[data-theme="dark"] .game-result-modal .result-stat-card {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .game-result-modal .review-section {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.2),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Notification items in dark mode */
+[data-theme="dark"] #notification-history-dialog .notification-item {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Close buttons in Dark Mode */
+[data-theme="dark"] .popup-gradient-theme .dialog-close-btn,
+[data-theme="dark"] .popup-fixed-layout .dialog-close-btn,
+[data-theme="dark"] .feature-launch-dialog .dialog-close-btn {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Smart card visual elements in Dark Mode */
+[data-theme="dark"] .vocab-smart-visual-inner {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Dark scrollbars for popups */
+[data-theme="dark"] .popup-gradient-theme ::-webkit-scrollbar-track,
+[data-theme="dark"] .feature-launch-dialog ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme ::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog ::-webkit-scrollbar-thumb {
+    background: rgba(var(--theme-rgb), 0.35) !important;
+}
+
+/* Loading overlay in dark mode */
+[data-theme="dark"] .popup-gradient-theme .loading-overlay {
+    background: rgba(22, 18, 34, 0.7) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .loader .dot {
+    box-shadow:
+        inset 1px 1px 2px rgba(255, 255, 255, 0.06),
+        inset -1px -1px 2px rgba(0, 0, 0, 0.15),
+        2px 2px 4px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — TRASH & DANGER ZONE OVERRIDES
+   ========================================================================= */
+
+/* Trash panel (รายการที่ลบล่าสุด) */
+#data-management-dialog .trash-history-box {
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+    border-radius: var(--clay-radius) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-management-dialog .clear-trash-btn {
+    min-height: 32px !important;
+    padding: 6px 14px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+    background: linear-gradient(135deg, #FFF5F5, #FFE3E3) !important;
+    color: #E53E3E !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-management-dialog .clear-trash-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15) !important;
+    background: linear-gradient(135deg, #FFE3E3, #FFD1D1) !important;
+}
+
+#data-management-dialog .clear-trash-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Danger Zone (โซนอันตราย) */
+#data-management-dialog .danger-zone-container {
+    background: linear-gradient(135deg, rgba(254, 242, 242, 0.7) 0%, rgba(254, 242, 242, 0.9) 100%) !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(239, 68, 68, 0.18) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border-radius: var(--clay-radius) !important;
+    padding: 10px 10px 18px !important;
+    margin-top: 25px !important;
+}
+
+#data-management-dialog .danger-zone-container::before,
+#data-management-dialog .danger-zone-container::after {
+    display: none !important;
+}
+
+#data-management-dialog .danger-zone-item {
+    background: #ffffff !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(0, 0, 0, 0.04) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border-radius: var(--clay-radius-small) !important;
+    margin-bottom: 10px !important;
+    padding: 12px 18px !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-management-dialog .danger-zone-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12) !important;
+    background: #ffffff !important;
+}
+
+#data-management-dialog .danger-item-icon {
+    border-radius: 16px !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
+    color: var(--dz-color, #ef4444) !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#data-management-dialog .danger-item-title {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+}
+
+#data-management-dialog .danger-item-count {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+    color: var(--primary-color) !important;
+    border-radius: var(--clay-radius-pill) !important;
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    padding: 2px 12px !important;
+    height: 26px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#data-management-dialog .danger-delete-btn {
+    border-radius: 14px !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(239, 68, 68, 0.18) !important;
+    background: linear-gradient(135deg, #FFF5F5, #FFE3E3) !important;
+    color: #ef4444 !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#data-management-dialog .danger-delete-btn:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35) !important;
+    transform: scale(1.08) !important;
+}
+
+#data-management-dialog .danger-delete-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* =========================================================================
+   DARK MODE OVERRIDES
+   ========================================================================= */
+[data-theme="dark"] #data-management-dialog .trash-history-box {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .clear-trash-btn {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    color: #F87171 !important;
+    box-shadow: 
+        inset 1px 1px 3px rgba(255, 255, 255, 0.05),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        2px 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .clear-trash-btn:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border-color: transparent !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-zone-container {
+    background: linear-gradient(145deg, rgba(37, 31, 56, 0.4), rgba(22, 18, 34, 0.5)) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    box-shadow: 
+        inset 2px 2px 5px rgba(255, 255, 255, 0.03),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.22),
+        5px 5px 14px rgba(0, 0, 0, 0.18) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-zone-item {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 
+        inset 1px 1px 3px rgba(255, 255, 255, 0.03),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
+        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-zone-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-item-icon {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-item-count {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+    color: #f87171 !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-delete-btn {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    color: #f87171 !important;
+    box-shadow: 
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] #data-management-dialog .danger-delete-btn:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border-color: transparent !important;
+}
+
+/* =========================================================================
    END OF CLAYMORPHISM OVERRIDE
    ========================================================================= */
+
 

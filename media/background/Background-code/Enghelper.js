@@ -23378,7 +23378,7 @@
                                         return showToast2("ระบบบีบอัดไฟล์ยังไม่พร้อมใช้งาน กรุณารอสักครู่", "error");
                                     }
                                     const btn = document.querySelector('[data-mgmt-action="export-ai-backup"]');
-                                    setSyncItemLoading(btn, true, "กำลังเตรียมข้อมูลสำรอง...", "fi fi-rr-cloud-download", "ส่งออกไฟล์เสียงและข้อมูลสำรอง AI (.zip)");
+                                    setSyncItemLoading(btn, true, "กำลังเตรียมข้อมูลสำรอง...", "fi fi-rr-box-alt", "บีบอัดและดาวน์โหลดข้อมูลทั้งหมด (.zip) รวมถึงความก้าวหน้า การตั้งค่า โปรไฟล์ บริบทส่วนตัว เสียงและรูปภาพที่สร้าง");
                                     try {
                                         const zip = new JSZip();
                                         const aiBackupData = {
@@ -23440,19 +23440,19 @@
                                         const content = await zip.generateAsync({ type: "blob" });
                         
                                         setSyncItemLoading(btn, true, "กำลังดาวน์โหลดไฟล์...");
-                                        const fileName = `enghelper_ai_backup_${(new Date()).toISOString().split("T")[0]}.zip`;
+                                        const fileName = `enghelper_full_backup_${(new Date()).toISOString().split("T")[0]}.zip`;
                                         const url = URL.createObjectURL(content);
                                         const link = document.createElement("a");
                                         link.href = url;
                                         link.download = fileName;
                                         link.click();
                                         setTimeout(() => URL.revokeObjectURL(url), 10000);
-                                        showToast2("ส่งออกข้อมูลเสียงและ AI สำรองเรียบร้อยแล้ว", "success");
+                                        showToast2("ส่งออกข้อมูลทั้งหมดเรียบร้อยแล้ว", "success");
                                     } catch (error) {
                                         console.error("[Export AI Backup] Error:", error);
                                         showToast2("เกิดข้อผิดพลาดในการส่งออกข้อมูล", "error");
                                     } finally {
-                                        setSyncItemLoading(btn, false, "", "fi fi-rr-cloud-download", "ส่งออกไฟล์เสียงและข้อมูลสำรอง AI (.zip)");
+                                        setSyncItemLoading(btn, false, "", "fi fi-rr-box-alt", "บีบอัดและดาวน์โหลดข้อมูลทั้งหมด (.zip) รวมถึงความก้าวหน้า การตั้งค่า โปรไฟล์ บริบทส่วนตัว เสียงและรูปภาพที่สร้าง");
                                     }
                                 }
 
@@ -30890,7 +30890,7 @@
                                             case "data-management":
                                                 if (command.payload?.type === "export") {
                                                     openDataManagementDialog();
-                                                    setTimeout(() => document.querySelector('#data-management-dialog [data-mgmt-action="export"][data-type="all"]')?.click(), 140);
+                                                    setTimeout(() => document.querySelector('#data-management-dialog [data-mgmt-action="export-ai-backup"]')?.click(), 140);
                                                     success = true;
                                                 } else if (command.payload?.type === "import") {
                                                     openDataManagementDialog();
