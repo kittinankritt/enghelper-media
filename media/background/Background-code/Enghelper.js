@@ -17770,71 +17770,100 @@
                                             let hasDialectPhonetics = false;
                                             if (viewModeMultiPosCapsuleContainerEl) {
                                                 viewModeMultiPosCapsuleContainerEl.innerHTML = "";
-                                                if (Array.isArray(itemToDisplay.posVariations) && itemToDisplay.posVariations.length > 0) {
-                                                    const multiPosBadge = document.createElement("span");
-                                                    multiPosBadge.className = "dialect-capsule general"; // Reusing style but logic for multi-pos
-                                                    multiPosBadge.style.display = "inline-flex";
-                                                    multiPosBadge.style.alignItems = "center";
-                                                    multiPosBadge.style.gap = "4px";
-                                                    multiPosBadge.style.cursor = "pointer";
-                                                    multiPosBadge.title = "คำนี้มีหลายหน้าที่และอาจมีความหมายหรือออกเสียงต่างกัน";
-                                                    multiPosBadge.innerHTML = `<span class="dialect-emoji" style="font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 14px; transform: translateY(1.5px);"><i class="fi fi-rr-tags"></i></span>
-                                                        <span class="dialect-text" style="font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 14px; margin-right: 4px;">หลายหน้าที่</span>`;
-
-                                                    multiPosBadge.addEventListener("click", (e) => {
-                                                        e.stopPropagation();
-                                                        if (!posVariationPopover) return;
-
-                                                        const isAlreadyActive = posVariationPopover.classList.contains("active");
-
-                                                        // Hide dialect popover if open
-                                                        if (dialectPopover) {
-                                                            dialectPopover.classList.remove("active");
-                                                            dialectPopover.style.display = "none";
-                                                        }
-
-                                                        if (isAlreadyActive) {
-                                                            posVariationPopover.classList.remove("active");
-                                                            posVariationPopover.style.display = "none";
-                                                            return;
-                                                        }
-
-                                                        let html = '<div class="dialect-popover-title">หน้าที่ของคำ (Part of Speech)</div><div class="dialect-popover-list">';
-                                                        itemToDisplay.posVariations.forEach(variation => {
-                                                            const formattedPhonetic = variation.phonetic ? (typeof formatPhoneticForDisplay === "function" ? formatPhoneticForDisplay(variation.phonetic) : `/${variation.phonetic}/`) : "";
-                                                            html += `
-                                                                <div class="dialect-popover-item">
-                                                                    <div class="dialect-popover-badge ${String(variation.pos).toLowerCase()}">${variation.pos}</div>
-                                                                    <div class="dialect-popover-variant-details" style="flex: 1;">
-                                                                        ${formattedPhonetic ? `<div class="dialect-popover-phonetic" style="font-size: 0.95rem;">${formattedPhonetic}</div>` : ''}
-                                                                        <div class="dialect-popover-spelling" style="font-size: 0.9rem; font-weight: normal; margin-top: 2px;">${variation.thaiExplanation || ""}</div>
-                                                                    </div>
-                                                                </div>
-                                                            `;
-                                                        });
-                                                        html += '</div>';
-
-                                                        posVariationPopover.innerHTML = html;
-                                                        posVariationPopover.classList.add("active");
-                                                        posVariationPopover.style.display = "block";
-
-                                                        // Positioning logic
-                                                        const badgeRect = multiPosBadge.getBoundingClientRect();
-                                                        const dialogContentRect = viewModeContentDiv.getBoundingClientRect();
-                                                        const popoverWidth = posVariationPopover.offsetWidth;
-
-                                                        let left = badgeRect.left - dialogContentRect.left + (badgeRect.width / 2) - (popoverWidth / 2);
-                                                        let top = badgeRect.bottom - dialogContentRect.top + 10;
-
-                                                        if (left < 10) left = 10;
-                                                        if (left + popoverWidth > dialogContentRect.width - 10) left = dialogContentRect.width - popoverWidth - 10;
-
-                                                        posVariationPopover.style.left = `${left}px`;
-                                                        posVariationPopover.style.top = `${top}px`;
-                                                    });
-
-                                                    viewModeMultiPosCapsuleContainerEl.appendChild(multiPosBadge);
+                                                const allPos = [];
+                                                if (itemToDisplay.pos) {
+                                                    allPos.push(itemToDisplay.pos);
                                                 }
+                                                if (Array.isArray(itemToDisplay.posVariations)) {
+                                                    itemToDisplay.posVariations.forEach(variation => {
+                                                        if (variation.pos && !allPos.includes(variation.pos)) {
+                                                            allPos.push(variation.pos);
+                                                        }
+                                                    });
+                                                }
+
+                                                allPos.forEach(posName => {
+                                                    const posBadge = document.createElement("span");
+                                                    posBadge.className = "dialect-capsule pos-badge-capsule " + posName.toLowerCase();
+                                                    posBadge.style.display = "inline-flex";
+                                                    posBadge.style.alignItems = "center";
+                                                    posBadge.style.gap = "4px";
+                                                    posBadge.style.cursor = "default";
+                                                    
+                                                    posBadge.innerHTML = `<span class="dialect-text" style="font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 14px; margin-right: 4px;">${posName}</span>`;
+
+                                                    if (Array.isArray(itemToDisplay.posVariations) && itemToDisplay.posVariations.length > 0) {
+                                                        posBadge.style.cursor = "pointer";
+                                                        posBadge.title = "คำนี้มีหลายหน้าที่ คลิกเพื่อดูรายละเอียดเพิ่มเติม";
+                                                        posBadge.addEventListener("click", (e) => {
+                                                            e.stopPropagation();
+                                                            if (!posVariationPopover) return;
+
+                                                            const isAlreadyActive = posVariationPopover.classList.contains("active");
+
+                                                            // Hide dialect popover if open
+                                                            if (dialectPopover) {
+                                                                dialectPopover.classList.remove("active");
+                                                                dialectPopover.style.display = "none";
+                                                            }
+
+                                                            if (isAlreadyActive) {
+                                                                posVariationPopover.classList.remove("active");
+                                                                posVariationPopover.style.display = "none";
+                                                                return;
+                                                            }
+
+                                                            let html = '<div class="dialect-popover-title">หน้าที่ของคำ (Part of Speech)</div><div class="dialect-popover-list">';
+                                                            if (itemToDisplay.pos) {
+                                                                const primaryPhonetic = itemToDisplay.phonetic ? (typeof formatPhoneticForDisplay === "function" ? formatPhoneticForDisplay(itemToDisplay.phonetic) : `/${itemToDisplay.phonetic}/`) : "";
+                                                                html += `
+                                                                    <div class="dialect-popover-item" style="border-bottom: 1px dashed rgba(255, 255, 255, 0.12); padding-bottom: 8px; margin-bottom: 8px;">
+                                                                        <div class="dialect-popover-badge ${String(itemToDisplay.pos).toLowerCase()}">${itemToDisplay.pos}</div>
+                                                                        <div class="dialect-popover-variant-details" style="flex: 1;">
+                                                                            ${primaryPhonetic ? `<div class="dialect-popover-phonetic" style="font-size: 0.95rem;">${primaryPhonetic}</div>` : ''}
+                                                                            <div class="dialect-popover-spelling" style="font-size: 0.9rem; font-weight: normal; margin-top: 2px;">${itemToDisplay.thaiExplanation || ""}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
+                                                            }
+                                                            if (Array.isArray(itemToDisplay.posVariations)) {
+                                                                itemToDisplay.posVariations.forEach(variation => {
+                                                                    const formattedPhonetic = variation.phonetic ? (typeof formatPhoneticForDisplay === "function" ? formatPhoneticForDisplay(variation.phonetic) : `/${variation.phonetic}/`) : "";
+                                                                    html += `
+                                                                        <div class="dialect-popover-item">
+                                                                            <div class="dialect-popover-badge ${String(variation.pos).toLowerCase()}">${variation.pos}</div>
+                                                                            <div class="dialect-popover-variant-details" style="flex: 1;">
+                                                                                ${formattedPhonetic ? `<div class="dialect-popover-phonetic" style="font-size: 0.95rem;">${formattedPhonetic}</div>` : ''}
+                                                                                <div class="dialect-popover-spelling" style="font-size: 0.9rem; font-weight: normal; margin-top: 2px;">${variation.thaiExplanation || ""}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    `;
+                                                                });
+                                                            }
+                                                            html += '</div>';
+
+                                                            posVariationPopover.innerHTML = html;
+                                                            posVariationPopover.classList.add("active");
+                                                            posVariationPopover.style.display = "block";
+
+                                                            // Positioning logic
+                                                            const badgeRect = posBadge.getBoundingClientRect();
+                                                            const dialogContentRect = viewModeContentDiv.getBoundingClientRect();
+                                                            const popoverWidth = posVariationPopover.offsetWidth;
+
+                                                            let left = badgeRect.left - dialogContentRect.left + (badgeRect.width / 2) - (popoverWidth / 2);
+                                                            let top = badgeRect.bottom - dialogContentRect.top + 10;
+
+                                                            if (left < 10) left = 10;
+                                                            if (left + popoverWidth > dialogContentRect.width - 10) left = dialogContentRect.width - popoverWidth - 10;
+
+                                                            posVariationPopover.style.left = `${left}px`;
+                                                            posVariationPopover.style.top = `${top}px`;
+                                                        });
+                                                    }
+
+                                                    viewModeMultiPosCapsuleContainerEl.appendChild(posBadge);
+                                                });
                                             }
 
                                             if (viewModeDialectCapsuleContainerEl) {
@@ -17880,7 +17909,7 @@
                                             const pos = itemToDisplay.pos || "";
                                             viewModePosBadge.textContent = pos;
                                             viewModePosBadge.className = "view-mode-pos-badge " + pos.toLowerCase();
-                                            viewModePosBadge.style.display = pos ? "inline-block" : "none";
+                                            viewModePosBadge.style.display = "none";
                                             viewModeSynonymsTextEl.textContent = (itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0 ? itemToDisplay.synonyms.join(", ") : "") || "";
                                             if (itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0) {
                                                 viewModeSynonymsContainer.style.display = "block";
@@ -17961,7 +17990,7 @@
                                             const newSynList = document.getElementById("vocab-synonyms-list");
                                             if (newSynList) {
                                                 newSynList.innerHTML = itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0 
-                                                    ? itemToDisplay.synonyms.map(syn => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: underline; color: var(--primary-color);" data-word="${escapeHtml(syn)}">${escapeHtml(syn)}</li>`).join("") 
+                                                    ? itemToDisplay.synonyms.map(syn => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: none; color: var(--primary-color);" data-word="${escapeHtml(syn)}">${escapeHtml(syn)}</li>`).join("") 
                                                     : "<li>-</li>";
                                             }
 
@@ -17969,15 +17998,16 @@
                                             const newAntList = document.getElementById("vocab-antonyms-list");
                                             if (newAntList) {
                                                 newAntList.innerHTML = itemToDisplay.antonyms && itemToDisplay.antonyms.length > 0 
-                                                    ? itemToDisplay.antonyms.map(ant => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: underline; color: var(--accent-color);" data-word="${escapeHtml(ant)}">${escapeHtml(ant)}</li>`).join("") 
+                                                    ? itemToDisplay.antonyms.map(ant => `<li class="vocab-related-word-clickable" style="cursor: pointer; text-decoration: none; color: var(--accent-color);" data-word="${escapeHtml(ant)}">${escapeHtml(ant)}</li>`).join("") 
                                                     : "<li>-</li>";
                                             }
 
-                                            // 3. CEFR Level glow
+                                            // 3. CEFR Level badge update
                                             const activeCefr = getVocabCefrLevel(itemToDisplay);
-                                            document.querySelectorAll(".cefr-spot").forEach(spot => {
-                                                spot.classList.toggle("active", spot.dataset.level === activeCefr);
-                                            });
+                                            const cefrBadge = document.getElementById("vocab-cefr-value-badge");
+                                            if (cefrBadge) {
+                                                cefrBadge.textContent = activeCefr || "-";
+                                            }
 
                                             // 4. Frequency & Formality SVG gauges
                                             const freqScore = getVocabFrequencyLevel(itemToDisplay);
@@ -18017,12 +18047,8 @@
                                                 pointerEl.setAttribute("cx", String(cx));
                                                 pointerEl.setAttribute("cy", String(cy));
                                                 if (needleEl) {
-                                                    const needleEndX = 50 + 29 * Math.cos(angleRad);
-                                                    const needleEndY = 50 - 29 * Math.sin(angleRad);
-                                                    needleEl.setAttribute("x1", "50");
-                                                    needleEl.setAttribute("y1", "50");
-                                                    needleEl.setAttribute("x2", String(needleEndX));
-                                                    needleEl.setAttribute("y2", String(needleEndY));
+                                                    const rotationAngle = (percent * 180) - 90;
+                                                    needleEl.style.transform = `rotate(${rotationAngle}deg)`;
                                                 }
                                             };
                                             

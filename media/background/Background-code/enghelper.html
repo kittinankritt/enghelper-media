@@ -1452,14 +1452,7 @@
                 <div class="vocab-cefr-gauges-wrapper">
                     <div class="vocab-cefr-card">
                         <div class="vocab-cefr-header">CEFR LEVEL</div>
-                        <div class="vocab-cefr-row-new">
-                            <span class="cefr-spot" data-level="A1">A1</span>
-                            <span class="cefr-spot" data-level="A2">A2</span>
-                            <span class="cefr-spot" data-level="B1">B1</span>
-                            <span class="cefr-spot" data-level="B2">B2</span>
-                            <span class="cefr-spot" data-level="C1">C1</span>
-                            <span class="cefr-spot" data-level="C2">C2</span>
-                        </div>
+                        <div class="vocab-cefr-value-badge" id="vocab-cefr-value-badge">-</div>
                     </div>
                     <div class="vocab-gauges-card">
                         <div class="vocab-gauge-box">
@@ -1467,14 +1460,14 @@
                                 <svg class="vocab-radial-gauge" viewBox="0 0 100 55">
                                     <defs>
                                         <linearGradient id="vocab-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" stop-color="#a855f7" />
-                                            <stop offset="100%" stop-color="#ec4899" />
+                                            <stop offset="0%" stop-color="var(--primary-color)" />
+                                            <stop offset="100%" stop-color="var(--secondary-color)" />
                                         </linearGradient>
                                     </defs>
                                     <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
                                     <path id="vocab-frequency-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
-                                    <line id="vocab-frequency-gauge-needle" x1="50" y1="50" x2="50" y2="28" stroke="#c084fc" stroke-width="7" stroke-linecap="round"/>
-                                    <circle id="vocab-frequency-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
+                                    <path id="vocab-frequency-gauge-needle" class="needle" d="M 46.5 50 A 3.5 3.5 0 1 0 53.5 50 L 51.2 21 A 1.2 1.2 0 0 0 48.8 21 Z" fill="var(--primary-color)"/>
+                                    <circle id="vocab-frequency-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff"/>
                                 </svg>
                             </div>
                             <div class="vocab-gauge-label-main">FREQUENCY</div>
@@ -1485,8 +1478,8 @@
                                 <svg class="vocab-radial-gauge" viewBox="0 0 100 55">
                                     <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-linecap="round"/>
                                     <path id="vocab-formality-gauge-fill" d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#vocab-gauge-gradient)" stroke-width="8" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="110"/>
-                                    <line id="vocab-formality-gauge-needle" x1="50" y1="50" x2="50" y2="28" stroke="#c084fc" stroke-width="7" stroke-linecap="round"/>
-                                    <circle id="vocab-formality-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff" filter="drop-shadow(0px 0px 4px rgba(236, 72, 153, 0.8))"/>
+                                    <path id="vocab-formality-gauge-needle" class="needle" d="M 46.5 50 A 3.5 3.5 0 1 0 53.5 50 L 51.2 21 A 1.2 1.2 0 0 0 48.8 21 Z" fill="var(--primary-color)"/>
+                                    <circle id="vocab-formality-gauge-pointer" cx="15" cy="50" r="5.5" fill="#ffffff"/>
                                 </svg>
                             </div>
                             <div class="vocab-gauge-label-main">FORMALITY</div>

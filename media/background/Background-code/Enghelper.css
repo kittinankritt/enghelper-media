@@ -3031,10 +3031,13 @@ dialog>h2,
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
-    font-weight: 500;
-    border: 2px solid #9E9E9E;
-    color: #9E9E9E;
-    background: rgba(158, 158, 158, 0.1);
+    font-weight: 700 !important;
+    border: none !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 
+        inset 2px 2px 4px rgba(255, 255, 255, 0.45),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.25),
+        0 4px 10px rgba(0, 0, 0, 0.15) !important;
 }
 
 .view-mode-pos-badge.noun {
@@ -3569,12 +3572,20 @@ dialog>h2,
     vertical-align: middle;
     user-select: none;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    border: none !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 
+        inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.25),
+        0 4px 10px rgba(0, 0, 0, 0.15) !important;
 }
 
 .dialect-capsule:hover {
-    transform: scale(1.08);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    transform: translateY(1px) scale(0.96) !important;
+    box-shadow: 
+        inset 1px 1px 3px rgba(255, 255, 255, 0.4),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.25),
+        0 2px 5px rgba(0, 0, 0, 0.12) !important;
 }
 
 .dialect-capsule.uk {
@@ -52537,50 +52548,73 @@ dialog {
     color: var(--primary-color) !important;
 }
 
-[data-theme="dark"] #mg-g2-audio-container button.bg-pink-50:hover {
-    background-color: var(--border-color) !important;
+.vocab-synonyms-antonyms-card {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(var(--theme-rgb), 0.25) !important;
+    border-radius: 20px !important;
+    padding: 30px 24px 22px !important;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.08), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
 }
 
-[data-theme="dark"] #mg-g2-audio-container button.bg-pink-500 {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-    color: white !important;
+.vocab-sa-col {
+    position: relative;
+    width: 100%;
+    max-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
-[data-theme="dark"] #mg-g2-word-container button.bg-white {
-    background-color: var(--hover-bg) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-color) !important;
+.vocab-sa-badge {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    border-radius: 20px;
+    width: fit-content;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    position: absolute;
+    top: -46px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.25), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.4), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] #mg-g2-word-container button.bg-white:hover {
-    border-color: var(--primary-color) !important;
+.vocab-sa-col:nth-child(1) .vocab-sa-badge {
+    /* Kept for specificity but positioning is now handled by generic .vocab-sa-badge */
 }
 
-[data-theme="dark"] #mg-g2-word-container button.bg-green-500,
-[data-theme="dark"] #mg-g2-audio-container button.bg-green-500 {
-    background-color: var(--success-lor) !important;
+.vocab-sa-col:nth-child(2) .vocab-sa-badge {
+    /* Kept for specificity but positioning is now handled by generic .vocab-sa-badge */
 }
 
-/* Dark Mode style overrides for Game 4 buttons */
-[data-theme="dark"] #mg-g4-source-area button.bg-white,
-[data-theme="dark"] #mg-g4-target-area button.bg-white {
-    background-color: var(--hover-bg) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-color) !important;
+.vocab-sa-badge.syn {
+    background: var(--primary-color) !important;
 }
 
-[data-theme="dark"] #mg-g4-source-area button.bg-white:hover {
-    border-color: var(--primary-color) !important;
-}
-
-[data-theme="dark"] #mg-g4-target-area button.bg-white {
-    border-color: var(--primary-color) !important;
-}
-
-[data-theme="dark"] #mg-g4-target-area button.bg-white:hover {
-    border-color: var(--error-color) !important;
-}
+.vocab-sa-badge.ant {
+    background: var(--accent-color) !important;
+};
 
 
 /* ===== block 11, original line 98586, attrs: id="final-floating-nav-overrides" ===== */
@@ -53217,13 +53251,13 @@ dialog {
     z-index: 4;
     /* Higher than overlays and blur */
     margin-top: 80px; /* Offset the absolutely positioned header */
+    margin-bottom: 120px !important; /* Offset the overlapping metrics card at the bottom */
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 24px 20px;
-    margin-bottom: 0 !important;
     box-sizing: border-box;
 }
 
@@ -53377,22 +53411,29 @@ dialog {
     min-width: 0;
     width: 100%;
     box-sizing: border-box;
-    background: rgba(147, 51, 234, 0.03) !important;
-    border: 1px solid rgba(168, 85, 247, 0.44) !important;
-    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(var(--theme-rgb), 0.25) !important;
+    border-radius: 20px !important;
     padding: 30px 24px 22px !important;
     display: flex;
-    gap: 26px;
-    box-shadow: 0 4px 24px rgba(147, 51, 234, 0.04) !important;
+    justify-content: center;
+    gap: 60px;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.08), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     position: relative;
 }
 
 .vocab-sa-col {
-    flex: 1;
+    position: relative;
+    width: 100%;
+    max-width: 180px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 12px;
 }
 
@@ -53400,34 +53441,30 @@ dialog {
     font-size: 0.82rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 5px 22px 6px;
+    padding: 6px 20px;
     border-radius: 20px;
     width: fit-content;
-    letter-spacing: 0;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
     position: absolute;
-    top: -15px;
-    background: color-mix(in srgb, var(--surface-color) 78%, rgba(35, 18, 59, 0.9)) !important;
-    box-shadow: 0 0 18px rgba(168, 85, 247, 0.2);
-}
-
-.vocab-sa-col:nth-child(1) .vocab-sa-badge {
-    left: 28px;
-}
-
-.vocab-sa-col:nth-child(2) .vocab-sa-badge {
-    left: calc(50% + 16px);
+    top: -46px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.25), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.4), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .vocab-sa-badge.syn {
-    background: rgba(168, 85, 247, 0.12) !important;
-    color: #c084fc !important;
-    border: 1px solid rgba(168, 85, 247, 0.2) !important;
+    background: var(--primary-color) !important;
 }
 
 .vocab-sa-badge.ant {
-    background: rgba(236, 72, 153, 0.12) !important;
-    color: #f472b6 !important;
-    border: 1px solid rgba(236, 72, 153, 0.2) !important;
+    background: var(--accent-color) !important;
 }
 
 #vocab-synonyms-list,
@@ -53456,14 +53493,18 @@ dialog {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #a855f7;
-    box-shadow: 0 0 8px #a855f7;
+    background: var(--primary-color);
+    box-shadow: 0 0 8px var(--primary-color);
     flex-shrink: 0;
 }
 
 #vocab-antonyms-list li::before {
-    background: #ec4899;
-    box-shadow: 0 0 8px #ec4899;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+.vocab-related-word-clickable:hover {
+    text-decoration: underline !important;
 }
 
 .vocab-cefr-gauges-wrapper {
@@ -53476,15 +53517,19 @@ dialog {
 }
 
 .vocab-cefr-card {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(168, 85, 247, 0.42) !important;
-    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(var(--theme-rgb), 0.25) !important;
+    border-radius: 20px !important;
     padding: 26px 28px 18px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     position: relative;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.08), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -53492,61 +53537,59 @@ dialog {
 .vocab-cefr-header {
     font-size: 0.84rem;
     font-weight: 700;
-    color: var(--light-text-color);
-    letter-spacing: 0;
+    color: #ffffff !important;
+    letter-spacing: 0.5px;
     position: absolute;
     top: -16px;
-    background: color-mix(in srgb, var(--surface-color) 78%, rgba(35, 18, 59, 0.9));
-    padding: 5px 20px 6px;
+    background: var(--primary-color) !important;
+    padding: 6px 20px;
     border-radius: 20px;
-    border: 1px solid rgba(168, 85, 247, 0.42);
-    box-shadow: 0 0 18px rgba(168, 85, 247, 0.22);
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.25), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.4), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .vocab-cefr-header {
-    background: #110e20;
+    background: var(--primary-color) !important;
 }
 
-.vocab-cefr-row-new {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: 8px;
-    margin-top: 0;
-}
-
-.cefr-spot {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: transparent;
-    padding: 8px 0;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255, 255, 255, 0.035);
-    transition: all 0.3s ease;
-    cursor: default;
-    flex: 1;
-    text-align: center;
-}
-
-.cefr-spot.active {
+.vocab-cefr-value-badge {
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #ffffff !important;
-    background: #a855f7 !important;
-    border-color: #c084fc !important;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5) !important;
-    text-shadow: 0 0 2px #fff !important;
-    transform: translateY(-1px) scale(1.04);
+    background: var(--primary-color) !important;
+    border: 2px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 16px;
+    padding: 8px 30px;
+    width: fit-content;
+    min-width: 80px;
+    text-align: center;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.2), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.4), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
+    text-shadow: 0 1.5px 2px rgba(0, 0, 0, 0.15);
+    margin: 12px auto 0;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .vocab-gauges-card {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(168, 85, 247, 0.24) !important;
-    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(var(--theme-rgb), 0.2) !important;
+    border-radius: 20px !important;
     padding: 20px 24px 18px !important;
     display: flex;
     justify-content: space-around;
     align-items: center;
     gap: 15px;
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.15), 
+        inset 0 2px 4px rgba(255, 255, 255, 0.08), 
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -53573,21 +53616,19 @@ dialog {
     height: auto;
 }
 
-.vocab-radial-gauge path,
-.vocab-radial-gauge line {
-    transition:
-        stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-        x2 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-        y2 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.vocab-radial-gauge line {
-    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.72));
-    transform-origin: 50px 50px;
+.vocab-radial-gauge path {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .vocab-radial-gauge circle {
     transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0px 0px 4px var(--primary-color));
+}
+
+.vocab-radial-gauge path.needle {
+    transform-origin: 50px 50px;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 0 4px var(--primary-color));
 }
 
 .vocab-gauge-label-main {
@@ -53751,4 +53792,52 @@ dialog {
     font-size: 1.1rem;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.2);
+}
+
+/* Styling POS capsules inside main-display (to keep their original POS colors but styled with claymorphism) */
+.pos-badge-capsule.noun {
+    background: var(--pos-noun-color) !important;
+}
+.pos-badge-capsule.verb {
+    background: var(--pos-verb-color) !important;
+}
+.pos-badge-capsule.adjective {
+    background: var(--pos-adjective-color) !important;
+}
+.pos-badge-capsule.adverb {
+    background: var(--pos-adverb-color) !important;
+}
+.pos-badge-capsule.pronoun {
+    background: var(--pos-pronoun-color) !important;
+}
+.pos-badge-capsule.preposition {
+    background: var(--pos-preposition-color) !important;
+}
+.pos-badge-capsule.conjunction {
+    background: var(--pos-conjunction-color) !important;
+}
+.pos-badge-capsule.interjection {
+    background: var(--pos-interjection-color) !important;
+}
+.pos-badge-capsule.determiner {
+    background: var(--pos-determiner-color) !important;
+}
+.pos-badge-capsule.idiom {
+    background: var(--pos-idiom-color) !important;
+}
+.pos-badge-capsule.phrasal {
+    background: var(--pos-phrasal-color) !important;
+}
+.pos-badge-capsule.sentence {
+    background: var(--pos-sentence-color) !important;
+    color: #333333 !important;
+}
+.pos-badge-capsule.other {
+    background: var(--pos-other-color) !important;
+}
+
+.multi-pos-capsule-container-view .dialect-capsule,
+.dialect-capsule-container-view .dialect-capsule {
+    margin-left: 4px !important;
+    margin-right: 4px !important;
 }
