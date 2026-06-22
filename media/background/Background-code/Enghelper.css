@@ -53107,6 +53107,8 @@ dialog {
     position: relative;
     overflow: hidden;
     /* Clips at boundary - safe because gradients reach surface-color before edge */
+    display: flex;
+    flex-direction: column;
 }
 
 #data-details-dialog.has-image .view-mode-hero-bg {
@@ -53214,8 +53216,15 @@ dialog {
     position: relative;
     z-index: 4;
     /* Higher than overlays and blur */
-    padding: 160px 20px 92px 20px;
+    margin-top: 80px; /* Offset the absolutely positioned header */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 20px;
     margin-bottom: 0 !important;
+    box-sizing: border-box;
 }
 
 #data-details-dialog.has-image .view-mode-english-data-text {
@@ -53269,11 +53278,24 @@ dialog {
 #data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn,
 #data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn,
 #data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn {
-    color: #ffffff !important;
-    border-color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.18) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+    background: #ffffff !important;
+    border: none !important;
+    color: #2d3748 !important;
+    box-shadow: 
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        inset -3px -3px 6px rgba(0, 0, 0, 0.15),
+        0 6px 14px rgba(0, 0, 0, 0.18) !important;
+}
+
+#data-details-dialog.has-image .vocab-dialog-header button i,
+#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #find-in-stories-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-audio-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-mic-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn i {
+    color: #2d3748 !important;
 }
 
 #data-details-dialog.has-image .vocab-dialog-header button:hover,
@@ -53284,10 +53306,24 @@ dialog {
 #data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn:hover,
 #data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn:hover,
 #data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn:hover {
-    background: rgba(255, 255, 255, 0.3) !important;
-    color: #ffffff !important;
-    border-color: #ffffff !important;
-    transform: scale(1.1) rotate(5deg) !important;
+    background: #ffffff !important;
+    color: #1a202c !important;
+    transform: translateY(1px) scale(0.96) !important;
+    box-shadow: 
+        inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.15),
+        0 3px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+#data-details-dialog.has-image .vocab-dialog-header button:hover i,
+#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #find-in-stories-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-audio-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-mic-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn:hover i,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn:hover i {
+    color: #1a202c !important;
 }
 
 
