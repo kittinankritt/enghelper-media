@@ -53921,3 +53921,704 @@ dialog {
     margin-left: 4px !important;
     margin-right: 4px !important;
 }
+
+
+/* =========================================================================
+   ██████╗ ██╗      █████╗ ██╗   ██╗███╗   ███╗ ██████╗ ██████╗ ██████╗ ██╗  ██╗
+  ██╔════╝ ██║     ██╔══██╗╚██╗ ██╔╝████╗ ████║██╔═══██╗██╔══██╗██╔══██╗██║  ██║
+  ██║      ██║     ███████║ ╚████╔╝ ██╔████╔██║██║   ██║██████╔╝██████╔╝███████║
+  ██║      ██║     ██╔══██║  ╚██╔╝  ██║╚██╔╝██║██║   ██║██╔══██╗██╔═══╝ ██╔══██║
+  ╚██████╗ ███████╗██║  ██║   ██║   ██║ ╚═╝ ██║╚██████╔╝██║  ██║██║     ██║  ██║
+   ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝
+   CLAYMORPHISM DASHBOARD OVERRIDE
+   ========================================================================= */
+
+/* ── 1. CLAYMORPHISM CORE VARIABLES ── */
+:root {
+    --clay-shadow-outer: 6px 6px 14px rgba(0, 0, 0, 0.07), -3px -3px 10px rgba(255, 255, 255, 0.85);
+    --clay-shadow-inner: inset 2px 2px 5px rgba(255, 255, 255, 0.65), inset -2px -2px 5px rgba(0, 0, 0, 0.04);
+    --clay-shadow-combined: 6px 6px 14px rgba(0, 0, 0, 0.07), -3px -3px 10px rgba(255, 255, 255, 0.85), inset 2px 2px 5px rgba(255, 255, 255, 0.65), inset -2px -2px 5px rgba(0, 0, 0, 0.04);
+    --clay-shadow-small: 3px 3px 8px rgba(0, 0, 0, 0.06), -2px -2px 6px rgba(255, 255, 255, 0.8), inset 1px 1px 3px rgba(255, 255, 255, 0.5), inset -1px -1px 3px rgba(0, 0, 0, 0.03);
+    --clay-shadow-pressed: 2px 2px 6px rgba(0, 0, 0, 0.05), -1px -1px 4px rgba(255, 255, 255, 0.7), inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -1px -1px 3px rgba(255, 255, 255, 0.4);
+    --clay-shadow-sphere: 5px 5px 12px rgba(0, 0, 0, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.7), inset -3px -3px 6px rgba(0, 0, 0, 0.05);
+    --clay-radius: 28px;
+    --clay-radius-small: 18px;
+    --clay-radius-pill: 50px;
+    --clay-border: 1px solid rgba(255, 255, 255, 0.45);
+    --clay-transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── CLAY HOVER BOUNCE ANIMATION ── */
+@keyframes clayBounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.04); }
+    60% { transform: scale(0.98); }
+    100% { transform: scale(1.02); }
+}
+
+@keyframes clayWobble {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(1deg); }
+    50% { transform: rotate(-1deg); }
+    75% { transform: rotate(0.5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes clayPulseGlow {
+    0%, 100% { box-shadow: var(--clay-shadow-combined); }
+    50% { box-shadow: 8px 8px 18px rgba(0, 0, 0, 0.09), -4px -4px 14px rgba(255, 255, 255, 0.95), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05); }
+}
+
+/* ── 2. BASE DASHBOARD GRADIENT CARD — CLAY OVERRIDE ── */
+.bento-grid-dashboard .dashboard-gradient-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+    position: relative;
+}
+
+.bento-grid-dashboard .dashboard-gradient-card:hover {
+    transform: translateY(-3px) scale(1.008) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.bento-grid-dashboard .dashboard-gradient-card:active {
+    transform: translateY(0px) scale(0.995) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 3. GREETING CARD — CLAY STYLE ── */
+.bento-grid-dashboard .greeting-card-modern {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .greeting-card-modern:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 8px 8px 22px rgba(0, 0, 0, 0.08), -5px -5px 16px rgba(255, 255, 255, 0.9), inset 2px 2px 6px rgba(255, 255, 255, 0.65), inset -2px -2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Mascot Circle — Clay Sphere */
+.bento-grid-dashboard .greeting-mascot-circle {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .greeting-mascot-circle:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.12), -4px -4px 10px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Greeting Title — Soft Text Shadow */
+.bento-grid-dashboard .greeting-large-title {
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3), -1px -1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Greeting Background Image Column */
+.bento-grid-dashboard .greeting-bg-col {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 6px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ── 4. BANNER CAROUSEL — CLAY STYLE ── */
+.bento-grid-dashboard .banner-carousel {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+.bento-grid-dashboard .banner-content {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: inset 3px 3px 8px rgba(255, 255, 255, 0.15), inset -2px -2px 6px rgba(0, 0, 0, 0.08) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .banner-top-section {
+    border-radius: var(--clay-radius) var(--clay-radius) 0 0 !important;
+}
+
+.bento-grid-dashboard .banner-bottom-section {
+    border-radius: 0 0 var(--clay-radius) var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: var(--clay-border) !important;
+    border-top: none !important;
+}
+
+/* Banner Tag — Clay Pill */
+.bento-grid-dashboard .banner-tag {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.08), -1px -1px 4px rgba(255, 255, 255, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 4px 14px !important;
+}
+
+/* Banner Button — Clay Button */
+.bento-grid-dashboard .banner-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1), -2px -2px 6px rgba(255, 255, 255, 0.5), inset 1px 1px 3px rgba(255, 255, 255, 0.6), inset -1px -1px 2px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .banner-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.12), -3px -3px 8px rgba(255, 255, 255, 0.6), inset 1px 1px 3px rgba(255, 255, 255, 0.7), inset -1px -1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+.bento-grid-dashboard .banner-btn:active {
+    transform: scale(0.96) !important;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.08), inset 2px 2px 5px rgba(0, 0, 0, 0.08), inset -1px -1px 3px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Banner Illustration Icon — Clay Float */
+.bento-grid-dashboard .banner-illustration i {
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.15)) drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.4)) !important;
+}
+
+/* Banner Slider */
+.bento-grid-dashboard .banner-slider-container {
+    border-radius: var(--clay-radius-pill) !important;
+}
+
+/* ── 5. WORD OF THE DAY — CLAY STYLE ── */
+.bento-grid-dashboard #word-of-the-day-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: 6px 6px 16px rgba(249, 43, 126, 0.12), -3px -3px 10px rgba(255, 255, 255, 0.5), inset 2px 2px 6px rgba(255, 255, 255, 0.2), inset -2px -2px 4px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard #word-of-the-day-card:hover {
+    transform: translateY(-2px) scale(1.005) !important;
+    box-shadow: 8px 8px 22px rgba(249, 43, 126, 0.15), -4px -4px 12px rgba(255, 255, 255, 0.6), inset 2px 2px 6px rgba(255, 255, 255, 0.25), inset -2px -2px 5px rgba(0, 0, 0, 0.07) !important;
+}
+
+/* WOTD Audio/Mic Buttons — Clay Circles */
+.bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"],
+.bento-grid-dashboard #word-of-the-day-card button[id*="mic-btn"] {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"]:hover,
+.bento-grid-dashboard #word-of-the-day-card button[id*="mic-btn"]:hover {
+    transform: scale(1.12) !important;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.12), -2px -2px 6px rgba(255, 255, 255, 0.8), inset 2px 2px 4px rgba(255, 255, 255, 0.6) !important;
+}
+
+.bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"]:active,
+.bento-grid-dashboard #word-of-the-day-card button[id*="mic-btn"]:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* WOTD POS Badge — Clay Pill */
+.bento-grid-dashboard #word-of-the-day-card span[id*="-pos"] {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.06), -1px -1px 3px rgba(255, 255, 255, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* WOTD Divider — Softer */
+.bento-grid-dashboard .wotd-divider {
+    border-radius: 10px !important;
+    opacity: 0.6 !important;
+}
+
+/* Trivia Action Buttons — Clay */
+.bento-grid-dashboard .trivia-action-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .trivia-action-btn:hover {
+    transform: scale(1.06) !important;
+}
+
+.bento-grid-dashboard .trivia-action-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 6. MISSION ITEMS — CLAY STYLE ── */
+
+/* Mission List Wrapper — Clay Inset Container */
+.bento-grid-dashboard #card-missions .daily-missions-list {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.7), 2px 2px 6px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden !important;
+}
+
+/* Each Mission Item — Clay Raised Row */
+.bento-grid-dashboard #card-missions .mission-item {
+    transition: var(--clay-transition) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+.bento-grid-dashboard #card-missions .mission-item:hover {
+    background: rgba(var(--theme-rgb), 0.04) !important;
+    transform: scale(1.01) !important;
+}
+
+.bento-grid-dashboard #card-missions .mission-item:active {
+    transform: scale(0.99) !important;
+}
+
+/* Mission Checkbox — Clay Sphere */
+.bento-grid-dashboard .mission-checkbox {
+    border-radius: 50% !important;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.06), -2px -2px 4px rgba(255, 255, 255, 0.8), inset 1px 1px 3px rgba(255, 255, 255, 0.5), inset -1px -1px 2px rgba(0, 0, 0, 0.04) !important;
+    border: 2px solid rgba(0, 0, 0, 0.06) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .mission-item.completed .mission-checkbox {
+    box-shadow: 3px 3px 8px rgba(var(--theme-rgb), 0.2), -2px -2px 5px rgba(255, 255, 255, 0.6), inset 2px 2px 4px rgba(255, 255, 255, 0.3), inset -1px -1px 3px rgba(0, 0, 0, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Mission XP Badge — Clay Pill */
+.bento-grid-dashboard .mission-xp {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 5px rgba(245, 158, 11, 0.12), -1px -1px 3px rgba(255, 255, 255, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(245, 158, 11, 0.15) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .mission-item.completed .mission-xp {
+    box-shadow: 2px 2px 6px rgba(var(--theme-rgb), 0.2), -1px -1px 4px rgba(255, 255, 255, 0.5), inset 1px 1px 3px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Mission Progress Badge — Clay Capsule */
+.bento-grid-dashboard .mission-progress-badge {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.04), -1px -1px 3px rgba(255, 255, 255, 0.5), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Mission Completed State — Clay Glow */
+.bento-grid-dashboard .mission-item.completed {
+    background: rgba(var(--theme-rgb), 0.06) !important;
+    box-shadow: inset 0 0 12px rgba(var(--theme-rgb), 0.06) !important;
+}
+
+/* Difficult Words Section — Clay Count Badge */
+.bento-grid-dashboard .count-badge {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Start Difficult Quiz Button — Clay */
+.bento-grid-dashboard #start-difficult-quiz-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 3px 3px 8px rgba(var(--theme-rgb), 0.15), -2px -2px 5px rgba(255, 255, 255, 0.5), inset 1px 1px 3px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard #start-difficult-quiz-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+}
+
+.bento-grid-dashboard #start-difficult-quiz-btn:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Missions Divider — Softer */
+.bento-grid-dashboard .missions-divider {
+    border-radius: 10px !important;
+    opacity: 0.5 !important;
+}
+
+/* ── 7. STAT CARDS — CLAY STYLE ── */
+/* Level, Goal, Streak, Review, Vocab Cards */
+.bento-grid-dashboard #card-level,
+.bento-grid-dashboard #card-goal,
+.bento-grid-dashboard #card-streak,
+.bento-grid-dashboard #card-review,
+.bento-grid-dashboard #card-vocab {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard #card-level:hover,
+.bento-grid-dashboard #card-goal:hover,
+.bento-grid-dashboard #card-streak:hover,
+.bento-grid-dashboard #card-review:hover,
+.bento-grid-dashboard #card-vocab:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 8px 8px 22px rgba(0, 0, 0, 0.1), -5px -5px 16px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.bento-grid-dashboard #card-level:active,
+.bento-grid-dashboard #card-goal:active,
+.bento-grid-dashboard #card-streak:active,
+.bento-grid-dashboard #card-review:active,
+.bento-grid-dashboard #card-vocab:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Stat Card Values — Clay Text */
+.bento-grid-dashboard .stat-card-value {
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.4), -1px -1px 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Level XP Progress Bar — Clay Inset */
+.bento-grid-dashboard #card-level div[style*="height: 10px"] {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.08), inset -1px -1px 3px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Level XP Bar Fill — Clay Raised */
+.bento-grid-dashboard #xp-bar-fill {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 0 6px rgba(var(--theme-rgb), 0.3), inset 1px 1px 3px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Watermark Icons — Softer Clay */
+.bento-grid-dashboard .watermark-icon {
+    opacity: 0.06 !important;
+    filter: blur(0.5px) !important;
+}
+
+/* ── 8. BADGES CONTAINER — CLAY STYLE ── */
+.bento-grid-dashboard #card-badges {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard #card-badges:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Badge Container — Clay Inset */
+.bento-grid-dashboard #badges-container {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.5), 2px 2px 6px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Each Badge Circle — Clay Sphere ✨ */
+.bento-grid-dashboard .badge-circle {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+}
+
+.bento-grid-dashboard .badge-grid-item:hover .badge-circle {
+    transform: scale(1.1) rotate(-5deg) !important;
+    box-shadow: 6px 6px 16px rgba(var(--theme-rgb), 0.2), -3px -3px 10px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.06) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.bento-grid-dashboard .badge-grid-item:active .badge-circle {
+    transform: scale(0.93) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Locked Badge — Muted Clay */
+.bento-grid-dashboard .badge-grid-item.locked .badge-circle {
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.05), -2px -2px 5px rgba(255, 255, 255, 0.6), inset 2px 2px 4px rgba(255, 255, 255, 0.3), inset -1px -1px 3px rgba(0, 0, 0, 0.03) !important;
+    border: 2px solid rgba(0, 0, 0, 0.04) !important;
+    opacity: 0.75 !important;
+}
+
+/* Lock Overlay Icon — Clay */
+.bento-grid-dashboard .lock-overlay {
+    box-shadow: var(--clay-shadow-small) !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Badge Name — Subtle */
+.bento-grid-dashboard .badge-name {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Badge Hover — Whole Item */
+.bento-grid-dashboard .badge-grid-item {
+    transition: var(--clay-transition) !important;
+}
+
+.bento-grid-dashboard .badge-grid-item:hover {
+    transform: translateY(-6px) !important;
+}
+
+/* ── 9. QUICK ADD INPUT — CLAY INSET ── */
+.bento-grid-dashboard .quick-add-wrapper input,
+.bento-grid-dashboard #quick-add-vocab-input {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+    padding-left: 24px !important;
+}
+
+.bento-grid-dashboard .quick-add-wrapper input:focus,
+.bento-grid-dashboard #quick-add-vocab-input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* ── 10. DASHBOARD SECTION TITLES — CLAY STYLE ── */
+.bento-grid-dashboard .dashboard-section-title span {
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3), -1px -1px 0px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ── 11. CARD MISSIONS OVERALL — CLAY ── */
+.bento-grid-dashboard #card-missions {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+/* ── 12. BANNER SLIDER — CLAY THUMB ── */
+.bento-grid-dashboard .banner-slider-container input[type="range"]::-webkit-slider-thumb {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — DARK MODE OVERRIDES
+   ========================================================================= */
+
+[data-theme="dark"] {
+    --clay-shadow-outer: 5px 5px 14px rgba(0, 0, 0, 0.3), -3px -3px 10px rgba(255, 255, 255, 0.04);
+    --clay-shadow-inner: inset 2px 2px 5px rgba(255, 255, 255, 0.06), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+    --clay-shadow-combined: 5px 5px 14px rgba(0, 0, 0, 0.3), -3px -3px 10px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.06), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+    --clay-shadow-small: 3px 3px 8px rgba(0, 0, 0, 0.25), -2px -2px 6px rgba(255, 255, 255, 0.03), inset 1px 1px 3px rgba(255, 255, 255, 0.04), inset -1px -1px 3px rgba(0, 0, 0, 0.15);
+    --clay-shadow-pressed: 2px 2px 6px rgba(0, 0, 0, 0.2), -1px -1px 4px rgba(255, 255, 255, 0.03), inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -1px -1px 3px rgba(255, 255, 255, 0.04);
+    --clay-shadow-sphere: 4px 4px 12px rgba(0, 0, 0, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.05), inset 2px 2px 6px rgba(255, 255, 255, 0.06), inset -2px -2px 6px rgba(0, 0, 0, 0.25);
+    --clay-border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Dark — Cards */
+[data-theme="dark"] .bento-grid-dashboard .dashboard-gradient-card {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .dashboard-gradient-card:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Dark — Greeting */
+[data-theme="dark"] .bento-grid-dashboard .greeting-card-modern {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+/* Dark — Mascot */
+[data-theme="dark"] .bento-grid-dashboard .greeting-mascot-circle {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark — Banner */
+[data-theme="dark"] .bento-grid-dashboard .banner-carousel {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .banner-content {
+    box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.05), inset -2px -2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .banner-bottom-section {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: var(--clay-border) !important;
+    border-top: none !important;
+}
+
+/* Dark — Word of the Day */
+[data-theme="dark"] .bento-grid-dashboard #word-of-the-day-card {
+    box-shadow: 5px 5px 14px rgba(0, 0, 0, 0.3), -3px -3px 8px rgba(var(--theme-rgb), 0.06), inset 2px 2px 5px rgba(255, 255, 255, 0.06), inset -2px -2px 5px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Dark — WOTD Buttons */
+[data-theme="dark"] .bento-grid-dashboard #word-of-the-day-card button[id*="audio-btn"],
+[data-theme="dark"] .bento-grid-dashboard #word-of-the-day-card button[id*="mic-btn"] {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark — Mission List */
+[data-theme="dark"] .bento-grid-dashboard #card-missions .daily-missions-list {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04), 2px 2px 6px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Dark — Mission Item */
+[data-theme="dark"] .bento-grid-dashboard #card-missions .mission-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard #card-missions .mission-item:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Dark — Mission Checkbox */
+[data-theme="dark"] .bento-grid-dashboard .mission-checkbox {
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25), -2px -2px 4px rgba(255, 255, 255, 0.04), inset 1px 1px 3px rgba(255, 255, 255, 0.05), inset -1px -1px 2px rgba(0, 0, 0, 0.15) !important;
+    border: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Dark — Mission XP */
+[data-theme="dark"] .bento-grid-dashboard .mission-xp {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(255, 255, 255, 0.04), inset 1px 1px 2px rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Dark — Stat Cards */
+[data-theme="dark"] .bento-grid-dashboard #card-level,
+[data-theme="dark"] .bento-grid-dashboard #card-goal,
+[data-theme="dark"] .bento-grid-dashboard #card-streak,
+[data-theme="dark"] .bento-grid-dashboard #card-review,
+[data-theme="dark"] .bento-grid-dashboard #card-vocab {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard #card-level:hover,
+[data-theme="dark"] .bento-grid-dashboard #card-goal:hover,
+[data-theme="dark"] .bento-grid-dashboard #card-streak:hover,
+[data-theme="dark"] .bento-grid-dashboard #card-review:hover,
+[data-theme="dark"] .bento-grid-dashboard #card-vocab:hover {
+    box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.35), -4px -4px 14px rgba(255, 255, 255, 0.05), inset 3px 3px 6px rgba(255, 255, 255, 0.07), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Dark — Stat Text */
+[data-theme="dark"] .bento-grid-dashboard .stat-card-value {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3), -1px -1px 1px rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Dark — Badges */
+[data-theme="dark"] .bento-grid-dashboard #card-badges {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard #badges-container {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04), 2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .badge-circle {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .badge-grid-item:hover .badge-circle {
+    box-shadow: 5px 5px 14px rgba(0, 0, 0, 0.35), -3px -3px 8px rgba(var(--theme-rgb), 0.1), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -2px -2px 5px rgba(0, 0, 0, 0.2) !important;
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .badge-grid-item.locked .badge-circle {
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.03), inset 2px 2px 4px rgba(255, 255, 255, 0.04), inset -1px -1px 3px rgba(0, 0, 0, 0.15) !important;
+    border: 2px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Dark — Input */
+[data-theme="dark"] .bento-grid-dashboard .quick-add-wrapper input,
+[data-theme="dark"] .bento-grid-dashboard #quick-add-vocab-input {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .bento-grid-dashboard .quick-add-wrapper input:focus,
+[data-theme="dark"] .bento-grid-dashboard #quick-add-vocab-input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.22), inset -2px -2px 5px rgba(255, 255, 255, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.15) !important;
+}
+
+/* Dark — Section Titles */
+[data-theme="dark"] .bento-grid-dashboard .dashboard-section-title span {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3), -1px -1px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Dark — Card Missions */
+[data-theme="dark"] .bento-grid-dashboard #card-missions {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+/* Dark — Lock Overlay */
+[data-theme="dark"] .bento-grid-dashboard .lock-overlay {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* =========================================================================
+   CLAYMORPHISM — MOBILE RESPONSIVE ADJUSTMENTS (< 1024px)
+   ========================================================================= */
+
+@media (max-width: 1023px) {
+    .bento-grid-dashboard .dashboard-gradient-card,
+    .bento-grid-dashboard .greeting-card-modern,
+    .bento-grid-dashboard #word-of-the-day-card,
+    .bento-grid-dashboard #card-badges,
+    .bento-grid-dashboard #card-missions,
+    .bento-grid-dashboard .banner-carousel {
+        border-radius: 22px !important;
+        box-shadow: var(--clay-shadow-combined) !important;
+        border: var(--clay-border) !important;
+    }
+
+    .bento-grid-dashboard #card-level,
+    .bento-grid-dashboard #card-goal,
+    .bento-grid-dashboard #card-streak,
+    .bento-grid-dashboard #card-review,
+    .bento-grid-dashboard #card-vocab {
+        border-radius: 20px !important;
+        box-shadow: var(--clay-shadow-combined) !important;
+        border: var(--clay-border) !important;
+    }
+
+    .bento-grid-dashboard .badge-circle {
+        box-shadow: var(--clay-shadow-sphere) !important;
+    }
+
+    .bento-grid-dashboard .mission-checkbox {
+        box-shadow: var(--clay-shadow-small) !important;
+    }
+}
+
+/* =========================================================================
+   CLAYMORPHISM — TABLET RESPONSIVE ADJUSTMENTS (769px - 1149px)
+   ========================================================================= */
+
+@media (min-width: 769px) and (max-width: 1149px) {
+    .bento-grid-dashboard .dashboard-gradient-card,
+    .bento-grid-dashboard .greeting-card-modern,
+    .bento-grid-dashboard #word-of-the-day-card,
+    .bento-grid-dashboard #card-badges,
+    .bento-grid-dashboard #card-missions,
+    .bento-grid-dashboard .banner-carousel {
+        border-radius: 24px !important;
+        box-shadow: var(--clay-shadow-combined) !important;
+        border: var(--clay-border) !important;
+    }
+}
+
+/* =========================================================================
+   END OF CLAYMORPHISM DASHBOARD OVERRIDE
+   ========================================================================= */
