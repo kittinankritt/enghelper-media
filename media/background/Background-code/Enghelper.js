@@ -1621,13 +1621,14 @@
                         
                         var imageGenConfig = {
                             model: "gemini-2.5-flash-image-preview",
-                            defaultStyle: "anime",
+                            defaultStyle: "claymorphism",
                             autoEnhancePrompt: true,
                             autoGenerateForNewVocab: true
                         };
                         window.imageGenConfig = imageGenConfig;
 
                         var imageStylePrompts = {
+                            claymorphism: "cute 3D claymorphism style, smooth glossy clay textures, vibrant pastel colors, simple and clean background, educational and easy to understand illustration, friendly design",
                             cinematic: "cinematic lighting, photorealistic, 8k resolution, highly detailed, professional photography, clean background",
                             anime: "vibrant 3D anime style, clean lines, colorful, educational, cute illustration, simple background",
                             watercolor: "beautiful watercolor painting style, soft colors, artistic texture, clean white background",
@@ -9020,7 +9021,7 @@
                                             return null;
                                         });
 
-                                        const imagePrompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${aiData.thaiExplanation || ''}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                        const imagePrompt = `Cute 3D claymorphism illustration representing the English word "${word}" (meaning in Thai: "${aiData.thaiExplanation || ''}"). Keep it clean, bright, educational, simple, easy to understand. No text.`;
                                         const imagePromise = window.generateAIImage(imagePrompt, "1:1").then(b64 => {
                                             if (b64) {
                                                 currentVocabLearningDetails.imageB64 = b64;
@@ -10082,7 +10083,7 @@
                                     try {
                                         const translatePayload = {
                                             contents: [{ parts: [{ text: `Original: "${prompt}"` }] }],
-                                            systemInstruction: { parts: [{ text: "Translate user prompt to English if needed and enhance it into a highly descriptive 1-2 sentence prompt for Imagen. Focus on lighting, mood, camera angle, and details. Return ONLY the final English prompt string." }] }
+                                            systemInstruction: { parts: [{ text: "Translate user prompt to English if needed and enhance it into a highly descriptive 1-2 sentence prompt for Imagen. The style must be cute 3D claymorphism (smooth plasticine textures, friendly shapes, vibrant pastel colors). Focus on simple visual metaphors, educational clarity, lighting, camera angle, and cute details. Return ONLY the final English prompt string without mentioning '3D render' or photorealism." }] }
                                         };
                                         const tempRes = await callGemini(translatePayload, null, null, { contextScope: "vocab", isSilent: true });
                                         if (tempRes && tempRes.text) {
@@ -10220,7 +10221,7 @@
                                 if (englishDataStore[index].imageB64) return;
 
                                 try {
-                                    const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thaiExplanation || ""}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                    const prompt = `Cute 3D claymorphism illustration representing the English word "${word}" (meaning in Thai: "${thaiExplanation || ""}"). Keep it clean, bright, educational, simple, easy to understand. No text.`;
                                     const b64 = await window.generateAIImage(prompt, "1:1");
                                     if (b64) {
                                         englishDataStore[index].imageB64 = b64;
@@ -22643,7 +22644,7 @@
                                     editModeGenerateImageBtn.innerHTML = "<i class=\"fi fi-rr-picture animate-spin\" style=\"margin-right: 5px;\"></i> กำลังสร้างรูปภาพ...";
 
                                     try {
-                                        const prompt = `Visual illustration representing the English word "${word}" (meaning in Thai: "${thai || ""}"). Keep it clean, bright, educational, studio-quality, simple. No text.`;
+                                        const prompt = `Cute 3D claymorphism illustration representing the English word "${word}" (meaning in Thai: "${thai || ""}"). Keep it clean, bright, educational, simple, easy to understand. No text.`;
                                         const b64Image = await window.generateAIImage(prompt, "1:1");
                                         if (b64Image) {
                                             currentImageData = b64Image; // Store it so it will be saved on form submit
