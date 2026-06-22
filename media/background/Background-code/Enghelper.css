@@ -53261,15 +53261,32 @@ dialog {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
 }
 
-#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn {
+#data-details-dialog.has-image .vocab-dialog-header button,
+#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn,
+#data-details-dialog.has-image .vocab-dialog-header #find-in-stories-btn,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-audio-btn,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-mic-btn,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn,
+#data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn {
     color: #ffffff !important;
+    border-color: #ffffff !important;
     background: rgba(255, 255, 255, 0.18) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
 }
 
-#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn:hover {
+#data-details-dialog.has-image .vocab-dialog-header button:hover,
+#data-details-dialog.has-image .vocab-dialog-header .dialog-audio-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #find-in-stories-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-audio-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-word-mic-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-edit-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #toggle-difficult-word-btn:hover,
+#data-details-dialog.has-image .vocab-dialog-header #view-mode-delete-btn:hover {
     background: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
     transform: scale(1.1) rotate(5deg) !important;
 }
 

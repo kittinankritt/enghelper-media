@@ -26116,6 +26116,7 @@
                                 });
                                 newFcNextBtn.addEventListener("click", () => {
                                     displaySRSFlashcard(cards, index + 1);
+                                });
                                 newFcPrevBtn.addEventListener("click", () => {
                                     if (index > 0) displaySRSFlashcard(cards, index - 1);
                                 });
@@ -26351,7 +26352,11 @@
                                             }
                                             if (dialog.id === "data-details-dialog") {
                                                 dialogHistoryStack = [];
-                                                dialog.close();
+                                                if (typeof goBackVocabHistory === "function") {
+                                                    goBackVocabHistory();
+                                                } else {
+                                                    dialog.close();
+                                                }
                                                 return;
                                             }
                                             const noBackdropCloseDialogs = ["swipe-game-dialog", "match-game-dialog", "flashcard-dialog", "mini-games-dialog", "typing-game-dialog"];
