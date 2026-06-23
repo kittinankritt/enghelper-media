@@ -55658,32 +55658,34 @@ dialog {
     background: rgba(255, 255, 255, 0.25) !important;
 }
 
-.popup-gradient-theme .data-list-container .data-capsule {
-    border-radius: var(--clay-radius-small) !important;
-    background: rgba(255, 255, 255, 0.55) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
-    box-shadow:
-        inset 2px 2px 4px rgba(255, 255, 255, 0.5),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.03),
-        3px 3px 8px rgba(0, 0, 0, 0.04),
-        -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
-    margin: 6px 8px !important;
-    transition: var(--clay-transition) !important;
+.popup-gradient-theme .data-list-container .data-capsule,
+.feature-launch-dialog .data-list-container .data-capsule {
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 16px 20px 16px 35px !important;
+    transition: background-color 0.2s ease !important;
 }
 
-.popup-gradient-theme .data-list-container .data-capsule:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow:
-        inset 2px 2px 5px rgba(255, 255, 255, 0.6),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.04),
-        5px 5px 14px rgba(0, 0, 0, 0.06),
-        -3px -3px 8px rgba(255, 255, 255, 0.7) !important;
+.popup-gradient-theme .data-list-container .data-capsule:last-child,
+.feature-launch-dialog .data-list-container .data-capsule:last-child {
+    border-bottom: none !important;
 }
 
-.popup-gradient-theme .data-list-container .data-capsule:active {
-    transform: scale(0.99) !important;
-    box-shadow: var(--clay-shadow-pressed) !important;
+.popup-gradient-theme .data-list-container .data-capsule:hover,
+.feature-launch-dialog .data-list-container .data-capsule:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.popup-gradient-theme .data-list-container .data-capsule:active,
+.feature-launch-dialog .data-list-container .data-capsule:active {
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Data capsule POS badge */
@@ -55905,34 +55907,35 @@ dialog {
     overflow: hidden !important;
 }
 
-/* History Card Items — Clay Raised Cards (Standalone) */
+/* History Card Items — Contiguous List Style (matching common-history-item) */
 .popup-gradient-theme .feature-history-card,
 .popup-gradient-theme .history-item-card,
 .feature-launch-dialog .feature-history-card,
 .feature-launch-dialog .history-item-card {
-    border-radius: var(--clay-radius-small) !important;
-    background: rgba(255, 255, 255, 0.55) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    box-shadow:
-        inset 2px 2px 4px rgba(255, 255, 255, 0.5),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.03),
-        3px 3px 8px rgba(0, 0, 0, 0.04),
-        -2px -2px 5px rgba(255, 255, 255, 0.55) !important;
-    margin: 6px 8px !important;
-    padding: 14px 16px !important;
-    transition: var(--clay-transition) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 16px 20px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.popup-gradient-theme .feature-history-card:last-child,
+.popup-gradient-theme .history-item-card:last-child,
+.feature-launch-dialog .feature-history-card:last-child,
+.feature-launch-dialog .history-item-card:last-child {
+    border-bottom: none !important;
 }
 
 .popup-gradient-theme .feature-history-card:hover,
 .popup-gradient-theme .history-item-card:hover,
 .feature-launch-dialog .feature-history-card:hover,
 .feature-launch-dialog .history-item-card:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow:
-        inset 2px 2px 5px rgba(255, 255, 255, 0.6),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.04),
-        5px 5px 14px rgba(0, 0, 0, 0.06),
-        -3px -3px 8px rgba(255, 255, 255, 0.65) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Contiguous History List Items inside Inset Containers */
@@ -56549,14 +56552,11 @@ dialog {
         inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
 }
 
-[data-theme="dark"] .popup-gradient-theme .data-list-container .data-capsule {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
-        3px 3px 8px rgba(0, 0, 0, 0.15),
-        -2px -2px 5px rgba(255, 255, 255, 0.02) !important;
+[data-theme="dark"] .popup-gradient-theme .data-list-container .data-capsule,
+[data-theme="dark"] .feature-launch-dialog .data-list-container .data-capsule {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: none !important;
 }
 
 /* History Lists in Dark Mode */
@@ -56578,17 +56578,14 @@ dialog {
     overflow: hidden !important;
 }
 
-/* History Cards in Dark Mode (Standalone) */
+/* History Cards in Dark Mode (Contiguous) */
 [data-theme="dark"] .popup-gradient-theme .feature-history-card,
 [data-theme="dark"] .popup-gradient-theme .history-item-card,
 [data-theme="dark"] .feature-launch-dialog .feature-history-card,
 [data-theme="dark"] .feature-launch-dialog .history-item-card {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-        inset 2px 2px 4px rgba(255, 255, 255, 0.04),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
-        3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: none !important;
 }
 
 /* Contiguous History List Items inside Inset Containers in Dark Mode */
