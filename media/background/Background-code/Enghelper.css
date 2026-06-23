@@ -42239,6 +42239,8 @@ dialog {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
     }
 }
 
@@ -42260,6 +42262,8 @@ dialog {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
     }
 }
 
@@ -55905,7 +55909,115 @@ dialog {
         inset 3px 3px 8px rgba(0, 0, 0, 0.04),
         inset -2px -2px 6px rgba(255, 255, 255, 0.6),
         3px 3px 10px rgba(0, 0, 0, 0.04) !important;
-    overflow: hidden !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Premium Webkit Scrollbar for Popup History Lists */
+.popup-gradient-theme .feature-history-list::-webkit-scrollbar,
+.popup-gradient-theme #test-history-container::-webkit-scrollbar,
+.popup-gradient-theme #game-history-container::-webkit-scrollbar,
+.popup-gradient-theme #story-history-list::-webkit-scrollbar,
+.popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar,
+.popup-gradient-theme #grammar-history-container::-webkit-scrollbar,
+.popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar,
+.feature-launch-dialog .feature-history-list::-webkit-scrollbar,
+.feature-launch-dialog #test-history-container::-webkit-scrollbar,
+.feature-launch-dialog #game-history-container::-webkit-scrollbar,
+.feature-launch-dialog #story-history-list::-webkit-scrollbar,
+.feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar,
+.feature-launch-dialog #grammar-history-container::-webkit-scrollbar,
+.feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+.popup-gradient-theme .feature-history-list::-webkit-scrollbar-track,
+.popup-gradient-theme #test-history-container::-webkit-scrollbar-track,
+.popup-gradient-theme #game-history-container::-webkit-scrollbar-track,
+.popup-gradient-theme #story-history-list::-webkit-scrollbar-track,
+.popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar-track,
+.popup-gradient-theme #grammar-history-container::-webkit-scrollbar-track,
+.popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar-track,
+.feature-launch-dialog .feature-history-list::-webkit-scrollbar-track,
+.feature-launch-dialog #test-history-container::-webkit-scrollbar-track,
+.feature-launch-dialog #game-history-container::-webkit-scrollbar-track,
+.feature-launch-dialog #story-history-list::-webkit-scrollbar-track,
+.feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar-track,
+.feature-launch-dialog #grammar-history-container::-webkit-scrollbar-track,
+.feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+.popup-gradient-theme .feature-history-list::-webkit-scrollbar-thumb,
+.popup-gradient-theme #test-history-container::-webkit-scrollbar-thumb,
+.popup-gradient-theme #game-history-container::-webkit-scrollbar-thumb,
+.popup-gradient-theme #story-history-list::-webkit-scrollbar-thumb,
+.popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar-thumb,
+.popup-gradient-theme #grammar-history-container::-webkit-scrollbar-thumb,
+.popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar-thumb,
+.feature-launch-dialog .feature-history-list::-webkit-scrollbar-thumb,
+.feature-launch-dialog #test-history-container::-webkit-scrollbar-thumb,
+.feature-launch-dialog #game-history-container::-webkit-scrollbar-thumb,
+.feature-launch-dialog #story-history-list::-webkit-scrollbar-thumb,
+.feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar-thumb,
+.feature-launch-dialog #grammar-history-container::-webkit-scrollbar-thumb,
+.feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.38) !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.popup-gradient-theme .feature-history-list::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #test-history-container::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #game-history-container::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #story-history-list::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #grammar-history-container::-webkit-scrollbar-thumb:hover,
+.popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog .feature-history-list::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #test-history-container::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #game-history-container::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #story-history-list::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #grammar-history-container::-webkit-scrollbar-thumb:hover,
+.feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.65) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .feature-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #test-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #game-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #story-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #grammar-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog .feature-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #test-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #game-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #story-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #grammar-history-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] .feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .feature-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #test-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #game-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #story-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #ai-roleplay-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #grammar-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .popup-gradient-theme #add-vocab-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog .feature-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #test-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #game-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #story-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #ai-roleplay-history-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #grammar-history-container::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .feature-launch-dialog #add-vocab-history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.45) !important;
 }
 
 /* History Card Items — Contiguous List Style (matching common-history-item) */
@@ -56046,9 +56158,9 @@ dialog {
 .feature-launch-dialog .history-filter-chip,
 .feature-launch-dialog .feature-history-tag-filter button {
     border-radius: var(--clay-radius-pill) !important;
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
     box-shadow: var(--clay-shadow-small) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
     transition: var(--clay-transition) !important;
 }
 
@@ -56066,13 +56178,10 @@ dialog {
 .popup-gradient-theme .vocab-library-tag-filter button.active,
 .feature-launch-dialog .history-filter-chip.active,
 .feature-launch-dialog .feature-history-tag-filter button.active {
-    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 15%, rgba(255, 255, 255, 0.6)) !important;
+    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 25%, rgba(255, 255, 255, 0.85)) !important;
     color: var(--tag-color, var(--primary-color)) !important;
-    box-shadow:
-        inset 2px 2px 5px rgba(0, 0, 0, 0.1),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.2),
-        3px 3px 8px rgba(var(--theme-rgb), 0.15) !important;
-    border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-color)) 30%, rgba(255, 255, 255, 0.4)) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid color-mix(in srgb, var(--tag-color, var(--primary-color)) 50%, rgba(255, 255, 255, 0.6)) !important;
 }
 
 .popup-gradient-theme .history-filter-chip:active,
@@ -56469,9 +56578,11 @@ dialog {
 .popup-gradient-theme .common-history-item::before,
 .feature-launch-dialog .data-capsule::before,
 .feature-launch-dialog .common-history-item::before {
-    border-radius: 4px !important;
-    margin: 4px 0 !important;
-    height: calc(100% - 8px) !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    top: 0 !important;
+    bottom: 0 !important;
 }
 
 /* =========================================================================
@@ -56670,12 +56781,10 @@ dialog {
 [data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button,
 [data-theme="dark"] .feature-launch-dialog .history-filter-chip,
 [data-theme="dark"] .feature-launch-dialog .feature-history-tag-filter button {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
-        inset -1px -1px 3px rgba(0, 0, 0, 0.15),
-        2px 2px 6px rgba(0, 0, 0, 0.12) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .popup-gradient-theme .history-filter-chip.active,
@@ -56683,12 +56792,10 @@ dialog {
 [data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button.active,
 [data-theme="dark"] .feature-launch-dialog .history-filter-chip.active,
 [data-theme="dark"] .feature-launch-dialog .feature-history-tag-filter button.active {
-    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 20%, rgba(0, 0, 0, 0.2)) !important;
-    border-color: color-mix(in srgb, var(--tag-color, var(--primary-color)) 40%, rgba(255, 255, 255, 0.08)) !important;
-    color: color-mix(in srgb, var(--tag-color, var(--primary-color)), white 60%) !important;
-    box-shadow:
-        inset 2px 2px 5px rgba(0, 0, 0, 0.25),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.04) !important;
+    background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 30%, rgba(255, 255, 255, 0.08)) !important;
+    border-color: color-mix(in srgb, var(--tag-color, var(--primary-color)) 60%, rgba(255, 255, 255, 0.15)) !important;
+    color: color-mix(in srgb, var(--tag-color, var(--primary-color)), white 75%) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
 }
 
 /* Search Inputs in Dark Mode */
@@ -57184,5 +57291,638 @@ dialog {
 /* =========================================================================
    END OF CLAYMORPHISM OVERRIDE
    ========================================================================= */
+
+/* =========================================================================
+   COMPACT & CONTIGUOUS LIST OVERRIDES FOR POPUPS (USER REQUEST)
+   ========================================================================= */
+
+/* 1. Force all history list containers to be scrollable (Fix scroll issue) */
+#test-history-container,
+#game-history-container,
+#story-history-list,
+#ai-roleplay-history-list,
+#grammar-history-container,
+#add-vocab-history-list {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 525px !important; /* matches standard common-history-box height */
+}
+
+/* 2. Force all history item styles to be compact and contiguous (Fix spacing) */
+#test-history-container .common-history-item,
+#game-history-container .common-history-item,
+#story-history-list .common-history-item,
+#ai-roleplay-history-list .common-history-item,
+#grammar-history-container .common-history-item,
+#add-vocab-history-list .common-history-item,
+#test-history-container .test-history-item,
+#game-history-container .game-history-item,
+#story-history-list .story-history-item,
+#ai-roleplay-history-list .roleplay-history-item,
+#grammar-history-container .grammar-history-item,
+#add-vocab-history-list .add-vocab-history-item {
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+    padding: 10px 12px 10px 25px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+/* Hover effect */
+#test-history-container .common-history-item:hover,
+#game-history-container .common-history-item:hover,
+#story-history-list .common-history-item:hover,
+#ai-roleplay-history-list .common-history-item:hover,
+#grammar-history-container .common-history-item:hover,
+#add-vocab-history-list .common-history-item:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] #test-history-container .common-history-item:hover,
+[data-theme="dark"] #game-history-container .common-history-item:hover,
+[data-theme="dark"] #story-history-list .common-history-item:hover,
+[data-theme="dark"] #ai-roleplay-history-list .common-history-item:hover,
+[data-theme="dark"] #grammar-history-container .common-history-item:hover,
+[data-theme="dark"] #add-vocab-history-list .common-history-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Remove last border */
+#test-history-container .common-history-item:last-child,
+#game-history-container .common-history-item:last-child,
+#story-history-list .common-history-item:last-child,
+#ai-roleplay-history-list .common-history-item:last-child,
+#grammar-history-container .common-history-item:last-child,
+#add-vocab-history-list .common-history-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Dark mode border adjustment */
+[data-theme="dark"] #test-history-container .common-history-item,
+[data-theme="dark"] #game-history-container .common-history-item,
+[data-theme="dark"] #story-history-list .common-history-item,
+[data-theme="dark"] #ai-roleplay-history-list .common-history-item,
+[data-theme="dark"] #grammar-history-container .common-history-item,
+[data-theme="dark"] #add-vocab-history-list .common-history-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 3. Force vocabulary library popup list items to be compact and contiguous */
+#vocab-library-dialog #english-data-list .data-capsule {
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+    padding: 10px 12px 10px 25px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+#vocab-library-dialog #english-data-list .data-capsule:last-child {
+    border-bottom: none !important;
+}
+
+#vocab-library-dialog #english-data-list .data-capsule:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] #vocab-library-dialog #english-data-list .data-capsule {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #vocab-library-dialog #english-data-list .data-capsule:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM OVERRIDES FOR SPOTLIGHT & QUICK COMMANDS
+   ========================================================================= */
+
+/* --- 1. SPOTLIGHT SEARCH OVERRIDES --- */
+.spotlight-container {
+    border-radius: var(--clay-radius) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    background: rgba(250, 250, 252, 0.85) !important;
+    backdrop-filter: blur(28px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(170%) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .spotlight-container {
+    background: rgba(30, 30, 38, 0.85) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+/* Recessed input box for Spotlight */
+.spotlight-header .vocab-search-input-shell {
+    border-radius: var(--clay-radius-pill) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+[data-theme="dark"] .spotlight-header .vocab-search-input-shell {
+    background: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.spotlight-header .vocab-search-input-shell:focus-within {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.15) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+[data-theme="dark"] .spotlight-header .vocab-search-input-shell:focus-within {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.25) !important;
+    border-color: rgba(var(--theme-rgb), 0.35) !important;
+}
+
+#spotlight-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Prevent horizontal overflow scrollbar in spotlight results */
+.spotlight-results {
+    overflow-x: hidden !important;
+}
+
+/* Spotlight Result Items */
+.spotlight-result-item {
+    border-radius: var(--clay-radius-small) !important;
+    transition: var(--clay-transition) !important;
+    margin: 2px 4px !important;
+    width: auto !important; /* Prevents overflow due to margins */
+}
+
+.spotlight-result-item:hover,
+.spotlight-result-item.selected {
+    background: rgba(var(--theme-rgb), 0.06) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Icon bubble inside Spotlight result items */
+.spotlight-result-item i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .spotlight-result-item i {
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.spotlight-result-item:hover i,
+.spotlight-result-item.selected i {
+    transform: scale(1.08) !important;
+}
+
+/* Result Type tags */
+.spotlight-result-type {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background: rgba(var(--theme-rgb), 0.08) !important;
+}
+
+[data-theme="dark"] .spotlight-result-type {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(var(--theme-rgb), 0.15) !important;
+}
+
+/* Spotlight Footer and Hints */
+.spotlight-footer {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-top: 1px solid rgba(var(--theme-rgb), 0.04) !important;
+}
+
+.spotlight-hint kbd {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border-radius: 6px !important;
+    padding: 3px 7px !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .spotlight-hint kbd {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+
+/* --- 2. QUICK COMMAND SEARCH SUGGESTIONS OVERRIDES --- */
+
+.quick-command-menu {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    background: rgba(250, 250, 252, 0.88) !important;
+    backdrop-filter: blur(24px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .quick-command-menu {
+    background: rgba(30, 30, 38, 0.88) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+/* Inset clay style for quick command sections */
+.quick-command-section {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    padding: 4px !important;
+    margin-bottom: 12px !important;
+}
+
+[data-theme="dark"] .quick-command-section {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Command list item hover/focus */
+.quick-command-item {
+    border-radius: var(--clay-radius-small) !important;
+    border-top: none !important;
+    margin-bottom: 2px !important;
+    transition: var(--clay-transition) !important;
+}
+
+.quick-command-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.quick-command-item:hover,
+.quick-command-item.active {
+    background: rgba(var(--theme-rgb), 0.06) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Icon bubble inside suggestions */
+.quick-command-icon {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .quick-command-icon {
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.quick-command-item:hover .quick-command-icon,
+.quick-command-item.active .quick-command-icon {
+    transform: scale(1.08) !important;
+}
+
+/* Keyboard hint badges */
+.quick-command-menu-hint kbd {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border-radius: 6px !important;
+    padding: 2px 6px !important;
+}
+
+[data-theme="dark"] .quick-command-menu-hint kbd {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+/* Premium Claymorphism overrides for history-type badges and parts-of-speech pills in popups */
+.popup-gradient-theme .common-history-item .history-type-badge,
+.popup-gradient-theme .data-capsule .history-type-badge,
+.feature-launch-dialog .common-history-item .history-type-badge,
+.feature-launch-dialog .data-capsule .history-type-badge {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    padding: 4px 12px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
+    margin-left: 8px !important;
+    background: color-mix(in srgb, var(--item-tag-color, var(--primary-color, #6b7280)) 15%, rgba(255, 255, 255, 0.6)) !important;
+    border: 1px solid color-mix(in srgb, var(--item-tag-color, var(--primary-color, #6b7280)) 35%, rgba(255, 255, 255, 0.4)) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    color: var(--item-tag-color, var(--primary-color, #6b7280)) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .common-history-item .history-type-badge,
+[data-theme="dark"] .popup-gradient-theme .data-capsule .history-type-badge,
+[data-theme="dark"] .feature-launch-dialog .common-history-item .history-type-badge,
+[data-theme="dark"] .feature-launch-dialog .data-capsule .history-type-badge {
+    background: color-mix(in srgb, var(--item-tag-color, var(--primary-color, #6b7280)) 25%, rgba(255, 255, 255, 0.08)) !important;
+    border: 1px solid color-mix(in srgb, var(--item-tag-color, var(--primary-color, #6b7280)) 55%, rgba(255, 255, 255, 0.15)) !important;
+    color: color-mix(in srgb, var(--item-tag-color, var(--primary-color, #6b7280)), white 75%) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+.popup-gradient-theme .data-capsule .pos-badge-pill,
+.feature-launch-dialog .data-capsule .pos-badge-pill {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    padding: 4px 12px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    display: inline-block !important;
+    line-height: 1.2 !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .data-capsule .pos-badge-pill,
+[data-theme="dark"] .feature-launch-dialog .data-capsule .pos-badge-pill {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM OVERRIDES FOR TODAY'S LEARNING POPUP
+   ========================================================================= */
+
+/* --- 1. HEADER ALIGNMENT BUG FIX --- */
+#today-learning-dialog .today-learning-header {
+    padding: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+/* --- 2. CUTE CARDS CLAYMORPHISM OVERRIDES --- */
+#today-learning-dialog .cute-card {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: var(--clay-border) !important;
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.4),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.05),
+        var(--clay-shadow-outer) !important;
+    transition: var(--clay-transition) !important;
+    padding: 25px !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .cute-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: var(--clay-border) !important;
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.04),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.25),
+        var(--clay-shadow-outer) !important;
+}
+
+/* --- 3. DAILY HERO CARD & ICON OVERRIDES --- */
+#today-learning-dialog .tl-daily-hero {
+    border: var(--clay-border) !important;
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(var(--theme-rgb), 0.06) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.5) !important;
+    padding: 16px !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-daily-hero {
+    background: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.04) !important;
+}
+
+#today-learning-dialog .tl-daily-hero-icon {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-daily-hero-icon {
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* --- 4. DAILY METRICS CHIPS OVERRIDES --- */
+#today-learning-dialog .tl-daily-metric {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-daily-metric {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+#today-learning-dialog .tl-daily-metric:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+/* --- 5. TIMELINE CARDS & DOTS OVERRIDES --- */
+#today-learning-dialog .tl-timeline-card {
+    border: var(--clay-border) !important;
+    background: rgba(255, 255, 255, 0.35) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-timeline-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+#today-learning-dialog .tl-timeline-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+#today-learning-dialog .tl-timeline-card::before {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    background: var(--primary-color) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-timeline-card::before {
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+
+/* --- 6. CHART, TABS, NAV BUTTONS & CALENDAR OVERRIDES --- */
+
+/* Recessed clay track for navigation tabs */
+#today-learning-dialog .tracker-tabs {
+    background: rgba(0, 0, 0, 0.06) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.08), inset -1px -1px 3px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    padding: 3px !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tracker-tabs {
+    background: rgba(0, 0, 0, 0.22) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.35), inset -1px -1px 3px rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Active tab as a raised clay pill */
+#today-learning-dialog .tracker-tab.active {
+    background: var(--surface-color) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.06), -1px -1px 3px rgba(255, 255, 255, 0.7), inset 1px 1px 2px rgba(255, 255, 255, 0.5) !important;
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tracker-tab.active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(255, 255, 255, 0.05), inset 1px 1px 2px rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* Round tactile clay buttons for navigation controls */
+#today-learning-dialog .tracker-nav-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    transition: var(--clay-transition) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tracker-nav-btn {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+#today-learning-dialog .tracker-nav-btn:hover {
+    transform: scale(1.1) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+#today-learning-dialog .tracker-nav-btn:active {
+    box-shadow: var(--clay-shadow-pressed) !important;
+    transform: scale(0.95) !important;
+}
+
+/* 3D clay cylinder bars for the chart */
+#today-learning-dialog .tl-bar {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 2.5px 2.5px 5px rgba(255, 255, 255, 0.5), inset -2px -2px 4px rgba(0, 0, 0, 0.12), 3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background: var(--primary-color) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-bar {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.18), inset -2px -2px 4px rgba(0, 0, 0, 0.38), 3px 3px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+#today-learning-dialog .tl-bar.goal-achieved {
+    background: var(--success-color) !important;
+}
+
+/* Muted clay style for days with no study */
+#today-learning-dialog .tl-bar.not-studied {
+    background: rgba(var(--theme-rgb), 0.12) !important;
+    box-shadow: inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.06), inset -1px -1px 2px rgba(255, 255, 255, 0.25) !important;
+    border: 1px solid transparent !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-bar.not-studied {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+#today-learning-dialog .tl-bar:hover {
+    transform: scaleX(1.08) scaleY(1.03) translateY(-1px) !important;
+    filter: brightness(1.08);
+}
+
+/* Claymorphism calendar cells */
+#today-learning-dialog .tl-cal-cell {
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.35) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-cal-cell {
+    background: rgba(255, 255, 255, 0.03) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+}
+
+/* Calendar days with normal learning */
+#today-learning-dialog .tl-cal-cell.learnt {
+    background: rgba(var(--theme-rgb), 0.18) !important;
+    color: var(--primary-color) !important;
+    box-shadow: var(--clay-shadow-small), inset 1px 1px 2px rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-cal-cell.learnt {
+    background: rgba(var(--theme-rgb), 0.25) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Calendar days with completed daily goals */
+#today-learning-dialog .tl-cal-cell.goal-achieved {
+    background: var(--success-color) !important;
+    color: white !important;
+    box-shadow: var(--clay-shadow-small), inset 1.5px 1.5px 3.5px rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Calendar future days (recessed & non-interactive) */
+#today-learning-dialog .tl-cal-cell.future-day {
+    background: rgba(0, 0, 0, 0.02) !important;
+    box-shadow: none !important;
+    border: 1px solid transparent !important;
+    opacity: 0.22 !important;
+}
+
+[data-theme="dark"] #today-learning-dialog .tl-cal-cell.future-day {
+    background: rgba(255, 255, 255, 0.01) !important;
+    opacity: 0.15 !important;
+}
+
+#today-learning-dialog .tl-cal-cell:hover {
+    transform: scale(1.12) translateY(-2px) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    z-index: 10 !important;
+}
+
+
+
+
 
 
