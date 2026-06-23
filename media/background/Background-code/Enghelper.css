@@ -57921,8 +57921,125 @@ dialog {
     z-index: 10 !important;
 }
 
+/* =========================================================================
+   UNIFIED PREMIUM SCROLLBAR SYSTEM (CLAYMORPHISM & ULTRA-THIN 4PX)
+   ========================================================================= */
 
+/* 1. Global Scrollbar Styling (Webkit Browsers) */
+::-webkit-scrollbar {
+    width: 4px !important;
+    height: 4px !important;
+}
 
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
 
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color) !important;
+    border-radius: 10px !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.45), 0.5px 0.5px 1px rgba(0, 0, 0, 0.06) !important;
+    transition: background 0.2s ease, box-shadow 0.2s ease !important;
+}
 
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color) !important;
+    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.6), 0.5px 0.5px 1.5px rgba(0, 0, 0, 0.1) !important;
+}
 
+/* Firefox Support */
+* {
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--primary-color) rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 2. Specific Overrides for Target Elements to Ensure 100% Consistency & Claymorphism */
+#word-of-the-day-card::-webkit-scrollbar,
+#card-missions::-webkit-scrollbar,
+#badges-container::-webkit-scrollbar,
+.badges-container::-webkit-scrollbar,
+.daily-missions-list::-webkit-scrollbar,
+.feature-history-tag-filter::-webkit-scrollbar,
+.vocab-library-tag-filter::-webkit-scrollbar,
+.difficult-words-list::-webkit-scrollbar,
+.data-list-container::-webkit-scrollbar,
+#data-details-dialog .form-scroll-container::-webkit-scrollbar,
+#data-details-dialog #view-mode-content::-webkit-scrollbar,
+.game-result-modal .game-evaluation-content::-webkit-scrollbar,
+.review-list::-webkit-scrollbar,
+.avatar-grid-scroll::-webkit-scrollbar {
+    width: 4px !important;
+    height: 4px !important;
+}
+
+#word-of-the-day-card::-webkit-scrollbar-track,
+#card-missions::-webkit-scrollbar-track,
+#badges-container::-webkit-scrollbar-track,
+.badges-container::-webkit-scrollbar-track,
+.daily-missions-list::-webkit-scrollbar-track,
+.feature-history-tag-filter::-webkit-scrollbar-track,
+.vocab-library-tag-filter::-webkit-scrollbar-track,
+.difficult-words-list::-webkit-scrollbar-track,
+.data-list-container::-webkit-scrollbar-track,
+#data-details-dialog .form-scroll-container::-webkit-scrollbar-track,
+#data-details-dialog #view-mode-content::-webkit-scrollbar-track,
+.game-result-modal .game-evaluation-content::-webkit-scrollbar-track,
+.review-list::-webkit-scrollbar-track,
+.avatar-grid-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+#word-of-the-day-card::-webkit-scrollbar-thumb,
+#card-missions::-webkit-scrollbar-thumb,
+#badges-container::-webkit-scrollbar-thumb,
+.badges-container::-webkit-scrollbar-thumb,
+.daily-missions-list::-webkit-scrollbar-thumb,
+.feature-history-tag-filter::-webkit-scrollbar-thumb,
+.vocab-library-tag-filter::-webkit-scrollbar-thumb,
+.difficult-words-list::-webkit-scrollbar-thumb,
+.data-list-container::-webkit-scrollbar-thumb,
+#data-details-dialog .form-scroll-container::-webkit-scrollbar-thumb,
+#data-details-dialog #view-mode-content::-webkit-scrollbar-thumb,
+.game-result-modal .game-evaluation-content::-webkit-scrollbar-thumb,
+.review-list::-webkit-scrollbar-thumb,
+.avatar-grid-scroll::-webkit-scrollbar-thumb {
+    background: var(--primary-color) !important;
+    border-radius: 10px !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.45), 0.5px 0.5px 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+#word-of-the-day-card::-webkit-scrollbar-thumb:hover,
+#card-missions::-webkit-scrollbar-thumb:hover,
+#badges-container::-webkit-scrollbar-thumb:hover,
+.badges-container::-webkit-scrollbar-thumb:hover,
+.daily-missions-list::-webkit-scrollbar-thumb:hover,
+.feature-history-tag-filter::-webkit-scrollbar-thumb:hover,
+.vocab-library-tag-filter::-webkit-scrollbar-thumb:hover,
+.difficult-words-list::-webkit-scrollbar-thumb:hover,
+.data-list-container::-webkit-scrollbar-thumb:hover,
+#data-details-dialog .form-scroll-container::-webkit-scrollbar-thumb:hover,
+#data-details-dialog #view-mode-content::-webkit-scrollbar-thumb:hover,
+.game-result-modal .game-evaluation-content::-webkit-scrollbar-thumb:hover,
+.review-list::-webkit-scrollbar-thumb:hover,
+.avatar-grid-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color) !important;
+    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.6), 0.5px 0.5px 1.5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure hidden scrollbars are NOT overridden by the global/specific rules */
+.roleplay-smart-chip-list::-webkit-scrollbar,
+.story-smart-chip-list::-webkit-scrollbar,
+.test-smart-chip-list::-webkit-scrollbar,
+.game-smart-chip-list::-webkit-scrollbar,
+.addvocab-smart-chip-list::-webkit-scrollbar,
+.streak-smart-chip-list::-webkit-scrollbar,
+.profile-nav-menu::-webkit-scrollbar,
+.sidebar-top::-webkit-scrollbar {
+    display: none !important;
+}
