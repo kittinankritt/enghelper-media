@@ -31932,6 +31932,7 @@
                                 const profileBtnSidebar2 = document.getElementById("profile-btn-sidebar");
                                 if (profileBtnSidebar2) {
                                     const iconEl = profileBtnSidebar2.querySelector("i");
+                                    const iconWrapper = iconEl ? iconEl.parentElement : null;
                                     let imgEl = profileBtnSidebar2.querySelector("img.sidebar-avatar-img");
                                     const hasCustomAvatar = user && user.photoURL || storedAvatar;
                                     if (hasCustomAvatar) {
@@ -31950,11 +31951,10 @@
                                             imgEl.src = avatarUrl;
                                             imgEl.style.display = "block";
                                         }
-                                        if (iconEl) iconEl.style.display = "none";
+                                        if (iconWrapper) iconWrapper.style.setProperty("display", "none", "important");
                                     } else {
                                         if (imgEl) imgEl.style.display = "none";
-                                        if (iconEl) iconEl.style.display = "block";
-                                        if (iconEl) iconEl.style.removeProperty("display");
+                                        if (iconWrapper) iconWrapper.style.removeProperty("display");
                                     }
                                 } else if (sidebarAvatar) {
                                     sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="User">`;
@@ -32782,6 +32782,7 @@
                                     const sidebarButton = document.getElementById("profile-btn-sidebar");
                                     if (sidebarButton) {
                                         const iconEl = sidebarButton.querySelector("i");
+                                        const iconWrapper = iconEl ? iconEl.parentElement : null;
                                         let sidebarImage = sidebarButton.querySelector("img.sidebar-avatar-img");
                                         if (!sidebarImage) {
                                             sidebarImage = document.createElement("img");
@@ -32796,7 +32797,7 @@
                                         }
                                         sidebarImage.src = avatarUrl;
                                         sidebarImage.style.display = "block";
-                                        if (iconEl) iconEl.style.display = "none";
+                                        if (iconWrapper) iconWrapper.style.setProperty("display", "none", "important");
                                     }
                                     const sidebarAvatarImg = document.querySelector("#sidebar-avatar img");
                                     if (sidebarAvatarImg) sidebarAvatarImg.src = avatarUrl;

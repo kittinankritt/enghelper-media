@@ -590,7 +590,7 @@ dialog.standard-dialog::backdrop {
     color: var(--light-text-color);
 }
 
-.empty-state i {
+.empty-state i:not(button i):not(.btn i) {
     font-size: 4rem;
     display: block;
     margin-bottom: 15px;
@@ -56431,6 +56431,44 @@ dialog {
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
+/* ── 15. SPECIAL MASCOT & LETTERS REFINEMENTS ── */
+.popup-gradient-theme .empty-state-mascot,
+.feature-launch-dialog .empty-state-mascot {
+    filter: drop-shadow(5px 8px 16px rgba(0, 0, 0, 0.08)) drop-shadow(-3px -3px 10px rgba(255, 255, 255, 0.55)) !important;
+}
+
+.popup-gradient-theme .empty-float-letter,
+.feature-launch-dialog .empty-float-letter {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: var(--clay-border) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.6),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.04),
+        var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.popup-gradient-theme .empty-float-letter::after,
+.feature-launch-dialog .empty-float-letter::after {
+    border: 1.5px dashed rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* ── 16. DATA CAPSULES & HISTORY ITEMS OVERFLOW & LEFT STRIP INDICATORS ── */
+.popup-gradient-theme .data-list-container .data-capsule {
+    overflow: hidden !important;
+}
+
+.popup-gradient-theme .data-capsule::before,
+.popup-gradient-theme .common-history-item::before,
+.feature-launch-dialog .data-capsule::before,
+.feature-launch-dialog .common-history-item::before {
+    border-radius: 4px !important;
+    margin: 4px 0 !important;
+    height: calc(100% - 8px) !important;
+}
+
 /* =========================================================================
    CLAYMORPHISM — FEATURE POPUPS — DARK MODE OVERRIDES
    ========================================================================= */
@@ -56644,7 +56682,8 @@ dialog {
 [data-theme="dark"] .popup-gradient-theme .history-filter-chip.active,
 [data-theme="dark"] .popup-gradient-theme .feature-history-tag-filter button.active,
 [data-theme="dark"] .popup-gradient-theme .vocab-library-tag-filter button.active,
-[data-theme="dark"] .feature-launch-dialog .history-filter-chip.active {
+[data-theme="dark"] .feature-launch-dialog .history-filter-chip.active,
+[data-theme="dark"] .feature-launch-dialog .feature-history-tag-filter button.active {
     background: color-mix(in srgb, var(--tag-color, var(--primary-color)) 20%, rgba(0, 0, 0, 0.2)) !important;
     border-color: color-mix(in srgb, var(--tag-color, var(--primary-color)) 40%, rgba(255, 255, 255, 0.08)) !important;
     color: color-mix(in srgb, var(--tag-color, var(--primary-color)), white 60%) !important;
@@ -56859,6 +56898,28 @@ dialog {
     border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
+/* ── 15. SPECIAL MASCOT & LETTERS REFINEMENTS (DARK MODE) ── */
+[data-theme="dark"] .popup-gradient-theme .empty-float-letter,
+[data-theme="dark"] .feature-launch-dialog .empty-float-letter {
+    background: rgba(30, 25, 45, 0.65) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+        var(--clay-shadow-pressed) !important;
+    color: color-mix(in srgb, var(--primary-color), white 60%) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .empty-float-letter::after,
+[data-theme="dark"] .feature-launch-dialog .empty-float-letter::after {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .popup-gradient-theme .empty-state-mascot,
+[data-theme="dark"] .feature-launch-dialog .empty-state-mascot {
+    filter: drop-shadow(6px 10px 20px rgba(0, 0, 0, 0.45)) !important;
+}
+
 /* =========================================================================
    CLAYMORPHISM — TRASH & DANGER ZONE OVERRIDES
    ========================================================================= */
@@ -56920,7 +56981,7 @@ dialog {
                 inset -2px -2px 6px rgba(255, 255, 255, 0.7), 
                 var(--clay-shadow-small) !important;
     background: rgba(255, 255, 255, 0.45) !important;
-    overflow: hidden !important;
+    overflow: hidden auto !important;
     padding: 0 !important;
 }
 
@@ -56949,21 +57010,27 @@ dialog {
 }
 
 #data-management-dialog .danger-item-icon {
-    border-radius: 16px !important;
+    border-radius: 10px !important;
     box-shadow: var(--clay-shadow-sphere) !important;
     border: var(--clay-border) !important;
     border-color: rgba(255, 255, 255, 0.4) !important;
     background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
     color: var(--dz-color, #ef4444) !important;
-    width: 44px !important;
-    height: 44px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    flex-shrink: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
+#data-management-dialog .danger-item-icon i {
+    font-size: 0.95rem !important;
+}
+
 #data-management-dialog .danger-item-title {
-    font-size: 1.1rem !important;
+    font-size: 0.92rem !important;
     font-weight: 800 !important;
 }
 
@@ -56983,18 +57050,24 @@ dialog {
 }
 
 #data-management-dialog .danger-delete-btn {
-    border-radius: 14px !important;
+    border-radius: 10px !important;
     border: var(--clay-border) !important;
     border-color: rgba(239, 68, 68, 0.18) !important;
     background: linear-gradient(135deg, #FFF5F5, #FFE3E3) !important;
     color: #ef4444 !important;
     box-shadow: var(--clay-shadow-small) !important;
     transition: var(--clay-transition) !important;
-    width: 44px !important;
-    height: 44px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    flex-shrink: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+}
+
+#data-management-dialog .danger-delete-btn i {
+    font-size: 0.9rem !important;
 }
 
 #data-management-dialog .danger-delete-btn:hover {
