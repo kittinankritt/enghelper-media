@@ -53211,7 +53211,7 @@ dialog {
 /* When the dialog has a generated image */
 #data-details-dialog.has-image .view-mode-hero-wrapper {
     margin: -5px -25px -6px -25px;
-    min-height: 455px;
+    min-height: 540px;
     background: transparent;
     position: relative;
     overflow: hidden;
@@ -53232,25 +53232,25 @@ dialog {
     z-index: 1;
     transform: scale(1.035);
     filter: saturate(1.08) contrast(1.02);
-    /* Image fades out completely by 70% - well before the wrapper edge */
+    /* Image stays visible longer and fades out smoothly towards the bottom */
     -webkit-mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 1) 15%,
-            rgba(0, 0, 0, 0.95) 25%,
-            rgba(0, 0, 0, 0.85) 35%,
-            rgba(0, 0, 0, 0.65) 45%,
-            rgba(0, 0, 0, 0.4) 53%,
-            rgba(0, 0, 0, 0.18) 60%,
-            rgba(0, 0, 0, 0.05) 66%,
-            rgba(0, 0, 0, 0) 72%);
+            rgba(0, 0, 0, 1) 35%,
+            rgba(0, 0, 0, 0.95) 45%,
+            rgba(0, 0, 0, 0.85) 55%,
+            rgba(0, 0, 0, 0.65) 65%,
+            rgba(0, 0, 0, 0.4) 73%,
+            rgba(0, 0, 0, 0.18) 80%,
+            rgba(0, 0, 0, 0.05) 86%,
+            rgba(0, 0, 0, 0) 92%);
     mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 1) 15%,
-            rgba(0, 0, 0, 0.95) 25%,
-            rgba(0, 0, 0, 0.85) 35%,
-            rgba(0, 0, 0, 0.65) 45%,
-            rgba(0, 0, 0, 0.4) 53%,
-            rgba(0, 0, 0, 0.18) 60%,
-            rgba(0, 0, 0, 0.05) 66%,
-            rgba(0, 0, 0, 0) 72%);
+            rgba(0, 0, 0, 1) 35%,
+            rgba(0, 0, 0, 0.95) 45%,
+            rgba(0, 0, 0, 0.85) 55%,
+            rgba(0, 0, 0, 0.65) 65%,
+            rgba(0, 0, 0, 0.4) 73%,
+            rgba(0, 0, 0, 0.18) 80%,
+            rgba(0, 0, 0, 0.05) 86%,
+            rgba(0, 0, 0, 0) 92%);
 }
 
 .hero-bottom-blur {
@@ -53290,7 +53290,7 @@ dialog {
 #data-details-dialog.has-image .hero-bottom-blur::before {
     content: "";
     position: absolute;
-    top: 25%;
+    top: 45%;
     left: 0;
     right: 0;
     bottom: 0;
