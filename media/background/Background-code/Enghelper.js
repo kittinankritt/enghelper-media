@@ -25785,6 +25785,11 @@
                                     startSRSFlashcardSession(wordsForReview);
                                 });
                             }
+                            if (streakStatCard) {
+                                streakStatCard.addEventListener("click", () => {
+                                    openSmartStreakDialog("dashboard");
+                                });
+                            }
                             if (startDifficultQuizBtn) {
                                 startDifficultQuizBtn.addEventListener("click", () => {
                                     startDailyQuiz();
