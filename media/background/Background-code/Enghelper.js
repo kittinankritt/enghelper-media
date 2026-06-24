@@ -38679,6 +38679,22 @@
                                     const recordingInput = document.querySelector(".shortcut-input.recording");
                                     if (recordingInput) return;
                                     const candidates = getEventShortcutCandidates(e);
+                                    
+                                    // Alt/Option + Escape: Close all open dialogs
+                                    const isAltEscape = e.altKey && !e.ctrlKey && !e.metaKey && (candidates.has("escape") || e.key === "Escape");
+                                    if (isAltEscape) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        document.querySelectorAll("dialog[open]").forEach((d) => {
+                                            try {
+                                                d.close();
+                                            } catch (err) {
+                                                console.error(err);
+                                            }
+                                        });
+                                        return;
+                                    }
+
                                     const spotlightVal = normalizeShortcutValue(userShortcuts.spotlight || DEFAULT_SHORTCUTS.spotlight);
                                     const isSpotlight = e.altKey && candidates.has(spotlightVal);
                                     if (isSpotlight) {
