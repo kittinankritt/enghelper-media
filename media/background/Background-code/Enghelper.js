@@ -40371,7 +40371,8 @@
 
                     // Import Capacitor Plugins
                     // Note: When running in a browser, these will be gracefully ignored or can be polyfilled
-                    const { LocalNotifications } = Capacitor.Plugins;
+                    const capacitorObj = window.Capacitor || { Plugins: {}, getPlatform: () => 'web' };
+                    const { LocalNotifications } = capacitorObj.Plugins;
 
                     /**
                      * Request permission for notifications
@@ -40397,8 +40398,8 @@
                         console.log('Enghelper Mobile App Initialized');
 
                         // Check if we are running on a native platform
-                        if (Capacitor.getPlatform() !== 'web') {
-                            console.log('Running on Native Platform:', Capacitor.getPlatform());
+                        if (capacitorObj.getPlatform() !== 'web') {
+                            console.log('Running on Native Platform:', capacitorObj.getPlatform());
 
                             // Request permissions on startup (optional, maybe better when user clicks something)
                             // await requestNotificationPermission();
