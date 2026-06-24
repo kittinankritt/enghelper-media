@@ -38375,14 +38375,32 @@
                                     if (input.parentElement.classList.contains("input-action-wrapper")) return;
                                     const wrapper = document.createElement("div");
                                     wrapper.className = "input-action-wrapper";
+                                    
                                     const btn = document.createElement("button");
                                     btn.type = "button";
                                     btn.className = "input-action-btn";
                                     btn.setAttribute("aria-label", "Action");
                                     btn.innerHTML = `<i class="${config.searchIcon}"></i>`;
+                                    
+                                    const clearBtn = document.createElement("button");
+                                    clearBtn.type = "button";
+                                    clearBtn.className = "input-clear-btn";
+                                    clearBtn.setAttribute("aria-label", "Clear");
+                                    clearBtn.innerHTML = `<i class="fi fi-rr-cross"></i>`;
+                                    
                                     input.parentNode.insertBefore(wrapper, input);
                                     wrapper.appendChild(input);
+                                    wrapper.appendChild(clearBtn);
                                     wrapper.appendChild(btn);
+                                    
+                                    clearBtn.addEventListener("click", (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        input.value = "";
+                                        input.dispatchEvent(new Event("input", { bubbles: true }));
+                                        input.focus();
+                                    });
+                                    
                                     let currentMode = "search";
                                     let debounceTimer = null;
                                     function updateIconState() {

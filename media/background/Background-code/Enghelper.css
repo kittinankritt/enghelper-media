@@ -30302,7 +30302,7 @@ div#card-level #level-watermark,
     width: 100% !important;
     flex: 1;
     /* fallback */
-    padding-right: 48px !important;
+    padding-right: 84px !important;
     /* space for the icon */
     margin-top: 0 !important;
     margin-bottom: 0 !important;
@@ -30359,6 +30359,60 @@ div#card-level #level-watermark,
 /* Dark mode adjustments */
 [data-theme="dark"] .input-action-btn {
     box-shadow: 0 2px 10px rgba(var(--theme-rgb), 0.5);
+}
+
+/* Circular clear button inside search input wrappers */
+.input-clear-btn {
+    position: absolute !important;
+    right: 48px !important; /* Positioned to the left of the action button */
+    top: 50% !important;
+    margin-top: -14px !important; /* half of 28px height */
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    color: var(--light-text-color) !important;
+    font-size: 0.85rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease, color 0.2s ease;
+    z-index: 9 !important;
+}
+
+[data-theme="dark"] .input-clear-btn {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.input-action-wrapper.has-text .input-clear-btn {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.input-clear-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .input-clear-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.input-clear-btn:active {
+    transform: scale(0.92);
 }
 
 .feature-history-search .input-action-btn {
