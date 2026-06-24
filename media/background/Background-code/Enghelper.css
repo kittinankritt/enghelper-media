@@ -53952,6 +53952,50 @@ dialog {
     --clay-transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* ── 1.1 CLAYMORPHISM SIDEBAR (MENU BAR) OVERRIDE ── */
+.sidebar {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.06), -5px -5px 15px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.03) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-theme="dark"] .sidebar {
+    background-color: rgba(21, 21, 33, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.35), -5px -5px 15px rgba(255, 255, 255, 0.02), inset 2px 2px 4px rgba(255, 255, 255, 0.1), inset -2px -2px 4px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* ── 1.2 CLAYMORPHISM SIDEBAR BUTTONS OVERRIDE ── */
+.app-wrapper:is(.layout-left, .layout-right, .layout-top, .layout-bottom)>aside.sidebar .sidebar-top>button.sidebar-btn {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+[data-theme="dark"] .app-wrapper:is(.layout-left, .layout-right, .layout-top, .layout-bottom)>aside.sidebar .sidebar-top>button.sidebar-btn {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2), -2px -2px 6px rgba(255, 255, 255, 0.02), inset 2px 2px 4px rgba(255, 255, 255, 0.08), inset -2px -2px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ── Active and Hovered Sidebar Buttons (Gumdrop 3D Sphere Effect) ── */
+.app-wrapper:is(.layout-left, .layout-right, .layout-top, .layout-bottom)>aside.sidebar .sidebar-top>button.sidebar-btn:is(:hover, :focus-visible, .active, .dock-hovered) {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15), -2px -2px 6px rgba(255, 255, 255, 0.35), inset 3px 3px 6px rgba(255, 255, 255, 0.45), inset -3px -3px 6px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-3px) !important;
+}
+
+[data-theme="dark"] .app-wrapper:is(.layout-left, .layout-right, .layout-top, .layout-bottom)>aside.sidebar .sidebar-top>button.sidebar-btn:is(:hover, :focus-visible, .active, .dock-hovered) {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35), -2px -2px 6px rgba(255, 255, 255, 0.15), inset 3px 3px 6px rgba(255, 255, 255, 0.25), inset -3px -3px 6px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
 /* ── CLAY HOVER BOUNCE ANIMATION ── */
 @keyframes clayBounce {
     0% { transform: scale(1); }
