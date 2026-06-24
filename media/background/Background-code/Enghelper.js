@@ -2658,6 +2658,7 @@
                             const dashboardView = document.getElementById("dashboard-view");
                             const viewVocabListBtn = document.getElementById("view-vocab-list-btn");
                             const reviewStatCard = document.getElementById("card-review");
+                            const streakStatCard = document.getElementById("card-streak");
                             const startDifficultQuizBtn = document.getElementById("start-difficult-quiz-btn");
                             const goalMinutesInput = document.getElementById("goal-minutes-input");
                             const goalProgressFill = document.getElementById("goal-progress-fill");
