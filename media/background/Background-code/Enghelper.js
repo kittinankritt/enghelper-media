@@ -10792,10 +10792,6 @@ const learnGrammarDialog = document.getElementById("learn-grammar-dialog");
                                 bulkAddAllBtn.textContent = `\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E04\u0E33\u0E43\u0E2B\u0E21\u0E48\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 (${count})`;
                                 bulkAddAllBtn.disabled = count === 0;
                             }
-
-)`;
-                                bulkAddAllBtn.disabled = count === 0;
-                            }
                             bulkAddAllBtn.addEventListener("click", async () => {
                                 const buttons = bulkVocabResults.querySelectorAll(".bulk-add-single-btn:not([disabled])");
                                 for (const btn of buttons) {
