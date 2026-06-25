@@ -27264,7 +27264,7 @@ div#card-level #level-watermark,
 
 #personal-context-dialog .context-carousel-track {
     display: flex;
-    width: 700%;
+    width: 800%;
     height: 100%;
     transform: translateX(0);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -27272,9 +27272,9 @@ div#card-level #level-watermark,
 }
 
 #personal-context-dialog .context-card-page {
-    width: calc(100% / 7);
-    flex: 0 0 calc(100% / 7);
-    min-width: calc(100% / 7);
+    width: calc(100% / 8);
+    flex: 0 0 calc(100% / 8);
+    min-width: calc(100% / 8);
     min-height: 0;
     padding: 4px;
     box-sizing: border-box;
