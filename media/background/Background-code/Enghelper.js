@@ -20370,9 +20370,15 @@ const learnGrammarDialog = document.getElementById("learn-grammar-dialog");
                                 } else if (btn.classList.contains("state-process")) {
                                     const pendingSummary = getPendingDataSyncSummary();
                                     const pendingAudioCount = typeof getPendingAudioUploadCount === "function" ? await getPendingAudioUploadCount() : 0;
+                                    const queue = typeof readPendingAudioUploads === "function" ? await readPendingAudioUploads() : [];
+                                    const failedAudio = queue.find(item => item.lastError);
+                                    let audioDetail = pendingAudioCount ? `\u0E44\u0E1F\u0E25\u0E4C\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E23\u0E2D\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14 ${pendingAudioCount} \u0E44\u0E1F\u0E25\u0E4C` : "";
+                                    if (pendingAudioCount && failedAudio) {
+                                        audioDetail += ` (\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14: ${failedAudio.lastError})`;
+                                    }
                                     const detail = [
                                         pendingSummary ? `\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E27\u0E47\u0E1A: ${pendingSummary}` : "",
-                                        pendingAudioCount ? `\u0E44\u0E1F\u0E25\u0E4C\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E23\u0E2D\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14 ${pendingAudioCount} \u0E44\u0E1F\u0E25\u0E4C` : ""
+                                        audioDetail
                                     ].filter(Boolean).join(" | ");
                                     showToast2(detail || "\u0E43\u0E08\u0E40\u0E22\u0E47\u0E19\u0E46 \u0E19\u0E30\u0E04\u0E23\u0E31\u0E1A \u0E1C\u0E21\u0E01\u0E33\u0E25\u0E31\u0E07\u0E23\u0E35\u0E1A\u0E2A\u0E48\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E36\u0E49\u0E19 Cloud \u0E43\u0E2B\u0E49\u0E2D\u0E22\u0E39\u0E48...", "info", 7e3);
                                 } else {
