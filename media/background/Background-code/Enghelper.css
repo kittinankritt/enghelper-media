@@ -20627,7 +20627,7 @@ dialog {
 .quick-command-section {
     margin-bottom: 8px !important;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: 12px !important;
     overflow: hidden;
     background: var(--surface-color);
     display: flex;
@@ -54892,18 +54892,18 @@ dialog {
 }
 
 /* Chat Send / Mic Buttons — Clay Sphere */
-#ai-companion-chat-box .chat-input-area button {
+#ai-companion-chat-box .chat-input-area button:not(.quick-command-item) {
     border-radius: 50% !important;
     box-shadow: var(--clay-shadow-sphere) !important;
     border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
     transition: var(--clay-transition) !important;
 }
 
-#ai-companion-chat-box .chat-input-area button:hover {
+#ai-companion-chat-box .chat-input-area button:not(.quick-command-item):hover {
     transform: scale(1.08) !important;
 }
 
-#ai-companion-chat-box .chat-input-area button:active {
+#ai-companion-chat-box .chat-input-area button:not(.quick-command-item):active {
     transform: scale(0.92) !important;
     box-shadow: var(--clay-shadow-pressed) !important;
 }
@@ -57710,7 +57710,7 @@ dialog {
 
 /* Inset clay style for quick command sections */
 .quick-command-section {
-    border-radius: var(--clay-radius-small) !important;
+    border-radius: 12px !important;
     box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.5) !important;
     border: 1px solid rgba(0, 0, 0, 0.03) !important;
     background: rgba(255, 255, 255, 0.15) !important;
@@ -57726,7 +57726,7 @@ dialog {
 
 /* Command list item hover/focus */
 .quick-command-item {
-    border-radius: var(--clay-radius-small) !important;
+    border-radius: 8px !important;
     border-top: none !important;
     margin-bottom: 2px !important;
     transition: var(--clay-transition) !important;
