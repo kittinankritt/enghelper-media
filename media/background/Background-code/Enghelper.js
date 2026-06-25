@@ -9239,7 +9239,7 @@
                                 const baseTokens = (isJson ? jsonDefaults : textDefaults)[scope] || (isJson ? jsonDefaults.general : textDefaults.general);
                                 if (scope === "vocab") {
                                     if (taskType === "autofill") return 7000;
-                                    if (taskType === "bulk") return 12000;
+                                    if (taskType === "bulk") return 32000;
                                     if (taskType === "pack" || taskType === "url" || taskType === "text" || taskType === "image") return 8000;
                                 } else if (scope === "story") {
                                     if (taskType === "short" || taskType === "dialogue") return 7000;
@@ -10309,7 +10309,7 @@
                                     synonyms: item.synonyms || [],
                                     antonyms: item.antonyms || []
                                 }));
-                                const batchSize = 6;
+                                const batchSize = 10;
                                 const batches = [];
                                 for (let i = 0; i < words.length; i += batchSize) {
                                     batches.push(words.slice(i, i + batchSize));
@@ -10378,7 +10378,7 @@
                                         contents: [{ role: "user", parts: [{ text: prompt }] }],
                                         generationConfig: {
                                             responseMimeType: "application/json",
-                                            maxOutputTokens: 12000,
+                                            maxOutputTokens: 32000,
                                             responseSchema: {
                                                 type: "ARRAY",
                                                 items: {
@@ -10453,6 +10453,27 @@
                                         antonyms: (item.antonyms || []).map((a) => a.toLowerCase())
                                     });
                                 });
+
+                                function getPreviewInfoHTML(item, statusBadges) {
+                                    return `
+                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <strong>${escapeHtml(item.word)}</strong>
+                                            <span class="pos pos-${String(item.pos || "").toLowerCase().trim().replace(/[^a-z0-9-]/g, "-")}">${escapeHtml(item.pos)}</span>
+                                            ${statusBadges.join(" ")}
+                                        </div>
+                                        <p style="margin: 5px 0; color: var(--text-color);">\u0E44\u0E17\u0E22: ${escapeHtml(item.thaiExplanation || "N/A")}</p>
+                                        ${item.synonyms && item.synonyms.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);">\u0E04\u0E38\u0E13\u0E1E\u0E45\u0E2D\u0E07: ${escapeHtml(item.synonyms.join(", "))}</p>` : ""}
+                                        ${item.antonyms && item.antonyms.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);">\u0E04\u0E38\u0E13\u0E15\u0E23\u0E07\u0E02\u0E49\u0E32\u0E21: ${escapeHtml(item.antonyms.join(", "))}</p>` : ""}
+                                        ${item.collocations && item.collocations.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>Collocations:</strong> ${escapeHtml(item.collocations.join(", "))}</p>` : ""}
+                                        ${item.usageNote ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>\u0E27\u0E34\u0E18\u0E35\u0E43\u0E0A\u0E45:</strong> ${escapeHtml(item.usageNote)}</p>` : ""}
+                                        ${item.commonMistake ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E23\u0E23\u0E30\u0E27\u0E31\u0E07:</strong> ${escapeHtml(item.commonMistake)}</p>` : ""}
+                                        ${item.memoryTip ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>\u0E27\u0E34\u0E18\u0E35\u0E08\u0E33:</strong> ${escapeHtml(item.memoryTip)}</p>` : ""}
+                                    `;
+                                }
+
+                                const buttonTextNormal = "\u0E40\u0E1E\u0E34\u0E48\u0E21"; // เพิ่ม
+                                const buttonTextExisting = "\u0E21\u0E35\u0E41\u0E25\u0E49\u0E27"; // มีแล้ว
+
                                 results.forEach((item, index) => {
                                     const wordLower = item.word.toLowerCase();
                                     const contextHint = item.contextHint || "";
@@ -10489,14 +10510,18 @@
                                     }
                                     const itemDiv = document.createElement("div");
                                     itemDiv.classList.add("vocab-pack-item");
+                                    itemDiv.style.flexDirection = "column";
+                                    itemDiv.style.alignItems = "stretch";
+                                    itemDiv.style.gap = "12px";
+
                                     let statusBadges = [];
                                     let statusClass = "";
-                                    let buttonText = "\u0E40\u0E1E\u0E34\u0E48\u0E21";
+                                    let buttonText = buttonTextNormal;
                                     let buttonDisabled = false;
                                     if (isExisting) {
                                         statusBadges.push('<span class="status-badge existing">\u0E21\u0E35\u0E41\u0E25\u0E49\u0E27</span>');
                                         statusClass = "existing";
-                                        buttonText = "\u0E21\u0E35\u0E41\u0E25\u0E49\u0E27";
+                                        buttonText = buttonTextExisting;
                                         buttonDisabled = true;
                                     } else {
                                         newCount++;
@@ -10520,32 +10545,200 @@
                                             statusBadges.push('<span class="status-badge new">\u0E04\u0E33\u0E43\u0E2B\u0E21\u0E48</span>');
                                             statusClass = "new";
                                         }
-                                        buttonText = "\u0E40\u0E1E\u0E34\u0E48\u0E21";
+                                        buttonText = buttonTextNormal;
                                     }
+
+                                    const posList = ["noun", "pronoun", "adjective", "determiner", "verb", "adverb", "preposition", "conjunction", "interjection", "idiom", "phrasal", "sentence", "other"];
+                                    const posOptions = posList.map(p => `<option value="${p}" ${item.pos === p ? "selected" : ""}>${p}</option>`).join("");
+                                    const cefrList = ["A1", "A2", "B1", "B2", "C1", "C2"];
+                                    const cefrOptions = cefrList.map(c => `<option value="${c}" ${(item.cefr || item.cefrLevel) === c ? "selected" : ""}>${c}</option>`).join("");
+
                                     itemDiv.innerHTML = `
-                                <div class="vocab-pack-item-info ${statusClass}">
-                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                        <strong>${item.word}</strong>
-                                        <span class="pos pos-${String(item.pos || '').toLowerCase().trim().replace(/[^a-z0-9-]/g, '-')}">${item.pos}</span>
-                                        ${statusBadges.join(" ")}
-                                    </div>
-                                    <p style="margin: 5px 0; color: var(--text-color);">\u0E44\u0E17\u0E22: ${item.thaiExplanation || "N/A"}</p>
-                                    ${item.synonyms && item.synonyms.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);">\u0E04\u0E33\u0E1E\u0E49\u0E2D\u0E07: ${item.synonyms.join(", ")}</p>` : ""}
-                                    ${item.antonyms && item.antonyms.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);">\u0E04\u0E33\u0E15\u0E23\u0E07\u0E02\u0E49\u0E32\u0E21: ${item.antonyms.join(", ")}</p>` : ""}
-                                    ${item.collocations && item.collocations.length > 0 ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>Collocations:</strong> ${item.collocations.join(", ")}</p>` : ""}
-                                    ${item.usageNote ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>วิธีใช้:</strong> ${item.usageNote}</p>` : ""}
-                                    ${item.commonMistake ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>ข้อควรระวัง:</strong> ${item.commonMistake}</p>` : ""}
-                                    ${item.memoryTip ? `<p style="margin: 2px 0; font-size: 0.85rem; color: var(--light-text-color);"><strong>วิธีจำ:</strong> ${item.memoryTip}</p>` : ""}
-                                </div>
-                                <button class="add-vocab-btn bulk-add-single-btn" data-index="${index}" ${buttonDisabled ? "disabled" : ""}>
-                                    ${buttonText}
-                                </button>
-                            `;
+                                        <div class="vocab-pack-item-preview" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                            <div class="vocab-pack-item-info ${statusClass}">
+                                                ${getPreviewInfoHTML(item, statusBadges)}
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 15px;">
+                                                <button type="button" class="edit-vocab-details-btn" data-index="${index}" style="border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fi fi-rr-edit"></i> \u0E41\u0E01\u0E49\u0E43\u0E02</button>
+                                                <button class="add-vocab-btn bulk-add-single-btn" data-index="${index}" ${buttonDisabled ? "disabled" : ""}>
+                                                    ${buttonText}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="vocab-pack-item-edit" style="display: none; width: 100%; border-top: 1px dashed rgba(var(--theme-rgb), 0.15); padding-top: 15px;">
+                                            <div class="vocab-pack-item-edit-form" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C (English)</label>
+                                                    <input type="text" class="edit-word" value="${escapeHtml(item.word)}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E33\u0E41\u0E1B\u0E25\u0E20\u0E32\u0E29\u0E32\u0E44\u0E17\u0E22</label>
+                                                    <input type="text" class="edit-thai" value="${escapeHtml(item.thaiExplanation || '')}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E0A\u0E19\u0E34\u0E14\u0E02\u0E2D\u0E05\u0E04\u0E33 (POS)</label>
+                                                    <select class="edit-pos" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">${posOptions}</select>
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E23\u0E30\u0E14\u0E31\u0E1A\u0E20\u0E32\u0E29\u0E32 CEFR</label>
+                                                    <select class="edit-cefr" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
+                                                        <option value="">\u0E40\u0E25\u0E37\u0E2D\u0E01 CEFR</option>
+                                                        ${cefrOptions}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E38\u0E13\u0E1E\u0E45\u0E2D\u0E07 (Synonyms)</label>
+                                                    <input type="text" class="edit-synonyms" value="${escapeHtml((item.synonyms || []).join(', '))}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);" placeholder="เช่น beautiful, gorgeous">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E38\u0E13\u0E15\u0E23\u0E07\u0E02\u0E49\u0E32\u0E21 (Antonyms)</label>
+                                                    <input type="text" class="edit-antonyms" value="${escapeHtml((item.antonyms || []).join(', '))}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);" placeholder="เช่น ugly, repulsive">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E33\u0E25\u0E34\u0E1B\u0E17\u0E4C\u0E04\u0E39\u0E48 (Collocations)</label>
+                                                    <input type="text" class="edit-collocations" value="${escapeHtml((item.collocations || []).join(', '))}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);" placeholder="เช่น take a break, short break">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E23\u0E32\u0E01\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C (Root Origin)</label>
+                                                    <input type="text" class="edit-root" value="${escapeHtml(item.root || '')}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
+                                                </div>
+                                                <div class="form-group" style="margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E04\u0E33\u0E22\u0E48\u0E32\u0E19\u0E2D\u0E48\u0E32\u0E19 (Phonetics)</label>
+                                                    <input type="text" class="edit-phonetic" value="${escapeHtml(item.phonetic || '')}" style="width: 100%; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
+                                                </div>
+                                                <div class="form-group" style="grid-column: span 2; margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E1B\u0E23\u0E30\u0E42\u0E22\u0E04\u0E15\u0E31\u0E27\u0E22\u0E48\u0E32\u0E07 (หนึ่งประโยคต่อหนึ่งบรรทัด)</label>
+                                                    <textarea class="edit-examples" style="width: 100%; height: 60px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); resize: vertical;" placeholder="เช่น She has a beautiful voice.">${(item.examples || []).join('\n')}</textarea>
+                                                </div>
+                                                <div class="form-group" style="grid-column: span 2; margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E27\u0E34\u0E18\u0E35\u0E43\u0E0A\u0E45\u0E08\u0E23\u0E34\u0E07 (Usage Note)</label>
+                                                    <textarea class="edit-usage" style="width: 100%; height: 50px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); resize: vertical;">${item.usageNote || ''}</textarea>
+                                                </div>
+                                                <div class="form-group" style="grid-column: span 2; margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E23\u0E23\u0E30\u0E27\u0E31\u0E07 (Common Mistake)</label>
+                                                    <textarea class="edit-mistake" style="width: 100%; height: 50px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); resize: vertical;">${item.commonMistake || ''}</textarea>
+                                                </div>
+                                                <div class="form-group" style="grid-column: span 2; margin-bottom: 8px;">
+                                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-color);">\u0E17\u0E34\u0E1B\u0E01\u0E32\u0E23\u0E08\u0E33 (Memory Tip)</label>
+                                                    <textarea class="edit-memory" style="width: 100%; height: 50px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); resize: vertical;">${item.memoryTip || ''}</textarea>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
+                                                <button type="button" class="cancel-edit-btn" style="border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); padding: 5px 15px; border-radius: var(--border-radius-sm, 16px); font-size: 0.85rem; cursor: pointer;">\u0E22\u0E01\u0E40\u0E25\u0E34\u0E01</button>
+                                                <button type="button" class="save-edit-btn" style="border: none; background: var(--primary-color); color: white; padding: 5px 15px; border-radius: var(--border-radius-sm, 16px); font-size: 0.85rem; cursor: pointer; font-weight: 500;">\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01</button>
+                                            </div>
+                                        </div>
+                                    `;
                                     bulkVocabResults.appendChild(itemDiv);
+
+                                    // Event listeners for edit/cancel/save inside this card
+                                    const previewContainer = itemDiv.querySelector(".vocab-pack-item-preview");
+                                    const editContainer = itemDiv.querySelector(".vocab-pack-item-edit");
+                                    const editBtn = itemDiv.querySelector(".edit-vocab-details-btn");
+                                    const cancelBtn = itemDiv.querySelector(".cancel-edit-btn");
+                                    const saveBtn = itemDiv.querySelector(".save-edit-btn");
+
+                                    editBtn.addEventListener("click", () => {
+                                        previewContainer.style.display = "none";
+                                        editContainer.style.display = "block";
+                                    });
+
+                                    cancelBtn.addEventListener("click", () => {
+                                        // Reset fields to original values
+                                        editContainer.querySelector(".edit-word").value = bulkVocabData[index].word;
+                                        editContainer.querySelector(".edit-thai").value = bulkVocabData[index].thaiExplanation || "";
+                                        editContainer.querySelector(".edit-pos").value = bulkVocabData[index].pos || "noun";
+                                        editContainer.querySelector(".edit-cefr").value = bulkVocabData[index].cefr || "";
+                                        editContainer.querySelector(".edit-phonetic").value = bulkVocabData[index].phonetic || "";
+                                        editContainer.querySelector(".edit-root").value = bulkVocabData[index].root || "";
+                                        editContainer.querySelector(".edit-synonyms").value = (bulkVocabData[index].synonyms || []).join(", ");
+                                        editContainer.querySelector(".edit-antonyms").value = (bulkVocabData[index].antonyms || []).join(", ");
+                                        editContainer.querySelector(".edit-collocations").value = (bulkVocabData[index].collocations || []).join(", ");
+                                        editContainer.querySelector(".edit-examples").value = (bulkVocabData[index].examples || []).join("\n");
+                                        editContainer.querySelector(".edit-usage").value = bulkVocabData[index].usageNote || "";
+                                        editContainer.querySelector(".edit-mistake").value = bulkVocabData[index].commonMistake || "";
+                                        editContainer.querySelector(".edit-memory").value = bulkVocabData[index].memoryTip || "";
+
+                                        editContainer.style.display = "none";
+                                        previewContainer.style.display = "flex";
+                                    });
+
+                                    saveBtn.addEventListener("click", () => {
+                                        const updatedWord = editContainer.querySelector(".edit-word").value.trim();
+                                        const updatedThai = editContainer.querySelector(".edit-thai").value.trim();
+                                        const updatedPos = editContainer.querySelector(".edit-pos").value;
+                                        const updatedCefr = editContainer.querySelector(".edit-cefr").value;
+                                        const updatedPhonetic = editContainer.querySelector(".edit-phonetic").value.trim();
+                                        const updatedRoot = editContainer.querySelector(".edit-root").value.trim();
+                                        const updatedSynonyms = editContainer.querySelector(".edit-synonyms").value.split(",").map(s => s.trim()).filter(Boolean);
+                                        const updatedAntonyms = editContainer.querySelector(".edit-antonyms").value.split(",").map(s => s.trim()).filter(Boolean);
+                                        const updatedCollocations = editContainer.querySelector(".edit-collocations").value.split(",").map(s => s.trim()).filter(Boolean);
+                                        const updatedExamples = editContainer.querySelector(".edit-examples").value.split("\n").map(s => s.trim()).filter(Boolean);
+                                        const updatedUsage = editContainer.querySelector(".edit-usage").value.trim();
+                                        const updatedMistake = editContainer.querySelector(".edit-mistake").value.trim();
+                                        const updatedMemory = editContainer.querySelector(".edit-memory").value.trim();
+
+                                        if (!updatedWord) {
+                                            showToast2("\u0E01\u0E23\u0E38\u0E13\u0E32\u0E1B\u0E49\u0E2D\u0E19\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C", "error");
+                                            return;
+                                        }
+
+                                        // Save to bulkVocabData store
+                                        bulkVocabData[index] = {
+                                            ...bulkVocabData[index],
+                                            word: updatedWord,
+                                            thaiExplanation: updatedThai,
+                                            pos: updatedPos,
+                                            cefr: updatedCefr,
+                                            phonetic: updatedPhonetic,
+                                            root: updatedRoot,
+                                            synonyms: updatedSynonyms,
+                                            antonyms: updatedAntonyms,
+                                            collocations: updatedCollocations,
+                                            examples: updatedExamples,
+                                            usageNote: updatedUsage,
+                                            commonMistake: updatedMistake,
+                                            memoryTip: updatedMemory
+                                        };
+
+                                        // Recheck if word already exists in local englishDataStore
+                                        const checkWord = bulkVocabData[index].word;
+                                        const existing = englishDataStore.find(d => areWordsMatching(d.englishData, checkWord));
+                                        const isWordExisting = !!existing;
+
+                                        let newStatusClass = "";
+                                        let newStatusBadges = [];
+                                        let addBtn = previewContainer.querySelector(".bulk-add-single-btn");
+
+                                        if (isWordExisting) {
+                                            newStatusClass = "existing";
+                                            newStatusBadges.push('<span class="status-badge existing">\u0E21\u0E35\u0E41\u0E25\u0E49\u0E27</span>');
+                                            addBtn.textContent = buttonTextExisting;
+                                            addBtn.disabled = true;
+                                        } else {
+                                            newStatusClass = "new";
+                                            newStatusBadges.push('<span class="status-badge new">\u0E04\u0E33\u0E43\u0E2B\u0E21\u0E48</span>');
+                                            addBtn.textContent = buttonTextNormal;
+                                            addBtn.disabled = false;
+                                        }
+
+                                        // Update the preview panel
+                                        const infoPanel = previewContainer.querySelector(".vocab-pack-item-info");
+                                        infoPanel.className = `vocab-pack-item-info ${newStatusClass}`;
+                                        infoPanel.innerHTML = getPreviewInfoHTML(bulkVocabData[index], newStatusBadges);
+
+                                        updateBulkAddAllButton();
+
+                                        editContainer.style.display = "none";
+                                        previewContainer.style.display = "flex";
+                                        showToast2("\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E01\u0E32\u0E23\u0E41\u0E01\u0E45\u0E02\u0E40\u0E23\u0E35\u0E22\u0E1B\u0E23\u0E49\u0E22\u0E22\u0E41\u0E25\u0E49\u0E27", "success");
+                                    });
                                 });
+
                                 bulkVocabActions.style.display = "flex";
                                 bulkAddAllBtn.textContent = `\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 (${newCount})`;
                                 bulkAddAllBtn.disabled = newCount === 0;
+
                                 bulkVocabResults.querySelectorAll(".bulk-add-single-btn").forEach((btn) => {
                                     btn.addEventListener("click", async (e) => {
                                         const index = parseInt(e.currentTarget.dataset.index);
@@ -10581,13 +10774,18 @@
                                     imageData: null,
                                     sourceType: "bulk"
                                 };
-                                addOrUpdateEnglishData(data, true);
+                                addOrUpdateEnglishData(data, false);
+                                generateAIImageForVocab(data.id, data.englishData, data.thaiExplanation);
                                 showToast2(`\u0E40\u0E1E\u0E34\u0E48\u0E21 "${item.word}" \u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08`, "success");
                             }
                             function updateBulkAddAllButton() {
                                 const remainingButtons = bulkVocabResults.querySelectorAll(".bulk-add-single-btn:not([disabled])");
                                 const count = remainingButtons.length;
                                 bulkAddAllBtn.textContent = `\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E04\u0E33\u0E43\u0E2B\u0E21\u0E48\u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 (${count})`;
+                                bulkAddAllBtn.disabled = count === 0;
+                            }
+
+)`;
                                 bulkAddAllBtn.disabled = count === 0;
                             }
                             bulkAddAllBtn.addEventListener("click", async () => {
@@ -36709,7 +36907,8 @@
                                     { title: "\u0E2A\u0E44\u0E15\u0E25\u0E4C", nextLabel: "\u0E16\u0E31\u0E14\u0E44\u0E1B" },
                                     { title: "\u0E04\u0E27\u0E32\u0E21\u0E2A\u0E19\u0E43\u0E08 & \u0E02\u0E2D\u0E1A\u0E40\u0E02\u0E15", nextLabel: "\u0E16\u0E31\u0E14\u0E44\u0E1B" },
                                     { title: "\u0E2D\u0E22\u0E32\u0E01\u0E43\u0E2B\u0E49\u0E08\u0E33\u0E40\u0E1E\u0E34\u0E48\u0E21", nextLabel: "\u0E16\u0E31\u0E14\u0E44\u0E1B" },
-                                    { title: "\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32\u0E23\u0E30\u0E1A\u0E1A", nextLabel: "\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34" },
+                                    { title: "\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32\u0E23\u0E30\u0E1A\u0E1A", nextLabel: "\u0E16\u0E31\u0E14\u0E44\u0E1B" },
+                                    { title: "\u0E23\u0E30\u0E1B\u0E1A\u0E23\u0E39\u0E49\u0E43\u0E08 (AI Adaptive Learning)", nextLabel: "\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34" },
                                     { title: "\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08", nextLabel: "\u0E40\u0E2A\u0E23\u0E47\u0E08" }
                                 ];
                                 const CONTEXT_TOTAL_PAGES = CONTEXT_PAGE_META.length;
@@ -37095,6 +37294,19 @@
                                 }
                                 function persistContextData({ showToast: showToast3 = false, closeAfterSave = false } = {}) {
                                     const contextData = collectContextDataFromForm();
+                                    
+                                    const adaptiveCheckbox = document.getElementById("ctx-adaptive-learning");
+                                    if (adaptiveCheckbox) {
+                                        if (typeof setStoredBoolean === "function") {
+                                            setStoredBoolean("profile_privacy_context_enabled", adaptiveCheckbox.checked);
+                                        } else {
+                                            localStorage.setItem("profile_privacy_context_enabled", JSON.stringify(adaptiveCheckbox.checked));
+                                        }
+                                        if (typeof syncProfilePrivacyControls === "function") {
+                                            syncProfilePrivacyControls();
+                                        }
+                                    }
+                                    
                                     const saved = typeof window.savePersonalContext === "function" ? window.savePersonalContext(contextData) : false;
                                     if (!saved) {
                                         if (typeof window.showToast === "function") {
@@ -37487,6 +37699,11 @@
                                                 checkbox.checked = data.contextScopes[scopeKey] !== false;
                                             }
                                         });
+                                        const isContextEnabled = typeof getStoredBoolean === "function" ? getStoredBoolean("profile_privacy_context_enabled", true) : true;
+                                        const adaptiveCheckbox = document.getElementById("ctx-adaptive-learning");
+                                        if (adaptiveCheckbox) {
+                                            adaptiveCheckbox.checked = isContextEnabled;
+                                        }
                                         ensureContextDots();
                                         syncContextSystemSettingsUI();
                                         updatePersonalContextDialogState();
