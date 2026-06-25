@@ -40574,49 +40574,248 @@
                             return text.split('').map(c => engToThaiMap[c] || c).join('');
                         }
 
-                        // Target all standard text inputs and textareas
-                        document.addEventListener('input', function (e) {
-                            if (e.detail === 'lueum_salab_phasa') return;
+                        // Create Thai to English map by inverting engToThaiMap
+                        const thaiToEngMap = {};
+                        for (const [enKey, thKey] of Object.entries(engToThaiMap)) {
+                            if (thaiToEngMap[thKey]) {
+                                if (['~', '`'].includes(enKey)) continue;
+                            }
+                            thaiToEngMap[thKey] = enKey;
+                        }
 
-                            const target = e.target;
-                            if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') return;
-                            if (target.tagName === 'INPUT' && !['text', 'search'].includes(target.type)) return;
-
-                            // Exclude fields where English gibberish might be intentional
-                            const excludeIds = ['typing-input', 'typing-game-input', 'url-vocab-input', 'ctx-nickname'];
-                            if (excludeIds.includes(target.id)) return;
-
-                            const text = target.value;
-                            if (!text) return;
-
-                            let modified = false;
-
-                            if (knownGibberish[text]) {
-                                target.value = convertToThai(text);
-                                modified = true;
+                        function convertLayout(text) {
+                            if (!text) return "";
+                            const hasThai = /[\u0E00-\u0E7F]/.test(text);
+                            if (hasThai) {
+                                return text.split('').map(c => thaiToEngMap[c] || c).join('');
                             } else {
-                                const words = text.split(' ');
-                                const newWords = words.map(word => {
-                                    if (knownGibberish[word]) {
-                                        modified = true;
-                                        return convertToThai(word);
-                                    }
-                                    if (isGibberishEnglishForThai(word)) {
-                                        modified = true;
-                                        return convertToThai(word);
-                                    }
-                                    return word;
-                                });
+                                if (knownGibberish[text]) return knownGibberish[text];
+                                return text.split('').map(c => engToThaiMap[c] || c).join('');
+                            }
+                        }
 
-                                if (modified) {
-                                    target.value = newWords.join(' ');
+                        // Create and inject CSS for the premium glassmorphism preview popup
+                        const style = document.createElement("style");
+                        style.textContent = `
+                            #layout-fix-preview-popup {
+                                position: absolute;
+                                z-index: 999999;
+                                pointer-events: none;
+                                display: none;
+                                flex-direction: column;
+                                gap: 6px;
+                                padding: 12px 16px;
+                                border-radius: 14px;
+                                font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+                                font-size: 13px;
+                                transition: opacity 0.15s ease, transform 0.15s ease;
+                                opacity: 0;
+                                transform: translateY(8px) scale(0.95);
+                                max-width: 340px;
+                                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+                                background: rgba(255, 255, 255, 0.85) !important;
+                                backdrop-filter: blur(14px) saturate(190%) !important;
+                                -webkit-backdrop-filter: blur(14px) saturate(190%) !important;
+                                color: #1e293b !important;
+                                border: 1px solid rgba(255, 255, 255, 0.5) !important;
+                            }
+                            [data-theme="dark"] #layout-fix-preview-popup {
+                                background: rgba(15, 23, 42, 0.85) !important;
+                                color: #f1f5f9 !important;
+                                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+                            }
+                            #layout-fix-preview-popup .preview-title {
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                font-weight: 600;
+                                color: #64748b;
+                            }
+                            [data-theme="dark"] #layout-fix-preview-popup .preview-title {
+                                color: #94a3b8;
+                            }
+                            #layout-fix-preview-popup .preview-text {
+                                font-size: 15px;
+                                font-weight: 600;
+                                word-break: break-all;
+                                color: var(--primary-color, #ec4899);
+                                margin: 2px 0;
+                            }
+                            #layout-fix-preview-popup .preview-hint {
+                                font-size: 11px;
+                                opacity: 0.65;
+                                display: flex;
+                                align-items: center;
+                                gap: 4px;
+                                margin-top: 2px;
+                            }
+                            #layout-fix-preview-popup kbd {
+                                background: rgba(0, 0, 0, 0.06);
+                                padding: 2px 5px;
+                                border-radius: 5px;
+                                border: 1px solid rgba(0, 0, 0, 0.1);
+                                font-family: inherit;
+                                font-size: 10px;
+                                font-weight: 600;
+                            }
+                            [data-theme="dark"] #layout-fix-preview-popup kbd {
+                                background: rgba(255, 255, 255, 0.08);
+                                border: 1px solid rgba(255, 255, 255, 0.15);
+                            }
+                        `;
+                        document.head.appendChild(style);
+
+                        const previewPopup = document.createElement("div");
+                        previewPopup.id = "layout-fix-preview-popup";
+                        previewPopup.innerHTML = `
+                            <div class="preview-title">
+                                <i class="fi fi-rr-keyboard" style="color: var(--primary-color, #ec4899); font-size: 1.1rem;"></i>
+                                <span>สลับภาษาแป้นพิมพ์</span>
+                            </div>
+                            <div class="preview-text"></div>
+                            <div class="preview-hint">
+                                กด <kbd>⌥ Option / Alt</kbd> + <kbd>Enter</kbd> เพื่อเปลี่ยน
+                            </div>
+                        `;
+                        document.body.appendChild(previewPopup);
+
+                        let activeInput = null;
+                        let isAltDown = false;
+
+                        function updatePreview() {
+                            if (!activeInput || !isAltDown) {
+                                hidePreview();
+                                return;
+                            }
+
+                            const val = activeInput.value;
+                            if (!val || val.trim() === "") {
+                                hidePreview();
+                                return;
+                            }
+
+                            const converted = convertLayout(val);
+                            if (converted === val) {
+                                hidePreview();
+                                return;
+                            }
+
+                            const textEl = previewPopup.querySelector(".preview-text");
+                            textEl.textContent = converted;
+                            
+                            previewPopup.style.display = "flex";
+                            previewPopup.offsetHeight;
+                            previewPopup.style.opacity = "1";
+                            previewPopup.style.transform = "translateY(0) scale(1)";
+                            
+                            positionPopup(activeInput);
+                        }
+
+                        function hidePreview() {
+                            previewPopup.style.opacity = "0";
+                            previewPopup.style.transform = "translateY(8px) scale(0.95)";
+                            setTimeout(() => {
+                                if (previewPopup.style.opacity === "0") {
+                                    previewPopup.style.display = "none";
+                                }
+                            }, 150);
+                        }
+
+                        function positionPopup(target) {
+                            const rect = target.getBoundingClientRect();
+                            const popupWidth = previewPopup.offsetWidth;
+                            
+                            let top = rect.bottom + window.scrollY + 8;
+                            let left = rect.left + window.scrollX;
+                            
+                            if (left + popupWidth > window.innerWidth) {
+                                left = Math.max(10, window.innerWidth - popupWidth - 20);
+                            }
+                            
+                            previewPopup.style.top = `${top}px`;
+                            previewPopup.style.left = `${left}px`;
+                        }
+
+                        // Listen for focus/blur on inputs
+                        document.addEventListener("focusin", (e) => {
+                            const target = e.target;
+                            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                                if (target.tagName === 'INPUT' && !['text', 'search'].includes(target.type)) return;
+                                
+                                const excludeIds = ['typing-input', 'typing-game-input', 'url-vocab-input', 'ctx-nickname'];
+                                if (excludeIds.includes(target.id)) return;
+                                
+                                activeInput = target;
+                                if (isAltDown) {
+                                    updatePreview();
+                                }
+                            }
+                        });
+
+                        document.addEventListener("focusout", (e) => {
+                            if (activeInput === e.target) {
+                                activeInput = null;
+                                hidePreview();
+                            }
+                        });
+
+                        // Watch keydown and keyup
+                        document.addEventListener("keydown", (e) => {
+                            if (e.key === "Alt") {
+                                if (!isAltDown) {
+                                    isAltDown = true;
+                                    updatePreview();
                                 }
                             }
 
-                            if (modified) {
-                                target.dispatchEvent(new CustomEvent('input', { bubbles: true, detail: 'lueum_salab_phasa' }));
+                            if (e.key === "Enter" && e.altKey && activeInput) {
+                                const val = activeInput.value;
+                                if (val && val.trim() !== "") {
+                                    const converted = convertLayout(val);
+                                    if (converted !== val) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        
+                                        activeInput.value = converted;
+                                        activeInput.dispatchEvent(new CustomEvent('input', { bubbles: true, detail: 'lueum_salab_phasa' }));
+                                        
+                                        hidePreview();
+                                    }
+                                }
+                            }
+                        }, true);
+
+                        document.addEventListener("keyup", (e) => {
+                            if (e.key === "Alt") {
+                                isAltDown = false;
+                                hidePreview();
                             }
                         });
+
+                        document.addEventListener("input", (e) => {
+                            if (e.detail === 'lueum_salab_phasa') return;
+                            if (activeInput === e.target && isAltDown) {
+                                updatePreview();
+                            }
+                        });
+
+                        window.addEventListener("blur", () => {
+                            isAltDown = false;
+                            hidePreview();
+                        });
+
+                        window.addEventListener("scroll", () => {
+                            if (activeInput && isAltDown && previewPopup.style.display === "flex") {
+                                positionPopup(activeInput);
+                            }
+                        }, { passive: true });
+
+                        window.addEventListener("resize", () => {
+                            if (activeInput && isAltDown && previewPopup.style.display === "flex") {
+                                positionPopup(activeInput);
+                            }
+                        }, { passive: true });
                     });
     
         },
