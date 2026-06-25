@@ -19385,6 +19385,12 @@
                                     flashcardFront.style.display = "block";
                                     flashcardBack.style.display = "none";
                                     isFlashcardExplanationFlipperActive = false;
+                                    flashcardContent.classList.remove('has-image', 'flipped');
+                                    flashcardContent.style.removeProperty('--fc-bg-image');
+                                    const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
+                                    if (fcBackWordHeader) {
+                                        fcBackWordHeader.textContent = "";
+                                    }
                                     return;
                                 }
                                 currentFlashcardIndex = index;
@@ -19394,6 +19400,18 @@
                                 if (fcWordImage) {
                                     fcWordImage.src = item.imageB64 || "";
                                     fcWordImage.style.display = item.imageB64 ? "block" : "none";
+                                }
+                                const hasImage = !!item.imageB64;
+                                flashcardContent.classList.toggle('has-image', hasImage);
+                                flashcardContent.classList.remove('flipped');
+                                if (hasImage) {
+                                    flashcardContent.style.setProperty('--fc-bg-image', `url(${item.imageB64})`);
+                                } else {
+                                    flashcardContent.style.removeProperty('--fc-bg-image');
+                                }
+                                const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
+                                if (fcBackWordHeader) {
+                                    fcBackWordHeader.textContent = item.englishData || "";
                                 }
                                 if (currentAudioPlayer) {
                                     currentAudioPlayer.pause();
@@ -19441,6 +19459,7 @@
                                     playFlipSound();
                                     flashcardFront.style.display = "none";
                                     flashcardBack.style.display = "flex";
+                                    flashcardContent.classList.add('flipped');
                                     fcExplanationEl.style.display = currentItem.explanation ? "block" : "none";
                                     fcThaiExplanationEl.style.display = currentItem.thaiExplanation ? "block" : "none";
                                     isFlashcardExplanationFlipperActive = false;
@@ -19453,6 +19472,7 @@
                                 } else {
                                     flashcardFront.style.display = "flex";
                                     flashcardBack.style.display = "none";
+                                    flashcardContent.classList.remove('flipped');
                                     isFlashcardExplanationFlipperActive = false;
                                     fcAudioBtn.dataset.text = currentItem.englishData;
                                     fcAudioBtn.dataset.lang = "en-GB";
@@ -26117,6 +26137,17 @@
                                     fcWordImage2.src = item.imageB64 || "";
                                     fcWordImage2.style.display = item.imageB64 ? "block" : "none";
                                 }
+                                const hasImage = !!item.imageB64;
+                                flashcardContent.classList.toggle('has-image', hasImage);
+                                if (hasImage) {
+                                    flashcardContent.style.setProperty('--fc-bg-image', `url(${item.imageB64})`);
+                                } else {
+                                    flashcardContent.style.removeProperty('--fc-bg-image');
+                                }
+                                const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
+                                if (fcBackWordHeader) {
+                                    fcBackWordHeader.textContent = item.englishData || "";
+                                }
                                 fcEnglishDataEl2.textContent = item.englishData;
                                 const audioBtn = flashcardContent.querySelector(".dialog-audio-btn");
                                 if (audioBtn) {
@@ -26159,6 +26190,7 @@
                                 }
                                 flashcardFront2.style.display = "flex";
                                 flashcardBack2.style.display = "none";
+                                flashcardContent.classList.remove('flipped');
                                 const fcNextBtn2 = document.getElementById("fc-next-btn");
                                 const fcPrevBtn2 = document.getElementById("fc-prev-btn");
                                 const heartBtns = document.querySelectorAll(".fc-heart-btn");
