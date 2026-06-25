@@ -2715,7 +2715,7 @@
                             const urlVocabInput = document.getElementById("url-vocab-input");
                             const generateVocabFromUrlBtn = document.getElementById("generate-vocab-from-url-btn");
                             const urlVocabResultsContainer = document.getElementById("url-vocab-results");
-                            const learnGrammarDialog = document.getElementById("learn-grammar-dialog");
+const learnGrammarDialog = document.getElementById("learn-grammar-dialog");
                             const learnGrammarLoadingOverlay = learnGrammarDialog.querySelector(".loading-overlay");
                             const grammarTopicInput = document.getElementById("grammar-topic-input");
                             const explainGrammarTopicBtn = document.getElementById("explain-grammar-topic-btn");
@@ -2778,6 +2778,10 @@
                             const dialogCefrInput = document.getElementById("dialog-cefr");
                             const dialogFrequencyInput = document.getElementById("dialog-frequency");
                             const dialogFormalityInput = document.getElementById("dialog-formality");
+                            const dialogCollocationsInput = document.getElementById("dialog-collocations");
+                            const dialogUsageNoteTextarea = document.getElementById("dialog-usage-note");
+                            const dialogCommonMistakeTextarea = document.getElementById("dialog-common-mistake");
+                            const dialogMemoryTipTextarea = document.getElementById("dialog-memory-tip");
                             const closeDataDialogBtn = document.getElementById("close-data-dialog-btn");
                             const clearDataDialogBtn = document.getElementById("clear-data-dialog-btn");
                             const autofillAiBtn = document.getElementById("autofill-ai-btn");
@@ -9005,7 +9009,7 @@
                                                     required: ["uk", "us", "au", "ca", "general"]
                                                 }
                                             },
-                                            required: ["pos", "thaiExplanation", "synonyms", "antonyms", "examples", "cefr", "frequency", "formality", "wordDialects", "dialects"]
+                                            required: ["pos", "thaiExplanation", "synonyms", "antonyms", "examples", "cefr", "frequency", "formality", "wordDialects", "dialects", "root", "collocations", "usageNote", "commonMistake", "memoryTip"]
                                         }
                                     }
                                 };
@@ -9029,6 +9033,10 @@
                                         if (dialogCefrInput) dialogCefrInput.value = aiData.cefr || "";
                                         if (dialogFrequencyInput) dialogFrequencyInput.value = aiData.frequency ?? "";
                                         if (dialogFormalityInput) dialogFormalityInput.value = aiData.formality ?? "";
+                                        if (dialogCollocationsInput) dialogCollocationsInput.value = (aiData.collocations || []).join(", ");
+                                        if (dialogUsageNoteTextarea) dialogUsageNoteTextarea.value = aiData.usageNote || "";
+                                        if (dialogCommonMistakeTextarea) dialogCommonMistakeTextarea.value = aiData.commonMistake || "";
+                                        if (dialogMemoryTipTextarea) dialogMemoryTipTextarea.value = aiData.memoryTip || "";
                                         currentVocabLearningDetails = normalizeVocabLearningDetails(aiData);
                                         resetDialectFields();
                                         populateDialectFormFields(aiData.dialects, aiData.wordDialects);
@@ -10413,7 +10421,7 @@
                                                         commonMistake: { type: "STRING" },
                                                         memoryTip: { type: "STRING" }
                                                     },
-                                                    required: ["word", "contextHint", "pos", "thaiExplanation", "synonyms", "examples", "cefr", "frequency", "formality"]
+                                                    required: ["word", "contextHint", "pos", "thaiExplanation", "synonyms", "examples", "cefr", "frequency", "formality", "root", "collocations", "usageNote", "commonMistake", "memoryTip"]
                                                 }
                                             }
                                         }
@@ -18452,6 +18460,10 @@
                                             dialogAntonymInput.value = (itemToDisplay.antonyms || []).join(", ");
                                             dialogRootInput.value = itemToDisplay.root || "";
                                             dialogExampleTextarea.value = (itemToDisplay.examples || []).join("\n");
+                                            if (dialogCollocationsInput) dialogCollocationsInput.value = (itemToDisplay.collocations || []).join(", ");
+                                            if (dialogUsageNoteTextarea) dialogUsageNoteTextarea.value = itemToDisplay.usageNote || "";
+                                            if (dialogCommonMistakeTextarea) dialogCommonMistakeTextarea.value = itemToDisplay.commonMistake || "";
+                                            if (dialogMemoryTipTextarea) dialogMemoryTipTextarea.value = itemToDisplay.memoryTip || "";
                                             if (dialogCefrInput) dialogCefrInput.value = itemToDisplay.cefr || "";
                                             if (dialogFrequencyInput) dialogFrequencyInput.value = itemToDisplay.frequency ?? "";
                                             if (dialogFormalityInput) dialogFormalityInput.value = itemToDisplay.formality ?? "";
@@ -18674,6 +18686,10 @@
                                     frequency: dialogFrequencyInput ? dialogFrequencyInput.value ? Number(dialogFrequencyInput.value) : null : null,
                                     formality: dialogFormalityInput ? dialogFormalityInput.value ? Number(dialogFormalityInput.value) : null : null,
                                     ...normalizeVocabLearningDetails(currentVocabLearningDetails),
+                                    collocations: dialogCollocationsInput ? dialogCollocationsInput.value.trim().split(",").map((s) => s.trim()).filter(Boolean) : (currentVocabLearningDetails.collocations || []),
+                                    usageNote: dialogUsageNoteTextarea ? dialogUsageNoteTextarea.value.trim() : (currentVocabLearningDetails.usageNote || ""),
+                                    commonMistake: dialogCommonMistakeTextarea ? dialogCommonMistakeTextarea.value.trim() : (currentVocabLearningDetails.commonMistake || ""),
+                                    memoryTip: dialogMemoryTipTextarea ? dialogMemoryTipTextarea.value.trim() : (currentVocabLearningDetails.memoryTip || ""),
                                     imageData: currentImageData
                                 };
                                 if (!data.englishData) {
