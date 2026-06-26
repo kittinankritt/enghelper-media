@@ -4736,19 +4736,23 @@
                         }
                     }
                     async function uploadAudioBlobToCloud(cacheKey, blob) {
-                        if (!currentUser || !storage) throw new Error("\u0E15\u0E49\u0E2D\u0E07\u0E25\u0E47\u0E2D\u0E01\u0E2D\u0E34\u0E19\u0E01\u0E48\u0E2D\u0E19\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E02\u0E36\u0E49\u0E19\u0E04\u0E25\u0E32\u0E27\u0E14\u0E4C");
+                        if (!currentUser || !db) throw new Error("ต้องล็อกอินก่อนอัปโหลดเสียงขึ้นคลาวด์");
                         if (!navigator.onLine) throw new Error("offline");
-                        const audioRef = ref(storage, `audio_cache/${currentUser.uid}/${cacheKey}.mp3`);
-                        const metadata = { contentType: blob.type || "audio/mp3" };
-                        await uploadBytes(audioRef, blob, metadata);
+                        const base64 = await blobToBase64(blob);
+                        const audioDocRef = doc(db, "users", currentUser.uid, "audio_cache", cacheKey);
+                        await setDoc(audioDocRef, {
+                            audioBase64: base64,
+                            contentType: blob.type || "audio/mp3",
+                            updatedAt: typeof serverTimestamp === "function" ? serverTimestamp() : new Date().toISOString()
+                        });
                         return {
-                            cloudPath: `audio_cache/${currentUser.uid}/${cacheKey}.mp3`,
-                            downloadUrl: await getDownloadURL(audioRef)
+                            cloudPath: `users/${currentUser.uid}/audio_cache/${cacheKey}`,
+                            downloadUrl: ""
                         };
                     }
                     async function processPendingAudioUploads(options = {}) {
                         const silent = Boolean(options.silent);
-                        if (!currentUser || !storage || !navigator.onLine) return;
+                        if (!currentUser || !db || !navigator.onLine) return;
                         const queue = await readPendingAudioUploads();
                         if (!queue.length) return;
                         let uploadedCount = 0;
@@ -5552,7 +5556,7 @@
                         updateAudioIconsState(text, true);
                         const isSyncOn = JSON.parse(localStorage.getItem("isCloudSyncEnabled") ?? "true");
                         if (!isSyncOn) return;
-                        if (currentUser && storage && navigator.onLine) {
+                        if (currentUser && db && navigator.onLine) {
                             // Run Firebase Storage upload in the background to prevent blocking playback
                             uploadAudioBlobToCloud(cacheKey, blob).then(async () => {
                                 await removePendingAudioUpload(cacheKey, currentUser.uid);
@@ -5711,10 +5715,8 @@
                             const rateMatch = mimeType.match(/rate=(\d+)/);
                             const sampleRate = rateMatch ? parseInt(rateMatch[1]) : 24000;
 
-                            const pcmBuffer = base64ToArrayBuffer(inlineData.data);
-                            const wavBuffer = pcmToWav(pcmBuffer, sampleRate);
-
-                            externalBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+                            const mp3Blob = convertPcmToMp3(inlineData.data, sampleRate);
+                            externalBlob = mp3Blob;
 
                             if (externalBlob) {
                                 await saveAudioToCache(text, externalBlob);
@@ -5811,17 +5813,24 @@
                             audioCache.set(cacheKey, url);
                             return { url, source: "indexeddb" };
                         }
-                        if (currentUser && storage) {
+                        if (currentUser && db) {
                             try {
-                                const audioRef = ref(storage, `audio_cache/${currentUser.uid}/${cacheKey}.mp3`);
-                                const url = await getDownloadURL(audioRef);
-                                audioCache.set(cacheKey, url);
-                                fetch(url).then((res) => res.blob()).then((blob) => {
-                                    saveAudioToIndexedDB(cacheKey, blob);
-                                });
-                                removePendingAudioUpload(cacheKey, currentUser.uid);
-                                return { url, source: "firebase" };
+                                const audioDocRef = doc(db, "users", currentUser.uid, "audio_cache", cacheKey);
+                                const docSnap = await getDoc(audioDocRef);
+                                if (docSnap.exists()) {
+                                    const data = docSnap.data();
+                                    if (data && data.audioBase64) {
+                                        const blob = base64ToBlob(data.audioBase64, data.contentType || "audio/mp3");
+                                        const url = URL.createObjectURL(blob);
+                                        audioCache.set(cacheKey, url);
+                                        await saveAudioToIndexedDB(cacheKey, blob);
+                                        removePendingAudioUpload(cacheKey, currentUser.uid);
+                                        return { url, source: "firebase" };
+                                    }
+                                }
+                                return null;
                             } catch (e) {
+                                console.warn("[Audio Sync] Firestore download failed:", e);
                                 return null;
                             }
                         }
@@ -5929,6 +5938,21 @@
                             bytes[i] = binaryString.charCodeAt(i);
                         }
                         return bytes.buffer;
+                    }
+                    function blobToBase64(blob) {
+                        return new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                const dataUrl = reader.result;
+                                const base64 = dataUrl.split(',')[1];
+                                resolve(base64);
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                    }
+                    function base64ToBlob(base64, contentType = 'audio/mp3') {
+                        return new Blob([base64ToArrayBuffer(base64)], { type: contentType });
                     }
                     function writeString(view, offset, string) {
                         for (let i = 0; i < string.length; i++) {
