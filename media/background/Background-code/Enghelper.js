@@ -4715,12 +4715,13 @@
                     async function saveImageToCache(id, base64Str) {
                         if (!id || !base64Str) return;
                         try {
+                            const compressedBase64 = await compressBase64Image(base64Str);
                             if (imageStore) {
-                                await imageStore.setItem(id, base64Str);
+                                await imageStore.setItem(id, compressedBase64);
                             } else {
-                                localStorage.setItem(`img_cache_${id}`, base64Str);
+                                localStorage.setItem(`img_cache_${id}`, compressedBase64);
                             }
-                            await queueImageForCloudUpload(id, base64Str);
+                            await queueImageForCloudUpload(id, compressedBase64);
                         } catch (e) {
                             console.error("[Image Cache] saveImageToCache error:", e);
                         }
@@ -4856,8 +4857,13 @@
                         }
                         if (nextQueue.length) {
                             updateCloudStatusUI("pending");
-                        } else if (!getPendingDataSyncManifest()) {
-                            updateCloudStatusUI("synced");
+                        } else {
+                            const stillPending = await hasAnyUnsyncedOrPendingUploads();
+                            if (!stillPending) {
+                                updateCloudStatusUI("synced");
+                            } else {
+                                updateCloudStatusUI("pending");
+                            }
                         }
                     }
 
@@ -5133,13 +5139,26 @@
                         }
                         if (nextQueue.length) {
                             updateCloudStatusUI("pending");
-                        } else if (!getPendingDataSyncManifest()) {
-                            updateCloudStatusUI("synced");
+                        } else {
+                            const stillPending = await hasAnyUnsyncedOrPendingUploads();
+                            if (!stillPending) {
+                                updateCloudStatusUI("synced");
+                            } else {
+                                updateCloudStatusUI("pending");
+                            }
                         }
                     }
                     async function getPendingAudioUploadCount() {
                         const queue = await readPendingAudioUploads();
                         return queue.filter((item) => !item.ownerUid || item.ownerUid === currentUser?.uid).length;
+                    }
+                    async function hasAnyUnsyncedOrPendingUploads() {
+                        if (getPendingDataSyncManifest()) return true;
+                        const pendingAudio = typeof readPendingAudioUploads === "function" ? await readPendingAudioUploads() : [];
+                        if (pendingAudio.length > 0) return true;
+                        const pendingImages = typeof readPendingImageUploads === "function" ? await readPendingImageUploads() : [];
+                        if (pendingImages.length > 0) return true;
+                        return false;
                     }
                     function hashText(text) {
                         let hash = 0;
@@ -20806,9 +20825,19 @@
                             if (pendingAudioCount && failedAudio) {
                                 audioDetail += ` (\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14: ${failedAudio.lastError})`;
                             }
+                            
+                            const pendingImages = typeof readPendingImageUploads === "function" ? await readPendingImageUploads() : [];
+                            const pendingImageCount = pendingImages.length;
+                            const failedImage = pendingImages.find(item => item.lastError);
+                            let imageDetail = pendingImageCount ? `\u0E23\u0E35\u0E1B\u0E20\u0E32\u0E1E\u0E23\u0E2D\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14 ${pendingImageCount} \u0E23\u0E35\u0E1B` : "";
+                            if (pendingImageCount && failedImage) {
+                                imageDetail += ` (\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14: ${failedImage.lastError})`;
+                            }
+
                             const detail = [
                                 pendingSummary ? `\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E27\u0E47\u0E1A: ${pendingSummary}` : "",
-                                audioDetail
+                                audioDetail,
+                                imageDetail
                             ].filter(Boolean).join(" | ");
                             showToast2(detail || "\u0E43\u0E08\u0E40\u0E22\u0E47\u0E19\u0E46 \u0E19\u0E30\u0E04\u0E23\u0E31\u0E1A \u0E1C\u0E21\u0E01\u0E33\u0E25\u0E31\u0E07\u0E23\u0E35\u0E1A\u0E2A\u0E48\u0E07\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E02\u0E36\u0E49\u0E19 Cloud \u0E43\u0E2B\u0E49\u0E2D\u0E22\u0E39\u0E48...", "info", 7e3);
                         } else {
