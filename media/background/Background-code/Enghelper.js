@@ -1893,6 +1893,24 @@
                             everythingEl.textContent = totalCount;
                             everythingEl.setAttribute("data-count", totalCount);
                         }
+
+                        // Disable buttons when counts are 0
+                        const dzVocabBtn = document.getElementById("danger-delete-all-vocab-btn");
+                        if (dzVocabBtn) dzVocabBtn.disabled = (vocabCount === 0);
+                        const dzTestsBtn = document.getElementById("danger-delete-all-tests-btn");
+                        if (dzTestsBtn) dzTestsBtn.disabled = (testsCount === 0);
+                        const dzGamesBtn = document.getElementById("danger-delete-all-games-btn");
+                        if (dzGamesBtn) dzGamesBtn.disabled = (gamesCount === 0);
+                        const dzStoriesBtn = document.getElementById("danger-delete-all-stories-btn");
+                        if (dzStoriesBtn) dzStoriesBtn.disabled = (storiesCount === 0);
+                        const dzRoleplayBtn = document.getElementById("danger-delete-all-roleplay-btn");
+                        if (dzRoleplayBtn) dzRoleplayBtn.disabled = (roleplayCount === 0);
+                        const dzGrammarBtn = document.getElementById("danger-delete-all-grammar-btn");
+                        if (dzGrammarBtn) dzGrammarBtn.disabled = (grammarCount === 0);
+                        const dzNotiBtn = document.getElementById("danger-delete-all-notifications-btn");
+                        if (dzNotiBtn) dzNotiBtn.disabled = (notiCount === 0);
+                        const dzNukeBtn = document.getElementById("danger-delete-everything-btn");
+                        if (dzNukeBtn) dzNukeBtn.disabled = (totalCount === 0);
                     }
                     window.updateDangerZoneCounts = updateDangerZoneCounts;
                     async function confirmDangerAction(message, title = "\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19") {

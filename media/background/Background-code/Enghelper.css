@@ -21449,6 +21449,16 @@ dialog {
     transform: scale(0.95);
 }
 
+.danger-delete-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: var(--border-color) !important;
+    color: var(--light-text-color) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
 /* Nuke (Delete All) Button */
 .danger-zone-nuke {
     padding: 16px 16px 20px;
