@@ -4554,8 +4554,8 @@ button .loader,
 /* 1. ย้าย Container ไปอยู่มุมขวาล่าง (พอดีกับช่องแชท) */
 #toast-container {
     position: fixed;
-    bottom: calc(5vh + 120px);
-    /* ปรับให้พอดีกับฐานของช่องแชทที่เปิด (40px + 80px) */
+    bottom: calc(5vh + 135px);
+    /* ปรับให้พอดีกับฐานของช่องแชทที่เปิด (40px + 80px + 15px) */
     right: calc(5vw + 40px);
     /* ขอบขวาตรงกับช่องแชทและปุ่มมาสคอต */
     top: auto;
@@ -14558,9 +14558,10 @@ li {
 
     /* Adjust Toast position on mobile to avoid overlapping with EngHelper mascot */
     #toast-container {
-        bottom: 190px !important;
-        /* ปรับให้สมดุลและเท่ากันกับช่องแชท */
-        right: 45px !important;
+        bottom: 280px !important;
+        /* ขยับขึ้นจากช่องแชท (265px + 15px) */
+        right: 55px !important;
+        /* ตรงกับขอบขวาของช่องแชทพอดี */
     }
 
     #ai-companion-chat-box {
@@ -23569,9 +23570,10 @@ button.data-mgmt-card:active {
 
     /* Adjust Toast: ลอยเหนือปุ่มเช่นกัน */
     #toast-container {
-        bottom: 190px !important;
-        /* ปรับให้สมดุลและเท่ากันกับช่องแชท */
+        bottom: 205px !important;
+        /* ขยับขึ้นจากช่องแชท (190px + 15px) */
         right: 45px !important;
+        /* ตรงกับขอบขวาของช่องแชทพอดี */
     }
 }
 
