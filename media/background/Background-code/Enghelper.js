@@ -3135,6 +3135,7 @@
                             item.srs.nextReviewDate = item.srs.nextReviewDate || getLocalDateKey();
                             item.srs.lastReviewDate = item.srs.lastReviewDate || null;
                         }
+                        item.hasAudio = Boolean(item.hasAudio);
                         return item;
                     }
                     function normalizeVocabularyStore(store) {
