@@ -7084,27 +7084,35 @@
 
                         // Make sure all current images in memory are cached locally and queued for upload if they aren't already
                         if (Array.isArray(englishDataStore)) {
+                            const imagePromises = [];
                             for (const item of englishDataStore) {
                                 if (item.imageB64 && item.imageB64.startsWith("data:image/")) {
                                     item.hasImage = true;
-                                    saveImageToCache(item.id, item.imageB64).catch(err => console.error("[Image Sync] Error caching image during sync:", err));
+                                    imagePromises.push(saveImageToCache(item.id, item.imageB64));
                                 }
+                            }
+                            if (imagePromises.length > 0) {
+                                await Promise.all(imagePromises.map(p => p.catch(err => console.error("[Image Sync] Error caching image during sync:", err))));
                             }
                         }
                         if (Array.isArray(storyHistoryStore)) {
+                            const storyPromises = [];
                             for (const story of storyHistoryStore) {
                                 if (story.imageB64 && story.imageB64.startsWith("data:image/")) {
                                     story.hasImage = true;
-                                    saveImageToCache(story.id, story.imageB64).catch(err => console.error("[Image Sync] Error caching story image during sync:", err));
+                                    storyPromises.push(saveImageToCache(story.id, story.imageB64));
                                 }
                                 if (Array.isArray(story.segments)) {
                                     story.segments.forEach((seg, idx) => {
                                         if (seg.imageB64 && seg.imageB64.startsWith("data:image/")) {
                                             seg.hasImage = true;
-                                            saveImageToCache(`${story.id}_segment_${idx}`, seg.imageB64).catch(err => console.error("[Image Sync] Error caching segment image during sync:", err));
+                                            storyPromises.push(saveImageToCache(`${story.id}_segment_${idx}`, seg.imageB64));
                                         }
                                     });
                                 }
+                            }
+                            if (storyPromises.length > 0) {
+                                await Promise.all(storyPromises.map(p => p.catch(err => console.error("[Image Sync] Error caching story image during sync:", err))));
                             }
                         }
 
@@ -24191,6 +24199,26 @@
                         setSyncItemLoading(btn, true, "กำลังอ่านไฟล์ ZIP...", "fi fi-rr-file-import", "เลือกไฟล์ที่สำรองไว้เพื่อกู้คืนข้อมูลของคุณ");
                         try {
                             const zip = await JSZip.loadAsync(file);
+                            const jsonFile = zip.file("ai_backup_data.json");
+                            let importedPayload = null;
+                            if (jsonFile) {
+                                const jsonText = await jsonFile.async("string");
+                                importedPayload = JSON.parse(jsonText);
+                            } else {
+                                showToast2("ไม่พบข้อมูลสำรอง (ai_backup_data.json) ในไฟล์ ZIP", "error");
+                                return;
+                            }
+
+                            const vocabTextMap = {};
+                            if (importedPayload && Array.isArray(importedPayload.englishDataStore)) {
+                                importedPayload.englishDataStore.forEach(item => {
+                                    const text = String(item.englishData || item.word || item.english || "").trim();
+                                    if (text) {
+                                        vocabTextMap[hashText(text)] = text;
+                                    }
+                                });
+                            }
+
                             const audioFolder = zip.folder("audio_cache");
                             if (audioFolder && typeof audioStore !== "undefined") {
                                 const files = [];
@@ -24212,6 +24240,8 @@
                                                 // Verify that key matches expected audio cache hash format
                                                 if (key.startsWith("audio_") && blob instanceof Blob) {
                                                     await audioStore.setItem(key, blob);
+                                                    const textVal = vocabTextMap[key] || "";
+                                                    await queueAudioForCloudUpload(key, textVal, blob);
                                                 }
                                             } catch (err) {
                                                 console.warn(`Failed to process audio import for ${zipEntry.name}`, err);
@@ -24228,15 +24258,8 @@
                             }
 
                             setSyncItemLoading(btn, true, "กำลังประมวลผลข้อมูล AI...");
-                            const jsonFile = zip.file("ai_backup_data.json");
-                            if (jsonFile) {
-                                const jsonText = await jsonFile.async("string");
-                                const importedPayload = JSON.parse(jsonText);
-                                if (typeof window.processImportedPayload === "function") {
-                                    window.processImportedPayload(importedPayload);
-                                }
-                            } else {
-                                showToast2("ไม่พบข้อมูลสำรอง (ai_backup_data.json) ในไฟล์ ZIP", "error");
+                            if (typeof window.processImportedPayload === "function") {
+                                window.processImportedPayload(importedPayload);
                             }
                         } catch (error) {
                             console.error("[Import ZIP] Error:", error);
