@@ -4670,6 +4670,315 @@
                             storeName: "audio_blob_store"
                         });
                     }
+                    let imageStore;
+                    if (typeof localforage !== "undefined") {
+                        imageStore = localforage.createInstance({
+                            name: "MyEnglishApp_Images",
+                            storeName: "image_cache_store"
+                        });
+                    }
+
+                    // --- [IMAGE CACHE & SYNC ENGINE] ---
+                    const IMAGE_UPLOAD_QUEUE_KEY = "pending_image_uploads";
+
+                    async function saveImageToCache(id, base64Str) {
+                        if (!id || !base64Str) return;
+                        try {
+                            if (imageStore) {
+                                await imageStore.setItem(id, base64Str);
+                            } else {
+                                localStorage.setItem(`img_cache_${id}`, base64Str);
+                            }
+                            await queueImageForCloudUpload(id, base64Str);
+                        } catch (e) {
+                            console.error("[Image Cache] saveImageToCache error:", e);
+                        }
+                    }
+
+                    async function getImageFromCache(id) {
+                        if (!id) return null;
+                        try {
+                            if (imageStore) {
+                                const cached = await imageStore.getItem(id);
+                                if (cached) return cached;
+                            } else {
+                                const cached = localStorage.getItem(`img_cache_${id}`);
+                                if (cached) return cached;
+                            }
+                            // Fallback to Firestore subcollection if online
+                            return await downloadImageFromFirestore(id);
+                        } catch (e) {
+                            console.warn("[Image Cache] getImageFromCache error:", e);
+                            return null;
+                        }
+                    }
+
+                    async function deleteImageFromCache(id) {
+                        if (!id) return;
+                        try {
+                            if (imageStore) {
+                                await imageStore.removeItem(id);
+                            } else {
+                                localStorage.removeItem(`img_cache_${id}`);
+                            }
+                            const queue = await readPendingImageUploads();
+                            const newQueue = queue.filter(item => item.id !== id);
+                            await writePendingImageUploads(newQueue);
+                            if (navigator.onLine && currentUser && db) {
+                                const imageDocRef = doc(db, "users", currentUser.uid, "image_cache", id);
+                                await deleteDoc(imageDocRef).catch(err => console.warn("[Image Sync] Failed to delete image from cloud cache:", err));
+                            }
+                        } catch (e) {
+                            console.error("[Image Cache] deleteImageFromCache error:", e);
+                        }
+                    }
+                    window.deleteImageFromCache = deleteImageFromCache;
+
+                    async function readPendingImageUploads() {
+                        try {
+                            if (typeof localforage !== "undefined") {
+                                return await localforage.getItem(IMAGE_UPLOAD_QUEUE_KEY) || [];
+                            }
+                            return JSON.parse(localStorage.getItem(IMAGE_UPLOAD_QUEUE_KEY) || "[]");
+                        } catch (e) {
+                            console.warn("[Image Sync] read queue failed:", e);
+                            return [];
+                        }
+                    }
+
+                    async function writePendingImageUploads(queue) {
+                        const safeQueue = Array.isArray(queue) ? queue : [];
+                        try {
+                            localStorage.setItem(IMAGE_UPLOAD_QUEUE_KEY, JSON.stringify(safeQueue));
+                        } catch (e) {
+                            console.warn("[Image Sync] local queue backup failed:", e);
+                        }
+                        if (typeof localforage !== "undefined") {
+                            try {
+                                await localforage.setItem(IMAGE_UPLOAD_QUEUE_KEY, safeQueue);
+                            } catch (e) {
+                                console.warn("[Image Sync] queue save failed:", e);
+                            }
+                        }
+                    }
+
+                    async function queueImageForCloudUpload(id, base64Str) {
+                        if (!currentUser) return;
+                        const queue = await readPendingImageUploads();
+                        const existing = queue.find(item => item.id === id);
+                        if (existing) {
+                            existing.status = "pending";
+                            existing.retryCount = 0;
+                            existing.updatedAt = new Date().toISOString();
+                        } else {
+                            queue.push({
+                                id,
+                                ownerUid: currentUser.uid,
+                                status: "pending",
+                                retryCount: 0,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            });
+                        }
+                        await writePendingImageUploads(queue);
+                        setTimeout(() => processPendingImageUploads({ silent: true }).catch(() => {}), 1000);
+                    }
+
+                    async function processPendingImageUploads(options = {}) {
+                        const silent = Boolean(options.silent);
+                        if (!currentUser || !db || !navigator.onLine) return;
+                        const queue = await readPendingImageUploads();
+                        if (!queue.length) return;
+                        let uploadedCount = 0;
+                        const nextQueue = [];
+                        for (const entry of queue) {
+                            if (entry.ownerUid && entry.ownerUid !== currentUser.uid) {
+                                nextQueue.push(entry);
+                                continue;
+                            }
+                            try {
+                                const base64Str = await getImageFromCache(entry.id);
+                                if (!base64Str) {
+                                    // Item doesn't exist locally anymore, skip
+                                    continue;
+                                }
+                                const imageDocRef = doc(db, "users", currentUser.uid, "image_cache", entry.id);
+                                await setDoc(imageDocRef, {
+                                    imageB64: base64Str,
+                                    updatedAt: typeof serverTimestamp === "function" ? serverTimestamp() : new Date().toISOString()
+                                });
+                                uploadedCount++;
+                            } catch (error) {
+                                nextQueue.push({
+                                    ...entry,
+                                    ownerUid: entry.ownerUid || currentUser.uid,
+                                    status: "pending",
+                                    retryCount: Number(entry.retryCount || 0) + 1,
+                                    lastError: error?.message || String(error),
+                                    updatedAt: new Date().toISOString()
+                                });
+                            }
+                        }
+                        await writePendingImageUploads(nextQueue);
+                        if (uploadedCount > 0 && !silent) {
+                            showToast2(`<i class="fi fi-rr-cloud-upload"></i> อัปโหลดรูปภาพที่ค้างอยู่ ${uploadedCount} รูปแล้ว`, "success");
+                        }
+                        if (nextQueue.length) {
+                            updateCloudStatusUI("pending");
+                        } else if (!getPendingDataSyncManifest()) {
+                            updateCloudStatusUI("synced");
+                        }
+                    }
+
+                    async function downloadImageFromFirestore(id) {
+                        if (!currentUser || !db || !navigator.onLine) return null;
+                        try {
+                            const imageDocRef = doc(db, "users", currentUser.uid, "image_cache", id);
+                            const snap = await getDoc(imageDocRef);
+                            if (snap.exists()) {
+                                const data = snap.data();
+                                if (data && data.imageB64) {
+                                    if (imageStore) {
+                                        await imageStore.setItem(id, data.imageB64);
+                                    } else {
+                                        localStorage.setItem(`img_cache_${id}`, data.imageB64);
+                                    }
+                                    return data.imageB64;
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("[Image Sync] Firestore download failed:", e);
+                            return null;
+                        }
+                        return null;
+                    }
+
+                    function sanitizeDataMapForFirestore(dataMap) {
+                        if (!dataMap) return dataMap;
+                        const copy = { ...dataMap };
+                        if (Array.isArray(copy.englishDataStore)) {
+                            copy.englishDataStore = copy.englishDataStore.map(item => {
+                                if (item.imageB64 || item.imageData) {
+                                    const cleaned = { ...item, hasImage: true };
+                                    delete cleaned.imageB64;
+                                    delete cleaned.imageData;
+                                    return cleaned;
+                                }
+                                return item;
+                            });
+                        }
+                        if (Array.isArray(copy.deletedDataStore)) {
+                            copy.deletedDataStore = copy.deletedDataStore.map(item => {
+                                if (item.imageB64 || item.imageData) {
+                                    const cleaned = { ...item, hasImage: true };
+                                    delete cleaned.imageB64;
+                                    delete cleaned.imageData;
+                                    return cleaned;
+                                }
+                                return item;
+                            });
+                        }
+                        if (Array.isArray(copy.storyHistoryStore)) {
+                            copy.storyHistoryStore = copy.storyHistoryStore.map(story => {
+                                let hasImage = story.hasImage || false;
+                                let segments = story.segments;
+                                if (story.imageB64 || story.imageData) {
+                                    hasImage = true;
+                                }
+                                if (Array.isArray(story.segments)) {
+                                    segments = story.segments.map(seg => {
+                                        if (seg.imageB64 || seg.imageData) {
+                                            const cleanedSeg = { ...seg, hasImage: true };
+                                            delete cleanedSeg.imageB64;
+                                            delete cleanedSeg.imageData;
+                                            return cleanedSeg;
+                                        }
+                                        return seg;
+                                    });
+                                }
+                                if (story.imageB64 || story.imageData || segments !== story.segments) {
+                                    const cleanedStory = { ...story, hasImage, segments };
+                                    delete cleanedStory.imageB64;
+                                    delete cleanedStory.imageData;
+                                    return cleanedStory;
+                                }
+                                return story;
+                            });
+                        }
+                        if (Array.isArray(copy.deletedStoryStore)) {
+                            copy.deletedStoryStore = copy.deletedStoryStore.map(story => {
+                                let hasImage = story.hasImage || false;
+                                let segments = story.segments;
+                                if (story.imageB64 || story.imageData) {
+                                    hasImage = true;
+                                }
+                                if (Array.isArray(story.segments)) {
+                                    segments = story.segments.map(seg => {
+                                        if (seg.imageB64 || seg.imageData) {
+                                            const cleanedSeg = { ...seg, hasImage: true };
+                                            delete cleanedSeg.imageB64;
+                                            delete cleanedSeg.imageData;
+                                            return cleanedSeg;
+                                        }
+                                        return seg;
+                                    });
+                                }
+                                if (story.imageB64 || story.imageData || segments !== story.segments) {
+                                    const cleanedStory = { ...story, hasImage, segments };
+                                    delete cleanedStory.imageB64;
+                                    delete cleanedStory.imageData;
+                                    return cleanedStory;
+                                }
+                                return story;
+                            });
+                        }
+                        return copy;
+                    }
+
+                    async function preloadImagesFromCache() {
+                        let updated = false;
+                        if (Array.isArray(englishDataStore)) {
+                            for (const item of englishDataStore) {
+                                if (item.hasImage && !item.imageB64) {
+                                    const cachedImg = await getImageFromCache(item.id);
+                                    if (cachedImg) {
+                                        item.imageB64 = cachedImg;
+                                        updated = true;
+                                    }
+                                }
+                            }
+                        }
+                        if (Array.isArray(storyHistoryStore)) {
+                            for (const story of storyHistoryStore) {
+                                if (story.hasImage && !story.imageB64) {
+                                    const cachedImg = await getImageFromCache(story.id);
+                                    if (cachedImg) {
+                                        story.imageB64 = cachedImg;
+                                        updated = true;
+                                    }
+                                }
+                                if (Array.isArray(story.segments)) {
+                                    for (let i = 0; i < story.segments.length; i++) {
+                                        const seg = story.segments[i];
+                                        if (seg.hasImage && !seg.imageB64) {
+                                            const cachedImg = await getImageFromCache(`${story.id}_segment_${i}`);
+                                            if (cachedImg) {
+                                                seg.imageB64 = cachedImg;
+                                                updated = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (updated) {
+                            console.log("[Image Sync] Preloaded images from cache, refreshing UI...");
+                            if (typeof applyFilterAndRender === "function") applyFilterAndRender();
+                            if (typeof renderStoryHistory === "function") renderStoryHistory();
+                        }
+                    }
+                    // --- [END OF IMAGE CACHE & SYNC ENGINE] ---
+
                     async function readPendingAudioUploads() {
                         try {
                             if (typeof localforage !== "undefined") {
@@ -6701,39 +7010,45 @@
                             cloudSyncTimeout = null;
                         }
 
-                        // Auto-compress large images in englishDataStore before sync to prevent Firestore 1MB document limit error
-                        let needsSave = false;
-                        for (let i = 0; i < englishDataStore.length; i++) {
-                            const item = englishDataStore[i];
-                            if (item.imageB64 && item.imageB64.startsWith("data:image/") && item.imageB64.length > 50000) {
-                                console.log(`[CloudSync] Auto-compressing large image for word: ${item.english} (${item.imageB64.length} chars)`);
-                                try {
-                                    const compressed = await compressBase64Image(item.imageB64);
-                                    if (compressed && compressed.length < item.imageB64.length) {
-                                        item.imageB64 = compressed;
-                                        needsSave = true;
-                                    }
-                                } catch (compressErr) {
-                                    console.warn("[CloudSync] Failed to compress image for word:", item.english, compressErr);
+                        // Make sure all current images in memory are cached locally and queued for upload if they aren't already
+                        if (Array.isArray(englishDataStore)) {
+                            for (const item of englishDataStore) {
+                                if (item.imageB64 && item.imageB64.startsWith("data:image/")) {
+                                    item.hasImage = true;
+                                    saveImageToCache(item.id, item.imageB64).catch(err => console.error("[Image Sync] Error caching image during sync:", err));
                                 }
                             }
                         }
-                        if (needsSave) {
-                            console.log("[CloudSync] Large images compressed, updating local snapshot...");
-                            lastSavedDataMap.englishDataStore = englishDataStore;
-                            saveTemporaryDataSnapshot(lastSavedDataMap);
+                        if (Array.isArray(storyHistoryStore)) {
+                            for (const story of storyHistoryStore) {
+                                if (story.imageB64 && story.imageB64.startsWith("data:image/")) {
+                                    story.hasImage = true;
+                                    saveImageToCache(story.id, story.imageB64).catch(err => console.error("[Image Sync] Error caching story image during sync:", err));
+                                }
+                                if (Array.isArray(story.segments)) {
+                                    story.segments.forEach((seg, idx) => {
+                                        if (seg.imageB64 && seg.imageB64.startsWith("data:image/")) {
+                                            seg.hasImage = true;
+                                            saveImageToCache(`${story.id}_segment_${idx}`, seg.imageB64).catch(err => console.error("[Image Sync] Error caching segment image during sync:", err));
+                                        }
+                                    });
+                                }
+                            }
                         }
 
                         const dataMap = lastSavedDataMap;
                         const isSyncOn = true;
                         if (navigator.onLine && isSyncOn) {
                             try {
-                                const cloudData = sanitizeForFirestore({ ...dataMap, lastUpdated: (/* @__PURE__ */ new Date()).toISOString() });
+                                // Strip large base64 images from the payload to avoid Firestore 1MB document limit error
+                                const sanitizedDataMap = sanitizeDataMapForFirestore(dataMap);
+                                const cloudData = sanitizeForFirestore({ ...sanitizedDataMap, lastUpdated: (/* @__PURE__ */ new Date()).toISOString() });
                                 await setDoc(doc(db, "users", currentUser.uid), cloudData, { merge: true });
                                 await clearPendingDataSyncManifest();
                                 console.log("Data synced to Cloud Success");
                                 updateCloudStatusUI("synced");
                                 processPendingAudioUploads({ silent: true });
+                                processPendingImageUploads({ silent: true });
                             } catch (e) {
                                 console.error("Cloud Save Error:", e);
                                 await setPendingDataSyncManifest(dataMap, e?.message || "cloud-save-error");
@@ -7037,6 +7352,7 @@
                         if (cloudData.userSettings && typeof applyUserSettings === "function") {
                             applyUserSettings(cloudData.userSettings);
                         }
+                        preloadImagesFromCache().catch((err) => console.error("[Image Sync] Preload failed:", err));
                         await saveLocalOnly();
                         if (isFirstLoad) {
                             showToast2("\u0E0B\u0E34\u0E07\u0E04\u0E4C\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E40\u0E2A\u0E23\u0E47\u0E08\u0E2A\u0E21\u0E1A\u0E39\u0E23\u0E13\u0E4C", "success");
@@ -7692,6 +8008,10 @@
                             incrementDailyMissionProgress("add_vocab");
                             checkAndAwardBadges();
                         }
+                        if (data.imageB64 && data.imageB64.startsWith("data:image/")) {
+                            data.hasImage = true;
+                            saveImageToCache(data.id, data.imageB64).catch(err => console.error("[Image Sync] Error caching image during add/update:", err));
+                        }
                         setTemporaryItem(getScopedDataKey("hasUnsyncedData"), true);
                         applyFilterAndRender();
                         renderAddVocabHistory();
@@ -7797,6 +8117,7 @@
                             { danger: true, previewHTML: previewHTML }
                         );
                         if (!confirmed) return;
+                        deleteImageFromCache(id).catch(err => console.error("[Image Sync] Error deleting image from cache:", err));
                         deletedDataStore = deletedDataStore.filter((item) => item.id !== id);
                         renderTrashList();
                         saveData();
@@ -7816,6 +8137,25 @@
                             { danger: true }
                         );
                         if (confirmed) {
+                            try {
+                                deletedDataStore.forEach(item => {
+                                    if (item && item.id) {
+                                        deleteImageFromCache(item.id).catch(() => {});
+                                    }
+                                });
+                                deletedStoryStore.forEach(story => {
+                                    if (story && story.id) {
+                                        deleteImageFromCache(story.id).catch(() => {});
+                                        if (Array.isArray(story.segments)) {
+                                            story.segments.forEach((seg, i) => {
+                                                deleteImageFromCache(`${story.id}_segment_${i}`).catch(() => {});
+                                            });
+                                        }
+                                    }
+                                });
+                            } catch (e) {
+                                console.error("[Image Sync] Error clearing images during trash empty:", e);
+                            }
                             deletedDataStore = [];
                             deletedStoryStore = [];
                             deletedTestHistoryStore = [];
@@ -14647,6 +14987,19 @@
                         showToast2("\u0E01\u0E39\u0E49\u0E04\u0E37\u0E19\u0E40\u0E23\u0E37\u0E48\u0E2D\u0E07\u0E23\u0E32\u0E27\u0E2A\u0E33\u0E40\u0E23\u0E47\u0E08", "success");
                     }
                     function deleteStoryPermanently(storyId) {
+                        try {
+                            const story = deletedStoryStore.find(s => s.id === storyId);
+                            if (story) {
+                                deleteImageFromCache(story.id).catch(() => {});
+                                if (Array.isArray(story.segments)) {
+                                    story.segments.forEach((seg, i) => {
+                                        deleteImageFromCache(`${story.id}_segment_${i}`).catch(() => {});
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.error("[Image Sync] Error deleting story images:", e);
+                        }
                         deletedStoryStore = deletedStoryStore.filter((s) => s.id !== storyId);
                         saveData();
                         renderTrashList();
