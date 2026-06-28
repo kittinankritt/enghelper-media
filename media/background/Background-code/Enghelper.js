@@ -7126,7 +7126,8 @@
                                 await setDoc(doc(db, "users", currentUser.uid), cloudData, { merge: true });
                                 await clearPendingDataSyncManifest();
                                 console.log("Data synced to Cloud Success");
-                                updateCloudStatusUI("synced");
+                                const stillPending = await hasAnyUnsyncedOrPendingUploads();
+                                updateCloudStatusUI(stillPending ? "pending" : "synced");
                                 processPendingAudioUploads({ silent: true });
                                 processPendingImageUploads({ silent: true });
                             } catch (e) {
@@ -30910,11 +30911,12 @@
                             checkAndRefillGlobalCache();
                             updateOfflineStatusIndicator();
                         }, 5e3);
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             const hasUnsynced = getTemporaryItem(getScopedDataKey("hasUnsyncedData")) === true;
+                            const stillPending = await hasAnyUnsyncedOrPendingUploads();
                             if (!navigator.onLine) {
                                 updateCloudStatusUI("offline");
-                            } else if (hasUnsynced) {
+                            } else if (hasUnsynced || stillPending) {
                                 updateCloudStatusUI("pending");
                             } else if (currentUser && db) {
                                 updateCloudStatusUI("synced");
