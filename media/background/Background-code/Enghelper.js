@@ -1895,6 +1895,18 @@
                         }
                     }
                     window.updateDangerZoneCounts = updateDangerZoneCounts;
+                    async function confirmDangerAction(message, title = "\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19") {
+                        if (typeof showConfirm === "function") {
+                            return await showConfirm(
+                                message,
+                                title,
+                                "\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19",
+                                "\u0E22\u0E01\u0E40\u0E25\u0E34\u0E01",
+                                { danger: true }
+                            );
+                        }
+                        return confirm(message.replace(/<[^>]*>/g, ""));
+                    }
                     document.body.addEventListener("click", async (e) => {
                         const vocabBtn = e.target.closest("#danger-delete-all-vocab-btn");
                         if (vocabBtn) {
