@@ -20871,7 +20871,7 @@
                             const pendingImages = typeof readPendingImageUploads === "function" ? await readPendingImageUploads() : [];
                             const pendingImageCount = pendingImages.length;
                             const failedImage = pendingImages.find(item => item.lastError);
-                            let imageDetail = pendingImageCount ? `\u0E23\u0E35\u0E1B\u0E20\u0E32\u0E1E\u0E23\u0E2D\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14 ${pendingImageCount} \u0E23\u0E35\u0E1B` : "";
+                            let imageDetail = pendingImageCount ? `\u0E23\u0E39\u0E1B\u0E20\u0E32\u0E1E\u0E23\u0E2D\u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14 ${pendingImageCount} \u0E23\u0E39\u0E1B` : "";
                             if (pendingImageCount && failedImage) {
                                 imageDetail += ` (\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14: ${failedImage.lastError})`;
                             }
