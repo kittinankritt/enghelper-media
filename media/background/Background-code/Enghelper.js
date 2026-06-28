@@ -4822,16 +4822,17 @@
                         const queue = await readPendingImageUploads();
                         if (!queue.length) return;
                         let uploadedCount = 0;
-                        const nextQueue = [];
+                        let currentQueue = [...queue];
                         for (const entry of queue) {
                             if (entry.ownerUid && entry.ownerUid !== currentUser.uid) {
-                                nextQueue.push(entry);
                                 continue;
                             }
                             try {
                                 const base64Str = await getImageFromCache(entry.id);
                                 if (!base64Str) {
-                                    // Item doesn't exist locally anymore, skip
+                                    // Item doesn't exist locally anymore, skip and remove from queue
+                                    currentQueue = currentQueue.filter(item => item.id !== entry.id);
+                                    await writePendingImageUploads(currentQueue);
                                     continue;
                                 }
                                 const imageDocRef = doc(db, "users", currentUser.uid, "image_cache", entry.id);
@@ -4840,30 +4841,33 @@
                                     updatedAt: typeof serverTimestamp === "function" ? serverTimestamp() : new Date().toISOString()
                                 });
                                 uploadedCount++;
+                                // Remove from queue immediately on success
+                                currentQueue = currentQueue.filter(item => item.id !== entry.id);
+                                await writePendingImageUploads(currentQueue);
                             } catch (error) {
-                                nextQueue.push({
-                                    ...entry,
-                                    ownerUid: entry.ownerUid || currentUser.uid,
-                                    status: "pending",
-                                    retryCount: Number(entry.retryCount || 0) + 1,
-                                    lastError: error?.message || String(error),
-                                    updatedAt: new Date().toISOString()
-                                });
+                                console.error(`Error uploading image ${entry.id}:`, error);
+                                const idx = currentQueue.findIndex(item => item.id === entry.id);
+                                if (idx > -1) {
+                                    currentQueue[idx] = {
+                                        ...currentQueue[idx],
+                                        ownerUid: entry.ownerUid || currentUser.uid,
+                                        status: "pending",
+                                        retryCount: Number(entry.retryCount || 0) + 1,
+                                        lastError: error?.message || String(error),
+                                        updatedAt: new Date().toISOString()
+                                    };
+                                    await writePendingImageUploads(currentQueue);
+                                }
                             }
                         }
-                        await writePendingImageUploads(nextQueue);
                         if (uploadedCount > 0 && !silent) {
                             showToast2(`<i class="fi fi-rr-cloud-upload"></i> อัปโหลดรูปภาพที่ค้างอยู่ ${uploadedCount} รูปแล้ว`, "success");
                         }
-                        if (nextQueue.length) {
+                        const stillPending = await hasAnyUnsyncedOrPendingUploads();
+                        if (stillPending) {
                             updateCloudStatusUI("pending");
                         } else {
-                            const stillPending = await hasAnyUnsyncedOrPendingUploads();
-                            if (!stillPending) {
-                                updateCloudStatusUI("synced");
-                            } else {
-                                updateCloudStatusUI("pending");
-                            }
+                            updateCloudStatusUI("synced");
                         }
                     }
 
@@ -5102,50 +5106,47 @@
                         const queue = await readPendingAudioUploads();
                         if (!queue.length) return;
                         let uploadedCount = 0;
-                        const nextQueue = [];
+                        let currentQueue = [...queue];
                         for (const entry of queue) {
                             if (entry.ownerUid && entry.ownerUid !== currentUser.uid) {
-                                nextQueue.push(entry);
                                 continue;
                             }
                             try {
                                 const blob = await getAudioFromIndexedDB(entry.cacheKey);
                                 if (!blob) {
-                                    nextQueue.push({
-                                        ...entry,
-                                        status: "failed",
-                                        lastError: "\u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E44\u0E1F\u0E25\u0E4C\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E43\u0E19\u0E40\u0E04\u0E23\u0E37\u0E48\u0E2D\u0E07",
-                                        updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-                                    });
+                                    currentQueue = currentQueue.filter(item => !(item.cacheKey === entry.cacheKey && (item.ownerUid || null) === (entry.ownerUid || null)));
+                                    await writePendingAudioUploads(currentQueue);
                                     continue;
                                 }
                                 await uploadAudioBlobToCloud(entry.cacheKey, blob);
                                 uploadedCount++;
+                                currentQueue = currentQueue.filter(item => !(item.cacheKey === entry.cacheKey && (item.ownerUid || null) === (entry.ownerUid || null)));
+                                await writePendingAudioUploads(currentQueue);
                             } catch (error) {
-                                nextQueue.push({
-                                    ...entry,
-                                    ownerUid: entry.ownerUid || currentUser.uid,
-                                    cloudPath: entry.cloudPath || `audio_cache/${currentUser.uid}/${entry.cacheKey}.mp3`,
-                                    status: "pending",
-                                    retryCount: Number(entry.retryCount || 0) + 1,
-                                    lastError: error?.message || String(error),
-                                    updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-                                });
+                                console.error(`Error uploading audio ${entry.cacheKey}:`, error);
+                                const idx = currentQueue.findIndex(item => item.cacheKey === entry.cacheKey && (item.ownerUid || null) === (entry.ownerUid || null));
+                                if (idx > -1) {
+                                    currentQueue[idx] = {
+                                        ...currentQueue[idx],
+                                        ownerUid: entry.ownerUid || currentUser.uid,
+                                        cloudPath: entry.cloudPath || `audio_cache/${currentUser.uid}/${entry.cacheKey}.mp3`,
+                                        status: "pending",
+                                        retryCount: Number(entry.retryCount || 0) + 1,
+                                        lastError: error?.message || String(error),
+                                        updatedAt: new Date().toISOString()
+                                    };
+                                    await writePendingAudioUploads(currentQueue);
+                                }
                             }
                         }
-                        await writePendingAudioUploads(nextQueue);
                         if (uploadedCount > 0 && !silent) {
-                            showToast2(`<i class="fi fi-rr-cloud-upload"></i> \u0E2D\u0E31\u0E1B\u0E42\u0E2B\u0E25\u0E14\u0E44\u0E1F\u0E25\u0E4C\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E17\u0E35\u0E48\u0E23\u0E2D\u0E2D\u0E22\u0E39\u0E48 ${uploadedCount} \u0E44\u0E1F\u0E25\u0E4C\u0E41\u0E25\u0E49\u0E27`, "success");
+                            showToast2(`<i class="fi fi-rr-cloud-upload"></i> อัปโหลดไฟล์เสียงที่รออยู่ ${uploadedCount} ไฟล์แล้ว`, "success");
                         }
-                        if (nextQueue.length) {
+                        const stillPending = await hasAnyUnsyncedOrPendingUploads();
+                        if (stillPending) {
                             updateCloudStatusUI("pending");
                         } else {
-                            const stillPending = await hasAnyUnsyncedOrPendingUploads();
-                            if (!stillPending) {
-                                updateCloudStatusUI("synced");
-                            } else {
-                                updateCloudStatusUI("pending");
-                            }
+                            updateCloudStatusUI("synced");
                         }
                     }
                     async function getPendingAudioUploadCount() {
@@ -7088,7 +7089,17 @@
                             for (const item of englishDataStore) {
                                 if (item.imageB64 && item.imageB64.startsWith("data:image/")) {
                                     item.hasImage = true;
-                                    imagePromises.push(saveImageToCache(item.id, item.imageB64));
+                                    let isCached = false;
+                                    if (imageStore) {
+                                        const cachedVal = await imageStore.getItem(item.id);
+                                        if (cachedVal) isCached = true;
+                                    } else {
+                                        const cachedVal = localStorage.getItem(`img_cache_${item.id}`);
+                                        if (cachedVal) isCached = true;
+                                    }
+                                    if (!isCached) {
+                                        imagePromises.push(saveImageToCache(item.id, item.imageB64));
+                                    }
                                 }
                             }
                             if (imagePromises.length > 0) {
@@ -7100,15 +7111,37 @@
                             for (const story of storyHistoryStore) {
                                 if (story.imageB64 && story.imageB64.startsWith("data:image/")) {
                                     story.hasImage = true;
-                                    storyPromises.push(saveImageToCache(story.id, story.imageB64));
+                                    let isCached = false;
+                                    if (imageStore) {
+                                        const cachedVal = await imageStore.getItem(story.id);
+                                        if (cachedVal) isCached = true;
+                                    } else {
+                                        const cachedVal = localStorage.getItem(`img_cache_${story.id}`);
+                                        if (cachedVal) isCached = true;
+                                    }
+                                    if (!isCached) {
+                                        storyPromises.push(saveImageToCache(story.id, story.imageB64));
+                                    }
                                 }
                                 if (Array.isArray(story.segments)) {
-                                    story.segments.forEach((seg, idx) => {
+                                    for (let idx = 0; idx < story.segments.length; idx++) {
+                                        const seg = story.segments[idx];
                                         if (seg.imageB64 && seg.imageB64.startsWith("data:image/")) {
                                             seg.hasImage = true;
-                                            storyPromises.push(saveImageToCache(`${story.id}_segment_${idx}`, seg.imageB64));
+                                            const segKey = `${story.id}_segment_${idx}`;
+                                            let isCached = false;
+                                            if (imageStore) {
+                                                const cachedVal = await imageStore.getItem(segKey);
+                                                if (cachedVal) isCached = true;
+                                            } else {
+                                                const cachedVal = localStorage.getItem(`img_cache_${segKey}`);
+                                                if (cachedVal) isCached = true;
+                                            }
+                                            if (!isCached) {
+                                                storyPromises.push(saveImageToCache(segKey, seg.imageB64));
+                                            }
                                         }
-                                    });
+                                    }
                                 }
                             }
                             if (storyPromises.length > 0) {
@@ -24117,11 +24150,28 @@
                         setSyncItemLoading(btn, true, "กำลังเตรียมข้อมูลสำรอง...", "fi fi-rr-box-alt", "บีบอัดและดาวน์โหลดข้อมูลทั้งหมด (.zip) รวมถึงความก้าวหน้า การตั้งค่า โปรไฟล์ บริบทส่วนตัว เสียงและรูปภาพที่สร้าง");
                         try {
                             const zip = new JSZip();
+
+                            // Sanitize main data stores to remove inline base64 images
+                            const sanitizedData = sanitizeDataMapForFirestore({
+                                englishDataStore,
+                                deletedDataStore,
+                                storyHistoryStore,
+                                deletedStoryStore
+                            });
+
+                            const localStorageSnapshot = typeof gatherLocalStorageSnapshot === "function" ? gatherLocalStorageSnapshot() : {};
+                            // Sanitize localStorageSnapshot to remove base64 image cache to avoid duplicate payload size
+                            for (const key in localStorageSnapshot) {
+                                if (key.startsWith("img_cache_")) {
+                                    delete localStorageSnapshot[key];
+                                }
+                            }
+
                             const aiBackupData = {
                                 appVersion: "2.2_ai_backup",
                                 exportDate: (new Date()).toISOString(),
-                                englishDataStore,
-                                deletedDataStore,
+                                englishDataStore: sanitizedData.englishDataStore,
+                                deletedDataStore: sanitizedData.deletedDataStore,
                                 testHistoryStore,
                                 deletedTestHistoryStore,
                                 gameHistoryStore,
@@ -24130,18 +24180,19 @@
                                 deletedRolePlayHistoryStore,
                                 grammarHistoryStore,
                                 deletedGrammarHistoryStore,
-                                storyHistoryStore,
-                                deletedStoryStore,
+                                storyHistoryStore: sanitizedData.storyHistoryStore,
+                                deletedStoryStore: sanitizedData.deletedStoryStore,
                                 userStats,
                                 globalCache,
                                 activeSessions,
                                 userSettings: typeof gatherUserSettings === "function" ? gatherUserSettings() : {},
-                                localStorageSnapshot: typeof gatherLocalStorageSnapshot === "function" ? gatherLocalStorageSnapshot() : {},
+                                localStorageSnapshot,
                                 personalContext: JSON.parse(localStorage.getItem("personal_context") || "{}"),
                                 aiUsageStats: JSON.parse(localStorage.getItem("ai_usage_stats") || "{}")
                             };
                             zip.file("ai_backup_data.json", JSON.stringify(aiBackupData, null, 2));
 
+                            // Extract audio files
                             if (typeof audioStore !== "undefined") {
                                 const keys = await audioStore.keys();
                                 if (keys.length > 0) {
@@ -24165,10 +24216,85 @@
 
                                         count += batchKeys.length;
                                         setSyncItemLoading(btn, true, `กำลังรวบรวมไฟล์เสียง (${Math.min(count, keys.length)}/${keys.length})...`);
-
-                                        // Yield to main thread briefly to avoid freezing UI
                                         await new Promise(resolve => setTimeout(resolve, 0));
                                     }
+                                }
+                            }
+
+                            // Extract image files
+                            function base64ToBlob(base64Str, defaultMime = "image/png") {
+                                if (!base64Str) return null;
+                                let mime = defaultMime;
+                                let data = base64Str;
+                                if (base64Str.startsWith("data:")) {
+                                    const parts = base64Str.split(",");
+                                    const match = parts[0].match(/:(.*?);/);
+                                    if (match) mime = match[1];
+                                    data = parts[1];
+                                }
+                                try {
+                                    const byteCharacters = atob(data);
+                                    const byteNumbers = new Array(byteCharacters.length);
+                                    for (let i = 0; i < byteCharacters.length; i++) {
+                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                    }
+                                    const byteArray = new Uint8Array(byteNumbers);
+                                    return new Blob([byteArray], { type: mime });
+                                } catch (e) {
+                                    console.error("base64ToBlob conversion error:", e);
+                                    return null;
+                                }
+                            }
+
+                            const allCachedImages = {};
+                            if (typeof imageStore !== "undefined") {
+                                const keys = await imageStore.keys();
+                                for (const key of keys) {
+                                    try {
+                                        const val = await imageStore.getItem(key);
+                                        if (val) allCachedImages[key] = val;
+                                    } catch (e) {
+                                        console.warn(`Failed to read image ${key} from imageStore`, e);
+                                    }
+                                }
+                            }
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const key = localStorage.key(i);
+                                if (key && key.startsWith("img_cache_")) {
+                                    const id = key.substring("img_cache_".length);
+                                    if (id && !allCachedImages[id]) {
+                                        allCachedImages[id] = localStorage.getItem(key);
+                                    }
+                                }
+                            }
+
+                            const imageKeys = Object.keys(allCachedImages);
+                            if (imageKeys.length > 0) {
+                                const imageFolder = zip.folder("image_cache");
+                                let count = 0;
+                                const batchSize = 20;
+
+                                for (let i = 0; i < imageKeys.length; i += batchSize) {
+                                    const batchKeys = imageKeys.slice(i, i + batchSize);
+
+                                    await Promise.all(batchKeys.map(async (key) => {
+                                        try {
+                                            const base64Str = allCachedImages[key];
+                                            const blob = base64ToBlob(base64Str);
+                                            if (blob) {
+                                                let ext = "png";
+                                                if (blob.type === "image/jpeg" || blob.type === "image/jpg") ext = "jpg";
+                                                else if (blob.type === "image/webp") ext = "webp";
+                                                imageFolder.file(`${key}.${ext}`, blob);
+                                            }
+                                        } catch (err) {
+                                            console.warn(`Failed to package image ${key}`, err);
+                                        }
+                                    }));
+
+                                    count += batchKeys.length;
+                                    setSyncItemLoading(btn, true, `กำลังรวบรวมไฟล์รูปภาพ (${Math.min(count, imageKeys.length)}/${imageKeys.length})...`);
+                                    await new Promise(resolve => setTimeout(resolve, 0));
                                 }
                             }
 
@@ -24210,53 +24336,8 @@
                                 return;
                             }
 
-                            const vocabTextMap = {};
-                            if (importedPayload && Array.isArray(importedPayload.englishDataStore)) {
-                                importedPayload.englishDataStore.forEach(item => {
-                                    const text = String(item.englishData || item.word || item.english || "").trim();
-                                    if (text) {
-                                        vocabTextMap[hashText(text)] = text;
-                                    }
-                                });
-                            }
-
-                            const audioFolder = zip.folder("audio_cache");
-                            if (audioFolder && typeof audioStore !== "undefined") {
-                                const files = [];
-                                audioFolder.forEach((relativePath, zipEntry) => {
-                                    if (!zipEntry.dir) files.push(zipEntry);
-                                });
-                                if (files.length > 0) {
-                                    let audioCount = 0;
-                                    const batchSize = 20;
-
-                                    for (let i = 0; i < files.length; i += batchSize) {
-                                        const batchFiles = files.slice(i, i + batchSize);
-
-                                        await Promise.all(batchFiles.map(async (zipEntry) => {
-                                            try {
-                                                const blob = await zipEntry.async("blob");
-                                                const filename = zipEntry.name.split("/").pop();
-                                                const key = filename.replace(".mp3", "");
-                                                // Verify that key matches expected audio cache hash format
-                                                if (key.startsWith("audio_") && blob instanceof Blob) {
-                                                    await audioStore.setItem(key, blob);
-                                                    const textVal = vocabTextMap[key] || "";
-                                                    await queueAudioForCloudUpload(key, textVal, blob);
-                                                }
-                                            } catch (err) {
-                                                console.warn(`Failed to process audio import for ${zipEntry.name}`, err);
-                                            }
-                                        }));
-
-                                        audioCount += batchFiles.length;
-                                        setSyncItemLoading(btn, true, `กำลังนำเข้าไฟล์เสียง (${Math.min(audioCount, files.length)}/${files.length})...`);
-
-                                        // Yield to main thread briefly to avoid freezing UI
-                                        await new Promise(resolve => setTimeout(resolve, 0));
-                                    }
-                                }
-                            }
+                            // Store zip object in window._pendingImportZip
+                            window._pendingImportZip = zip;
 
                             setSyncItemLoading(btn, true, "กำลังประมวลผลข้อมูล AI...");
                             if (typeof window.processImportedPayload === "function") {
@@ -25323,7 +25404,12 @@
                         }
                     });
 
-                    document.getElementById('detailed-import-confirm-btn')?.addEventListener('click', () => {
+                    document.getElementById('detailed-import-dialog')?.addEventListener('close', () => {
+                        window._pendingImportPayload = null;
+                        window._pendingImportZip = null;
+                    });
+
+                    document.getElementById('detailed-import-confirm-btn')?.addEventListener('click', async () => {
                         const payload = window._pendingImportPayload;
                         if (!payload) return;
 
@@ -25333,25 +25419,94 @@
 
                         let counts = { vocab: 0, tests: 0, games: 0, notifications: 0, chats: 0, grammar: 0, stories: 0, settings: 0, skipped: 0 };
 
+                        function blobToBase64(blob) {
+                            return new Promise((resolve, reject) => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => resolve(reader.result);
+                                reader.onerror = reject;
+                                reader.readAsDataURL(blob);
+                            });
+                        }
+
+                        async function extractAndCacheImage(zip, oldKey, newKey) {
+                            if (!zip) return;
+                            const imgFolder = zip.folder("image_cache");
+                            if (!imgFolder) return;
+                            const extensions = ["png", "jpg", "jpeg", "webp"];
+                            let zipEntry = null;
+                            for (const ext of extensions) {
+                                const entry = imgFolder.file(`${oldKey}.${ext}`);
+                                if (entry) {
+                                    zipEntry = entry;
+                                    break;
+                                }
+                            }
+                            if (zipEntry) {
+                                try {
+                                    const blob = await zipEntry.async("blob");
+                                    if (blob instanceof Blob) {
+                                        const base64Str = await blobToBase64(blob);
+                                        if (base64Str) {
+                                            if (typeof imageStore !== "undefined") {
+                                                await imageStore.setItem(newKey, base64Str);
+                                            } else {
+                                                localStorage.setItem(`img_cache_${newKey}`, base64Str);
+                                            }
+                                            await queueImageForCloudUpload(newKey, base64Str);
+                                        }
+                                    }
+                                } catch (err) {
+                                    console.warn(`Failed to extract image for key ${oldKey}`, err);
+                                }
+                            }
+                        }
+
                         // --- VOCAB ---
                         const vocabIndices = getCheckedIndices('import-chk-vocab');
                         if (vocabIndices.length > 0) {
                             const vocab = payload.englishDataStore || (Array.isArray(payload) ? payload : []);
-                            vocabIndices.forEach(idx => {
+                            for (const idx of vocabIndices) {
                                 const newItem = vocab[idx];
                                 if (newItem && typeof newItem.englishData === "string") {
                                     if (!englishDataStore.some(existing => areWordsMatching(existing.englishData, newItem.englishData))) {
+                                        const oldId = newItem.id;
                                         newItem.id = generateId();
                                         if (!("imageData" in newItem)) newItem.imageData = null;
                                         if (!("createdAt" in newItem) || !isValidDate(newItem.createdAt)) newItem.createdAt = new Date().toISOString();
                                         if (typeof newItem.thaiExplanation === "undefined") newItem.thaiExplanation = "";
                                         englishDataStore.push(normalizeVocabularyItem(newItem));
                                         counts.vocab++;
+
+                                        // Extract image if available
+                                        if (oldId && window._pendingImportZip) {
+                                            await extractAndCacheImage(window._pendingImportZip, oldId, newItem.id);
+                                        }
+
+                                        // Extract audio if available
+                                        const text = String(newItem.englishData || newItem.word || newItem.english || "").trim();
+                                        if (text && window._pendingImportZip && typeof audioStore !== "undefined") {
+                                            const audioKey = hashText(text);
+                                            const audioFolder = window._pendingImportZip.folder("audio_cache");
+                                            if (audioFolder) {
+                                                const audioEntry = audioFolder.file(`${audioKey}.mp3`);
+                                                if (audioEntry) {
+                                                    try {
+                                                        const blob = await audioEntry.async("blob");
+                                                        if (blob instanceof Blob) {
+                                                            await audioStore.setItem(audioKey, blob);
+                                                            await queueAudioForCloudUpload(audioKey, text, blob);
+                                                        }
+                                                    } catch (err) {
+                                                        console.warn(`Failed to extract audio for ${audioKey}`, err);
+                                                    }
+                                                }
+                                            }
+                                        }
                                     } else {
                                         counts.skipped++;
                                     }
                                 }
-                            });
+                            }
                             if (counts.vocab > 0) userStats.totalWordsAdded = (userStats.totalWordsAdded || 0) + counts.vocab;
                         }
 
@@ -25399,10 +25554,24 @@
                         const storyIndices = getCheckedIndices('import-chk-stories');
                         if (storyIndices.length > 0) {
                             const stories = payload.storyHistoryStore || [];
-                            storyIndices.forEach(idx => {
+                            for (const idx of storyIndices) {
                                 const story = stories[idx];
-                                if (story && story.id && !storyHistoryStore.some(e => e.id === story.id)) { storyHistoryStore.push(story); counts.stories++; }
-                            });
+                                if (story && story.id && !storyHistoryStore.some(e => e.id === story.id)) {
+                                    storyHistoryStore.push(story);
+                                    counts.stories++;
+
+                                    // Extract story images
+                                    if (window._pendingImportZip) {
+                                        await extractAndCacheImage(window._pendingImportZip, story.id, story.id);
+                                        if (Array.isArray(story.segments)) {
+                                            for (let i = 0; i < story.segments.length; i++) {
+                                                const segKey = `${story.id}_segment_${i}`;
+                                                await extractAndCacheImage(window._pendingImportZip, segKey, segKey);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         // --- SETTINGS (Iterate through the checked settings list) ---
@@ -25561,6 +25730,7 @@
                         showToast2(summaryMsg, "success", 6000);
 
                         window._pendingImportPayload = null;
+                        window._pendingImportZip = null;
                         document.getElementById('detailed-import-dialog').close();
                         if (typeof dataManagementDialog !== 'undefined' && dataManagementDialog.open) {
                             dataManagementDialog.close();
