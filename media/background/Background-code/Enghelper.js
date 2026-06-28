@@ -5864,6 +5864,15 @@
                         audioCache.set(cacheKey, url);
                         await saveAudioToIndexedDB(cacheKey, blob);
                         updateAudioIconsState(text, true);
+
+                        if (Array.isArray(englishDataStore)) {
+                            const item = englishDataStore.find(i => i.englishData === text);
+                            if (item && !item.hasAudio) {
+                                item.hasAudio = true;
+                                if (typeof saveData === "function") saveData();
+                            }
+                        }
+
                         const isSyncOn = JSON.parse(localStorage.getItem("isCloudSyncEnabled") ?? "true");
                         if (!isSyncOn) return;
                         if (currentUser && db && navigator.onLine) {
@@ -5888,12 +5897,18 @@
                             if (icon) {
                                 if (isProcessing) {
                                     icon.style.color = "#F59E0B";
+                                    btn.classList.add("audio-processing");
+                                    btn.classList.remove("audio-success", "audio-error");
                                     icon.className = icon.className.replace("fi-rr-", "fi-rr-").replace("fi-rr-", "fi-rr-");
                                 } else if (hasCache) {
                                     icon.style.color = "var(--success-color)";
+                                    btn.classList.add("audio-success");
+                                    btn.classList.remove("audio-processing", "audio-error");
                                     if (icon.classList.contains("fi-rr-play")) icon.classList.replace("fi-rr-play", "fi-rr-play");
                                 } else {
                                     icon.style.color = "var(--error-color)";
+                                    btn.classList.add("audio-error");
+                                    btn.classList.remove("audio-processing", "audio-success");
                                     if (icon.classList.contains("fi-rr-play")) icon.classList.replace("fi-rr-play", "fi-rr-play");
                                 }
                             }
@@ -6100,6 +6115,13 @@
                         if (audioCache.has(cacheKey)) {
                             updateAudioIconsState(text, true);
                             return;
+                        }
+                        if (Array.isArray(englishDataStore)) {
+                            const item = englishDataStore.find(i => i.englishData === text);
+                            if (item && item.hasAudio) {
+                                updateAudioIconsState(text, true);
+                                return;
+                            }
                         }
                         if (audioStore) {
                             const blob = await getAudioFromIndexedDB(cacheKey);

@@ -22171,8 +22171,6 @@ select {
     height: 38px !important;
     min-width: 38px !important;
     border-radius: 50% !important;
-    background: transparent !important;
-    border: 2px solid !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -22181,7 +22179,6 @@ select {
     font-size: 1.1rem !important;
     cursor: pointer !important;
     padding: 0 !important;
-    box-shadow: none !important;
     text-decoration: none !important;
 }
 
@@ -22192,64 +22189,189 @@ select {
 #view-mode-delete-btn:hover,
 #view-mode-word-mic-btn:hover,
 #find-in-stories-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-3px) scale(1.05) !important;
 }
 
-/* 3. กำหนดสี (Color Mapping) */
+/* 3. กำหนดสี (Color Mapping) และ Claymorphism */
 
-/* 🔊 ปุ่มเสียง (Audio) -> สี Primary (ตามธีม) */
+/* 🔊 ปุ่มเสียง (Audio) / รายละเอียด (Details) -> สี Primary (ตามธีม) */
 .capsule-icon-btn.audio-btn,
+.capsule-icon-btn.details-btn,
 #view-mode-word-audio-btn,
-#view-mode-examples-audio-btn {
+#view-mode-examples-audio-btn,
+#find-in-stories-btn {
     color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
+    border: 1px solid rgba(var(--theme-rgb), 0.3) !important;
+    background: rgba(var(--theme-rgb), 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(var(--theme-rgb), 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(var(--theme-rgb), 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn,
+[data-theme="dark"] .capsule-icon-btn.details-btn,
+[data-theme="dark"] #view-mode-word-audio-btn,
+[data-theme="dark"] #view-mode-examples-audio-btn,
+[data-theme="dark"] #find-in-stories-btn {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(var(--theme-rgb), 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(var(--theme-rgb), 0.4) !important;
 }
 
 .capsule-icon-btn.audio-btn:hover,
+.capsule-icon-btn.details-btn:hover,
 #view-mode-word-audio-btn:hover,
-#view-mode-examples-audio-btn:hover {
-    background-color: rgba(var(--theme-rgb), 0.14) !important;
-    color: var(--primary-color) !important;
+#view-mode-examples-audio-btn:hover,
+#find-in-stories-btn:hover {
+    background-color: rgba(var(--theme-rgb), 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(var(--theme-rgb), 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn:hover,
+[data-theme="dark"] .capsule-icon-btn.details-btn:hover,
+[data-theme="dark"] #view-mode-word-audio-btn:hover,
+[data-theme="dark"] #view-mode-examples-audio-btn:hover,
+[data-theme="dark"] #find-in-stories-btn:hover {
+    background-color: rgba(var(--theme-rgb), 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(var(--theme-rgb), 0.5) !important;
+}
+
+/* 🔊 ปุ่มเสียง (Audio) เมื่อสำเร็จ (มี Cache) -> สีเขียว (Success) */
+.capsule-icon-btn.audio-btn.audio-success {
+    color: var(--success-color) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(16, 185, 129, 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success {
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+    background: rgba(16, 185, 129, 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(16, 185, 129, 0.4) !important;
+}
+
+.capsule-icon-btn.audio-btn.audio-success:hover {
+    background-color: rgba(16, 185, 129, 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(16, 185, 129, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success:hover {
+    background-color: rgba(16, 185, 129, 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(16, 185, 129, 0.5) !important;
+}
+
+/* 🔊 ปุ่มเสียง (Audio) เมื่อเกิดข้อผิดพลาด -> สีแดง (Error) */
+.capsule-icon-btn.audio-btn.audio-error {
+    color: var(--error-color) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(239, 68, 68, 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error {
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(239, 68, 68, 0.4) !important;
+}
+
+.capsule-icon-btn.audio-btn.audio-error:hover {
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(239, 68, 68, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error:hover {
+    background-color: rgba(239, 68, 68, 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(239, 68, 68, 0.5) !important;
 }
 
 /* 🎙️ ปุ่มไมค์ (Mic) -> สีฟ้า (#3B82F6) */
 .capsule-icon-btn.mic-btn,
 #view-mode-word-mic-btn {
     color: #3B82F6 !important;
-    border-color: #3B82F6 !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(59, 130, 246, 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.mic-btn,
+[data-theme="dark"] #view-mode-word-mic-btn {
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    background: rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(59, 130, 246, 0.4) !important;
 }
 
 .capsule-icon-btn.mic-btn:hover,
 #view-mode-word-mic-btn:hover {
-    background-color: rgba(59, 130, 246, 0.14) !important;
-    color: #3B82F6 !important;
+    background-color: rgba(59, 130, 246, 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(59, 130, 246, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* ✏️ ปุ่มแก้ไข (Edit) -> สีเหลืองส้ม (#F59E0B) */
+[data-theme="dark"] .capsule-icon-btn.mic-btn:hover,
+[data-theme="dark"] #view-mode-word-mic-btn:hover {
+    background-color: rgba(59, 130, 246, 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(59, 130, 246, 0.5) !important;
+}
+
+/* ✏️ ปุ่มแก้ไข (Edit) และ 🔖 ปุ่มเน้น (Bookmark) -> สีเหลืองส้ม (#F59E0B) */
 .capsule-icon-btn.edit-btn,
-#view-mode-edit-btn {
+.capsule-icon-btn.bookmark-btn,
+#view-mode-edit-btn,
+#toggle-difficult-word-btn {
     color: #F59E0B !important;
-    border-color: #F59E0B !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    background: rgba(245, 158, 11, 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(245, 158, 11, 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(245, 158, 11, 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.edit-btn,
+[data-theme="dark"] .capsule-icon-btn.bookmark-btn,
+[data-theme="dark"] #view-mode-edit-btn,
+[data-theme="dark"] #toggle-difficult-word-btn {
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    background: rgba(245, 158, 11, 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(245, 158, 11, 0.4) !important;
 }
 
 .capsule-icon-btn.edit-btn:hover,
-#view-mode-edit-btn:hover {
-    background-color: rgba(245, 158, 11, 0.14) !important;
-    color: #F59E0B !important;
+.capsule-icon-btn.bookmark-btn:hover,
+#view-mode-edit-btn:hover,
+#toggle-difficult-word-btn:hover {
+    background-color: rgba(245, 158, 11, 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(245, 158, 11, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.edit-btn:hover,
+[data-theme="dark"] .capsule-icon-btn.bookmark-btn:hover,
+[data-theme="dark"] #view-mode-edit-btn:hover,
+[data-theme="dark"] #toggle-difficult-word-btn:hover {
+    background-color: rgba(245, 158, 11, 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(245, 158, 11, 0.5) !important;
 }
 
 /* 🗑️ ปุ่มลบ (Delete) -> สีแดง (#EF4444) */
 .capsule-icon-btn.delete-btn,
 #view-mode-delete-btn {
     color: #EF4444 !important;
-    border-color: #EF4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    box-shadow: 2px 3px 6px rgba(239, 68, 68, 0.15), inset 1px 2px 3px rgba(255, 255, 255, 0.6), inset -1px -2px 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.delete-btn,
+[data-theme="dark"] #view-mode-delete-btn {
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.2) !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.15), inset -1px -2px 3px rgba(239, 68, 68, 0.4) !important;
 }
 
 .capsule-icon-btn.delete-btn:hover,
 #view-mode-delete-btn:hover {
-    background-color: rgba(239, 68, 68, 0.14) !important;
-    color: #EF4444 !important;
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    box-shadow: 3px 5px 10px rgba(239, 68, 68, 0.3), inset 1px 2px 3px rgba(255, 255, 255, 0.8), inset -1px -2px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .capsule-icon-btn.delete-btn:hover,
+[data-theme="dark"] #view-mode-delete-btn:hover {
+    background-color: rgba(239, 68, 68, 0.35) !important;
+    box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.45), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.25), inset -1.5px -1.5px 3px rgba(239, 68, 68, 0.5) !important;
 }
 
 /* 4. ซ่อนเส้นคั่นแนวตั้งเดิมใน Popup เพื่อความสะอาดตา */
