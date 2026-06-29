@@ -18600,7 +18600,7 @@
                                                 'US': { flag: '🇺🇸', name: 'US' },
                                                 'CA': { flag: '🇨🇦', name: 'CA' },
                                                 'AU': { flag: '🇦🇺', name: 'AU' },
-                                                'General': { flag: '🌐', name: 'General' }
+                                                'General': { flag: '🌐', name: 'Universal' }
                                             };
                                             const info = dMap[d] || { flag: '🌐', name: d };
 
@@ -19424,7 +19424,7 @@
                                 'UK': { flag: '🇬🇧', label: 'UK' },
                                 'AU': { flag: '🇦🇺', label: 'AU' },
                                 'CA': { flag: '🇨🇦', label: 'CA' },
-                                'General': { flag: '🌐', label: 'General' }
+                                'General': { flag: '🌐', label: 'Universal' }
                             };
 
                             const dList = ["US", "UK", "AU", "CA", "General"];
