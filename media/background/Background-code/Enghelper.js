@@ -4561,16 +4561,14 @@
                             btnYes.removeAttribute("style");
                             btnNo.removeAttribute("style");
                             btnYes.disabled = false;
+                            dialog.classList.remove("danger-dialog", "danger-yes", "danger-no");
 
                             if (options.danger || noText === "\u0E40\u0E23\u0E34\u0E48\u0E21\u0E43\u0E2B\u0E21\u0E48" || noText === "\u0E25\u0E1A" || yesText === "\u0E25\u0E1A") {
-                                // ปรับแต่งปุ่มอันตราย (ลบ/เริ่มใหม่)
+                                dialog.classList.add("danger-dialog");
                                 if (yesText === "\u0E25\u0E1A" || options.danger) {
-                                    btnYes.style.background = "linear-gradient(135deg, #EF4444, #DC2626)";
-                                    btnYes.style.boxShadow = "0 4px 15px rgba(239, 68, 68, 0.4)";
+                                    dialog.classList.add("danger-yes");
                                 } else {
-                                    btnNo.style.backgroundColor = "#ff6b6b";
-                                    btnNo.style.color = "white";
-                                    btnNo.style.border = "none";
+                                    dialog.classList.add("danger-no");
                                 }
                             }
 
