@@ -53580,7 +53580,7 @@ dialog {
     margin-bottom: 24px;
     position: relative;
     z-index: 7;
-    align-items: stretch;
+    align-items: start;
 }
 
 #data-details-dialog.has-image .vocab-top-metrics-row {
