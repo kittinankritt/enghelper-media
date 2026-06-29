@@ -53572,7 +53572,7 @@ dialog {
 /* ==========================================================================
    Redesigned Vocabulary Detail Styles
    ========================================================================== */
-.vocab-top-metrics-row {
+.vocab-bottom-details-layout {
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: 20px;
@@ -53583,7 +53583,7 @@ dialog {
     align-items: start;
 }
 
-#data-details-dialog.has-image .vocab-top-metrics-row {
+#data-details-dialog.has-image .vocab-bottom-details-layout {
     margin-top: -120px;
 }
 
@@ -53594,7 +53594,7 @@ dialog {
     padding-bottom: 28px;
 }
 
-#data-details-dialog:not(.has-image) .vocab-top-metrics-row {
+#data-details-dialog:not(.has-image) .vocab-bottom-details-layout {
     margin-top: 48px;
 }
 
@@ -53605,7 +53605,7 @@ dialog {
 }
 
 @media (max-width: 768px) {
-    .vocab-top-metrics-row {
+    .vocab-bottom-details-layout {
         grid-template-columns: 1fr;
     }
 
@@ -53853,14 +53853,6 @@ dialog {
     opacity: 0.85;
 }
 
-.vocab-bottom-details-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    gap: 20px;
-    margin-top: 20px;
-    align-items: flex-start;
-}
-
 .vocab-bottom-left-col {
     min-width: 0;
     display: flex;
@@ -53876,10 +53868,6 @@ dialog {
 }
 
 @media (max-width: 768px) {
-    .vocab-bottom-details-layout {
-        grid-template-columns: 1fr;
-    }
-
     .vocab-bottom-left-col,
     .vocab-bottom-right-col {
         width: 100%;
