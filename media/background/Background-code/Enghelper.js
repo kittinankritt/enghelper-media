@@ -27100,7 +27100,7 @@
                         const hasImage = !!item.imageB64;
                         flashcardContent.classList.toggle('has-image', hasImage);
                         if (hasImage) {
-                            flashcardContent.style.setProperty('--fc-bg-image', `url(${item.imageB64})`);
+                            flashcardContent.style.setProperty('--fc-bg-image', `url("${item.imageB64}")`);
                         } else {
                             flashcardContent.style.removeProperty('--fc-bg-image');
                         }
