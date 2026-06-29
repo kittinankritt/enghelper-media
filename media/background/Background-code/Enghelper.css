@@ -5132,6 +5132,135 @@ button .loader,
     flex: 0 0 auto;
 }
 
+/* ===== Full Background Image for Flashcard when it has an image ===== */
+#flashcard-content.has-image {
+    background-image: linear-gradient(rgba(15, 12, 30, 0.65), rgba(15, 12, 30, 0.65)), var(--fc-bg-image) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Hide the duplicate inline small image */
+#flashcard-content.has-image .fc-word-image {
+    display: none !important;
+}
+
+/* Make front/back containers sit on top of background image */
+#flashcard-content.has-image .flashcard-front,
+#flashcard-content.has-image .flashcard-back {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#flashcard-content.has-image .fc-front-info-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 16px;
+    padding: 0 10px;
+    z-index: 2;
+    position: relative;
+}
+
+#flashcard-content.has-image .fc-front-row-meta {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#flashcard-content.has-image .fc-front-row-meta .fc-item-display {
+    flex: 1;
+    min-width: 0;
+}
+
+#flashcard-content.has-image .fc-back-info-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 16px;
+    padding: 0 10px;
+    z-index: 2;
+    position: relative;
+}
+
+#flashcard-content.has-image .fc-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+/* Adjust all text displays on the card to be glassmorphic and highly readable */
+#flashcard-content.has-image .fc-item-display {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    margin-bottom: 0 !important;
+}
+
+#flashcard-content.has-image .fc-english-data {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8) !important;
+}
+
+#flashcard-content.has-image .fc-back-word-header {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8) !important;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#flashcard-content.has-image .fc-flipper-toggle-hint {
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+#flashcard-content.has-image .fc-example-title {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+#flashcard-content.has-image .fc-example li {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Clay styling override for the active audio button when card has image */
+#flashcard-content.has-image .dialog-audio-btn {
+    z-index: 10 !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+}
+
+#flashcard-content.has-image .dialog-audio-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: scale(1.1) !important;
+}
+
 .fc-item-display {
     font-size: 1.25rem;
     margin-bottom: 10px;
