@@ -1941,7 +1941,7 @@
                                 const posClass = item.pos ? `pos-${item.pos.toLowerCase().replace(/\s+/g, "").replace(".", "")}` : "";
                                 const thaiTextPart = item.thaiExplanation ? `<span class="thai-text">(${escapeHtml(item.thaiExplanation)})</span>` : "";
                                 return `
-                                            <div class="data-capsule ${posClass}" style="pointer-events: none; margin-bottom: 8px; box-shadow: none; border-color: var(--border-color); transform: scale(0.95); transform-origin: left top; width: 105%;">
+                                            <div class="data-capsule ${posClass}" style="pointer-events: none; margin-bottom: 8px; box-shadow: none; border-color: var(--border-color); transform: scale(0.95); transform-origin: left top; width: 105%; position: relative !important; padding: 12px 15px 12px 35px !important; overflow: hidden;">
                                                 <div class="capsule-row-top">
                                                     <span class="english-text">${escapeHtml(item.englishData)}</span>
                                                     ${thaiTextPart}
@@ -8141,7 +8141,7 @@
                         const posClass = itemToDelete.pos ? `pos-${itemToDelete.pos.toLowerCase().replace(/\s+/g, "").replace(".", "")}` : "";
                         const thaiTextPart = itemToDelete.thaiExplanation ? `<span class="thai-text">(${escapeHtml(itemToDelete.thaiExplanation)})</span>` : "";
                         const previewHTML = `
-                                    <div class="data-capsule ${posClass}" style="pointer-events: none; margin: 0; box-shadow: none; border-color: var(--border-color); padding: 12px 15px; border-left: none;">
+                                    <div class="data-capsule ${posClass}" style="pointer-events: none; margin: 0; box-shadow: none; border-color: var(--border-color); padding: 12px 15px 12px 35px !important; position: relative !important; overflow: hidden; border-left: none;">
                                         <div class="capsule-row-top">
                                             <span class="english-text">${escapeHtml(itemToDelete.englishData)}</span>
                                             ${thaiTextPart}
@@ -8209,7 +8209,7 @@
                         const posClass = itemToDelete.pos ? `pos-${itemToDelete.pos.toLowerCase().replace(/\s+/g, "").replace(".", "")}` : "";
                         const thaiTextPart = itemToDelete.thaiExplanation ? `<span class="thai-text">(${escapeHtml(itemToDelete.thaiExplanation)})</span>` : "";
                         const previewHTML = `
-                                    <div class="data-capsule ${posClass}" style="pointer-events: none; margin: 0; box-shadow: none; border-color: var(--border-color); padding: 12px 15px; border-left: none;">
+                                    <div class="data-capsule ${posClass}" style="pointer-events: none; margin: 0; box-shadow: none; border-color: var(--border-color); padding: 12px 15px 12px 35px !important; position: relative !important; overflow: hidden; border-left: none;">
                                         <div class="capsule-row-top">
                                             <span class="english-text">${escapeHtml(itemToDelete.englishData)}</span>
                                             ${thaiTextPart}
