@@ -20160,7 +20160,7 @@
                         flashcardContent.classList.toggle('has-image', hasImage);
                         flashcardContent.classList.remove('flipped');
                         if (hasImage) {
-                            flashcardContent.style.setProperty('--fc-bg-image', `url(${item.imageB64})`);
+                            flashcardContent.style.setProperty('--fc-bg-image', `url("${item.imageB64}")`);
                         } else {
                             flashcardContent.style.removeProperty('--fc-bg-image');
                         }
@@ -25483,18 +25483,34 @@
                         }
 
                         async function extractAndCacheImage(zip, oldKey, newKey) {
-                            if (!zip) return;
-                            const imgFolder = zip.folder("image_cache");
-                            if (!imgFolder) return;
+                            if (!zip) return null;
                             const extensions = ["png", "jpg", "jpeg", "webp"];
                             let zipEntry = null;
+
+                            // 1. Direct path lookup (fast path)
                             for (const ext of extensions) {
-                                const entry = imgFolder.file(`${oldKey}.${ext}`);
+                                const entry = zip.file(`image_cache/${oldKey}.${ext}`);
                                 if (entry) {
                                     zipEntry = entry;
                                     break;
                                 }
                             }
+
+                            // 2. Scan zip files (handles subdirectories, backslashes, case mismatches)
+                            if (!zipEntry) {
+                                const oldKeyLower = oldKey.toLowerCase();
+                                const matchKey = Object.keys(zip.files).find(name => {
+                                    const normalized = name.replace(/\\/g, '/').toLowerCase();
+                                    return normalized.endsWith(`image_cache/${oldKeyLower}.png`) ||
+                                           normalized.endsWith(`image_cache/${oldKeyLower}.jpg`) ||
+                                           normalized.endsWith(`image_cache/${oldKeyLower}.jpeg`) ||
+                                           normalized.endsWith(`image_cache/${oldKeyLower}.webp`);
+                                });
+                                if (matchKey) {
+                                    zipEntry = zip.file(matchKey);
+                                }
+                            }
+
                             if (zipEntry) {
                                 try {
                                     const blob = await zipEntry.async("blob");
@@ -25507,12 +25523,14 @@
                                                 localStorage.setItem(`img_cache_${newKey}`, base64Str);
                                             }
                                             await queueImageForCloudUpload(newKey, base64Str);
+                                            return base64Str;
                                         }
                                     }
                                 } catch (err) {
                                     console.warn(`Failed to extract image for key ${oldKey}`, err);
                                 }
                             }
+                            return null;
                         }
 
                         // --- VOCAB ---
@@ -25533,26 +25551,37 @@
 
                                         // Extract image if available
                                         if (oldId && window._pendingImportZip) {
-                                            await extractAndCacheImage(window._pendingImportZip, oldId, newItem.id);
+                                            const base64 = await extractAndCacheImage(window._pendingImportZip, oldId, newItem.id);
+                                            if (base64) {
+                                                newItem.hasImage = true;
+                                                newItem.imageB64 = base64;
+                                            }
                                         }
 
                                         // Extract audio if available
                                         const text = String(newItem.englishData || newItem.word || newItem.english || "").trim();
                                         if (text && window._pendingImportZip && typeof audioStore !== "undefined") {
                                             const audioKey = hashText(text);
-                                            const audioFolder = window._pendingImportZip.folder("audio_cache");
-                                            if (audioFolder) {
-                                                const audioEntry = audioFolder.file(`${audioKey}.mp3`);
-                                                if (audioEntry) {
-                                                    try {
-                                                        const blob = await audioEntry.async("blob");
-                                                        if (blob instanceof Blob) {
-                                                            await audioStore.setItem(audioKey, blob);
-                                                            await queueAudioForCloudUpload(audioKey, text, blob);
-                                                        }
-                                                    } catch (err) {
-                                                        console.warn(`Failed to extract audio for ${audioKey}`, err);
+                                            let audioEntry = window._pendingImportZip.file(`audio_cache/${audioKey}.mp3`);
+                                            if (!audioEntry) {
+                                                const matchKey = Object.keys(window._pendingImportZip.files).find(name => {
+                                                    const normalized = name.replace(/\\/g, '/').toLowerCase();
+                                                    return normalized.endsWith(`audio_cache/${audioKey}.mp3`);
+                                                });
+                                                if (matchKey) {
+                                                    audioEntry = window._pendingImportZip.file(matchKey);
+                                                }
+                                            }
+                                            if (audioEntry) {
+                                                try {
+                                                    const blob = await audioEntry.async("blob");
+                                                    if (blob instanceof Blob) {
+                                                        await audioStore.setItem(audioKey, blob);
+                                                        await queueAudioForCloudUpload(audioKey, text, blob);
+                                                        newItem.hasAudio = true;
                                                     }
+                                                } catch (err) {
+                                                    console.warn(`Failed to extract audio for ${audioKey}`, err);
                                                 }
                                             }
                                         }
@@ -25616,11 +25645,19 @@
 
                                     // Extract story images
                                     if (window._pendingImportZip) {
-                                        await extractAndCacheImage(window._pendingImportZip, story.id, story.id);
+                                        const storyImgBase64 = await extractAndCacheImage(window._pendingImportZip, story.id, story.id);
+                                        if (storyImgBase64) {
+                                            story.hasImage = true;
+                                            story.imageB64 = storyImgBase64;
+                                        }
                                         if (Array.isArray(story.segments)) {
                                             for (let i = 0; i < story.segments.length; i++) {
                                                 const segKey = `${story.id}_segment_${i}`;
-                                                await extractAndCacheImage(window._pendingImportZip, segKey, segKey);
+                                                const segImgBase64 = await extractAndCacheImage(window._pendingImportZip, segKey, segKey);
+                                                if (segImgBase64) {
+                                                    story.segments[i].hasImage = true;
+                                                    story.segments[i].imageB64 = segImgBase64;
+                                                }
                                             }
                                         }
                                     }
