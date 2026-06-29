@@ -10743,7 +10743,7 @@
                                         dialog.classList.add("has-image");
                                     }
                                     if (heroBg) {
-                                        heroBg.style.backgroundImage = `url(${b64})`;
+                                        heroBg.style.backgroundImage = `url("${b64}")`;
                                     }
                                     if (viewModeImageContainer) {
                                         viewModeImageContainer.style.display = "none";
@@ -18471,7 +18471,7 @@
                                     if (itemToDisplay.imageB64) {
                                         dataDetailsDialog.classList.add("has-image");
                                         if (heroBg) {
-                                            heroBg.style.backgroundImage = `url(${itemToDisplay.imageB64})`;
+                                            heroBg.style.backgroundImage = `url("${itemToDisplay.imageB64}")`;
                                         }
                                         if (viewModeImageContainer) viewModeImageContainer.style.display = "none";
                                     } else {
@@ -20141,7 +20141,7 @@
                             flashcardBack.style.display = "none";
                             isFlashcardExplanationFlipperActive = false;
                             flashcardContent.classList.remove('has-image', 'flipped');
-                            flashcardContent.style.removeProperty('--fc-bg-image');
+                            flashcardContent.style.removeProperty('background-image');
                             const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
                             if (fcBackWordHeader) {
                                 fcBackWordHeader.textContent = "";
@@ -20160,9 +20160,9 @@
                         flashcardContent.classList.toggle('has-image', hasImage);
                         flashcardContent.classList.remove('flipped');
                         if (hasImage) {
-                            flashcardContent.style.setProperty('--fc-bg-image', `url("${item.imageB64}")`);
+                            flashcardContent.style.setProperty('background-image', `linear-gradient(rgba(15, 12, 30, 0.65), rgba(15, 12, 30, 0.65)), url("${item.imageB64}")`, 'important');
                         } else {
-                            flashcardContent.style.removeProperty('--fc-bg-image');
+                            flashcardContent.style.removeProperty('background-image');
                         }
                         const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
                         if (fcBackWordHeader) {
@@ -23508,7 +23508,7 @@
                                     // Update the dialog background immediately so the user can see it!
                                     const heroBg = document.querySelector(".view-mode-hero-bg");
                                     if (heroBg) {
-                                        heroBg.style.backgroundImage = `url(${b64Image})`;
+                                        heroBg.style.backgroundImage = `url("${b64Image}")`;
                                     }
                                     dataDetailsDialog.classList.add("has-image");
 
@@ -27100,9 +27100,9 @@
                         const hasImage = !!item.imageB64;
                         flashcardContent.classList.toggle('has-image', hasImage);
                         if (hasImage) {
-                            flashcardContent.style.setProperty('--fc-bg-image', `url("${item.imageB64}")`);
+                            flashcardContent.style.setProperty('background-image', `linear-gradient(rgba(15, 12, 30, 0.65), rgba(15, 12, 30, 0.65)), url("${item.imageB64}")`, 'important');
                         } else {
-                            flashcardContent.style.removeProperty('--fc-bg-image');
+                            flashcardContent.style.removeProperty('background-image');
                         }
                         const fcBackWordHeader = flashcardContent.querySelector(".fc-back-word-header");
                         if (fcBackWordHeader) {
