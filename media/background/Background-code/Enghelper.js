@@ -18906,29 +18906,83 @@
                                     }
 
                                     const balanceVocabDetailCards = () => {
+
                                         const leftCol = document.querySelector(".vocab-bottom-left-col");
+
                                         const rightCol = document.querySelector(".vocab-bottom-right-col");
+
                                         if (!leftCol || !rightCol) return;
 
+                                        const synAntCard = document.querySelector(".vocab-synonyms-antonyms-card");
+
+                                        const cefrGaugesWrapper = document.querySelector(".vocab-cefr-gauges-wrapper");
+
+                                        if (synAntCard) {
+
+                                            const hasSyns = itemToDisplay.synonyms && itemToDisplay.synonyms.length > 0;
+
+                                            const hasAnts = itemToDisplay.antonyms && itemToDisplay.antonyms.length > 0;
+
+                                            if (!hasSyns && !hasAnts) {
+
+                                                synAntCard.style.display = "none";
+
+                                            } else {
+
+                                                synAntCard.style.display = "flex";
+
+                                            }
+
+                                        }
+
                                         const cards = [
+
                                             usageCard,
+
                                             newExamplesCard,
+
                                             collocationsCard,
+
                                             mistakeCard,
+
                                             tipCard,
+
                                             rootCard
+
                                         ].filter((card) => card && card.style.display !== "none");
 
                                         leftCol.innerHTML = "";
+
                                         rightCol.innerHTML = "";
 
+                                        // Prepend top metrics cards
+
+                                        if (synAntCard && synAntCard.style.display !== "none") {
+
+                                            leftCol.appendChild(synAntCard);
+
+                                        }
+
+                                        if (cefrGaugesWrapper) {
+
+                                            rightCol.appendChild(cefrGaugesWrapper);
+
+                                        }
+
                                         cards.forEach((card, index) => {
+
                                             const preferLeft = card === usageCard || card === newExamplesCard;
+
                                             const target = index < 2 && preferLeft
+
                                                 ? leftCol
+
                                                 : (leftCol.offsetHeight <= rightCol.offsetHeight ? leftCol : rightCol);
+
                                             target.appendChild(card);
+
                                         });
+
                                     };
                                     requestAnimationFrame(balanceVocabDetailCards);
 
