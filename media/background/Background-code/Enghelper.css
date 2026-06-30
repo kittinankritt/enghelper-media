@@ -31348,11 +31348,11 @@ div#card-level #level-watermark,
     width: 70px;
     height: 70px;
     margin-bottom: 18px;
-    border-radius: 22px;
-    background: linear-gradient(135deg, rgba(var(--theme-rgb), 0.18), rgba(var(--theme-rgb), 0.06));
+    border-radius: 50% !important;
+    background: transparent !important;
     color: var(--primary-color);
     font-size: 1.55rem;
-    box-shadow: 0 14px 28px rgba(var(--theme-rgb), 0.12);
+    box-shadow: none !important;
 }
 
 #vocab-library-dialog .empty-state-search .empty-state-desc {
@@ -31452,8 +31452,7 @@ div#card-level #level-watermark,
 
 [data-theme="dark"] #vocab-library-dialog .dialog-kicker,
 [data-theme="dark"] #vocab-library-dialog .empty-state-badge,
-[data-theme="dark"] #vocab-library-dialog .empty-step-number,
-[data-theme="dark"] #vocab-library-dialog .empty-state-search-icon {
+[data-theme="dark"] #vocab-library-dialog .empty-step-number {
     background: rgba(var(--theme-rgb), 0.18);
 }
 
@@ -31933,11 +31932,11 @@ div#card-level #level-watermark,
     width: 66px;
     height: 66px;
     margin-bottom: 16px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, rgba(var(--theme-rgb), 0.16), rgba(var(--theme-rgb), 0.06));
+    border-radius: 50% !important;
+    background: transparent !important;
     color: var(--primary-color);
     font-size: 1.45rem;
-    box-shadow: 0 12px 26px rgba(var(--theme-rgb), 0.12);
+    box-shadow: none !important;
 }
 
 #test-me-dialog .empty-state-quiz-search .empty-state-desc {
@@ -31989,9 +31988,7 @@ div#card-level #level-watermark,
     color: rgba(255, 255, 255, 0.72) !important;
 }
 
-[data-theme="dark"] #test-me-dialog .empty-state-search-icon {
-    background: rgba(var(--theme-rgb), 0.18);
-}
+
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
