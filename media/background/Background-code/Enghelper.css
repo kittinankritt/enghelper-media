@@ -58481,11 +58481,21 @@ dialog {
 /* ── 25. CAPSULE ICON BUTTONS WHITE CLAYMORPHISM THEME ── */
 .capsule-icon-btn,
 [data-theme="dark"] .capsule-icon-btn,
+.capsule-icon-btn.audio-btn,
 [data-theme="dark"] .capsule-icon-btn.audio-btn,
+.capsule-icon-btn.audio-btn.audio-success,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success,
+.capsule-icon-btn.audio-btn.audio-error,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error,
+.capsule-icon-btn.details-btn,
 [data-theme="dark"] .capsule-icon-btn.details-btn,
+.capsule-icon-btn.mic-btn,
 [data-theme="dark"] .capsule-icon-btn.mic-btn,
+.capsule-icon-btn.edit-btn,
 [data-theme="dark"] .capsule-icon-btn.edit-btn,
+.capsule-icon-btn.bookmark-btn,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn,
+.capsule-icon-btn.delete-btn,
 [data-theme="dark"] .capsule-icon-btn.delete-btn {
     background: #ffffff !important;
     border: none !important;
@@ -58498,38 +58508,48 @@ dialog {
 
 .capsule-icon-btn i,
 [data-theme="dark"] .capsule-icon-btn i,
+.capsule-icon-btn.audio-btn i,
 [data-theme="dark"] .capsule-icon-btn.audio-btn i,
+.capsule-icon-btn.audio-btn.audio-success i,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success i,
+.capsule-icon-btn.audio-btn.audio-error i,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error i,
+.capsule-icon-btn.details-btn i,
 [data-theme="dark"] .capsule-icon-btn.details-btn i,
+.capsule-icon-btn.mic-btn i,
 [data-theme="dark"] .capsule-icon-btn.mic-btn i,
+.capsule-icon-btn.edit-btn i,
 [data-theme="dark"] .capsule-icon-btn.edit-btn i,
+.capsule-icon-btn.bookmark-btn i,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn i,
+.capsule-icon-btn.delete-btn i,
 [data-theme="dark"] .capsule-icon-btn.delete-btn i {
     color: #2d3748 !important;
 }
 
-/* Maintain active/state-specific colors */
+/* Maintain active/state-specific colors for bookmark only */
 .capsule-icon-btn.bookmark-btn .fi-sr-book-bookmark,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn .fi-sr-book-bookmark {
     color: #F59E0B !important;
 }
 
-.capsule-icon-btn.audio-btn.audio-success i,
-[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success i {
-    color: var(--success-color, #10b981) !important;
-}
-
-.capsule-icon-btn.audio-btn.audio-error i,
-[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error i {
-    color: var(--error-color, #ef4444) !important;
-}
-
 .capsule-icon-btn:hover,
 [data-theme="dark"] .capsule-icon-btn:hover,
+.capsule-icon-btn.audio-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.audio-btn:hover,
+.capsule-icon-btn.audio-btn.audio-success:hover,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success:hover,
+.capsule-icon-btn.audio-btn.audio-error:hover,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error:hover,
+.capsule-icon-btn.details-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.details-btn:hover,
+.capsule-icon-btn.mic-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.mic-btn:hover,
+.capsule-icon-btn.edit-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.edit-btn:hover,
+.capsule-icon-btn.bookmark-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn:hover,
+.capsule-icon-btn.delete-btn:hover,
 [data-theme="dark"] .capsule-icon-btn.delete-btn:hover {
     background: #ffffff !important;
     color: #1a202c !important;
@@ -58542,11 +58562,21 @@ dialog {
 
 .capsule-icon-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn:hover i,
+.capsule-icon-btn.audio-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.audio-btn:hover i,
+.capsule-icon-btn.audio-btn.audio-success:hover i,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success:hover i,
+.capsule-icon-btn.audio-btn.audio-error:hover i,
+[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error:hover i,
+.capsule-icon-btn.details-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.details-btn:hover i,
+.capsule-icon-btn.mic-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.mic-btn:hover i,
+.capsule-icon-btn.edit-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.edit-btn:hover i,
+.capsule-icon-btn.bookmark-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn:hover i,
+.capsule-icon-btn.delete-btn:hover i,
 [data-theme="dark"] .capsule-icon-btn.delete-btn:hover i {
     color: #1a202c !important;
 }
@@ -58554,15 +58584,5 @@ dialog {
 .capsule-icon-btn.bookmark-btn:hover .fi-sr-book-bookmark,
 [data-theme="dark"] .capsule-icon-btn.bookmark-btn:hover .fi-sr-book-bookmark {
     color: #d97706 !important;
-}
-
-.capsule-icon-btn.audio-btn.audio-success:hover i,
-[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-success:hover i {
-    color: #059669 !important;
-}
-
-.capsule-icon-btn.audio-btn.audio-error:hover i,
-[data-theme="dark"] .capsule-icon-btn.audio-btn.audio-error:hover i {
-    color: #dc2626 !important;
 }
 
