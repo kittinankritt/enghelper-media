@@ -18410,10 +18410,7 @@
                         if (clearDataDialogBtn) {
                             clearDataDialogBtn.style.display = isViewMode ? "none" : "flex";
                         }
-                        const backToViewBtn = document.getElementById("back-to-view-btn");
-                        if (backToViewBtn) {
-                            backToViewBtn.style.display = isEditMode ? "flex" : "none";
-                        }
+
                         const autofillBtn = document.getElementById("autofill-ai-btn");
                         if (autofillBtn) {
                             autofillBtn.classList.toggle("pulse-active", isAddMode);
@@ -19133,11 +19130,7 @@
                             }
                         }
                     });
-                    document.getElementById("back-to-view-btn").addEventListener("click", () => {
-                        if (currentViewingItemId) {
-                            openDataDetailsDialog(currentViewingItemId, true);
-                        }
-                    });
+
                     englishDataInput.addEventListener("input", applyFilterAndRender);
                     englishDataInput.addEventListener("keydown", async (e) => {
                         if (e.key === "Enter" && englishDataInput.value.trim() !== "") {
@@ -19291,7 +19284,12 @@
                         }
                     }
                     closeDataDialogBtn.addEventListener("click", () => {
-                        goBackVocabHistory();
+                        const isFormMode = dataDetailsDialog.classList.contains("data-details-form-mode");
+                        if (isFormMode && currentViewingItemId) {
+                            openDataDetailsDialog(currentViewingItemId, true);
+                        } else {
+                            goBackVocabHistory();
+                        }
                     });
                     const viewModeBackBtnEl = document.getElementById("view-mode-back-btn");
                     if (viewModeBackBtnEl) {
