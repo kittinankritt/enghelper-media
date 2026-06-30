@@ -4058,12 +4058,27 @@
                             mascotState.notificationTimeout = null;
                         }
                     }
+                    function adjustMascotParent(show) {
+                        const wrapper = document.getElementById("ai-companion-wrapper");
+                        if (!wrapper) return;
+                        if (show) {
+                            const openDialog = document.querySelector("dialog[open]");
+                            if (openDialog) {
+                                openDialog.appendChild(wrapper);
+                                return;
+                            }
+                        }
+                        if (wrapper.parentElement !== document.body) {
+                            document.body.appendChild(wrapper);
+                        }
+                    }
                     function openAiCompanionChat() {
                         const chatBox = document.getElementById("ai-companion-chat-box");
                         const notificationBubble = document.getElementById("mascot-notification-bubble");
                         const inputField = document.getElementById("ai-command-input");
                         if (!chatBox) return;
                         chatBox.classList.remove("hidden");
+                        adjustMascotParent(true);
                         if (notificationBubble) notificationBubble.classList.add("hidden");
                         markAllNotificationsRead();
                         clearMascotUnreadUI();
@@ -4441,6 +4456,7 @@
                             const isHidden = chatBox.classList.contains("hidden");
                             if (isHidden) {
                                 chatBox.classList.remove("hidden");
+                                if (typeof adjustMascotParent === "function") adjustMascotParent(true);
                                 if (notificationBubble) notificationBubble.classList.add("hidden");
                                 markAllNotificationsRead();
                                 clearMascotUnreadUI();
@@ -4448,6 +4464,7 @@
                                 if (typeof playClickSound === "function") playClickSound();
                             } else {
                                 chatBox.classList.add("hidden");
+                                if (typeof adjustMascotParent === "function") adjustMascotParent(false);
                             }
                         }
                         if (mascotBtn) {
@@ -4472,15 +4489,25 @@
                             minimizeBtn.addEventListener("click", (e) => {
                                 e.stopPropagation();
                                 chatBox.classList.add("hidden");
+                                if (typeof adjustMascotParent === "function") adjustMascotParent(false);
                             });
                         }
                         document.addEventListener("click", (e) => {
                             if (chatBox && !chatBox.classList.contains("hidden")) {
                                 if (!chatBox.contains(e.target) && !mascotBtn.contains(e.target) && !notificationBubble.contains(e.target)) {
                                     chatBox.classList.add("hidden");
+                                    if (typeof adjustMascotParent === "function") adjustMascotParent(false);
                                 }
                             }
                         });
+                        document.addEventListener("close", (e) => {
+                            if (e.target && e.target.tagName === "DIALOG") {
+                                const wrapper = document.getElementById("ai-companion-wrapper");
+                                if (wrapper && wrapper.parentElement === e.target) {
+                                    document.body.appendChild(wrapper);
+                                }
+                            }
+                        }, true);
                     }
                     initMascotListeners();
                     (function initAtMentionMenu() {
