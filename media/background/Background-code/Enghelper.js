@@ -3486,6 +3486,93 @@
                         if (!Array.isArray(store)) return [];
                         return store.map(normalizeStoryHistoryEntry).filter(Boolean).sort((a, b) => getStoryTimestamp(b) - getStoryTimestamp(a));
                     }
+                    function normalizeAllStores() {
+                        // 1. Clean up difficultWordStats orphans
+                        if (userStats && userStats.difficultWordStats && typeof userStats.difficultWordStats === "object") {
+                            const activeIds = new Set((englishDataStore || []).map(item => item.id).filter(Boolean));
+                            const deletedIds = new Set((deletedDataStore || []).map(item => item.id).filter(Boolean));
+                            const cleanedStats = {};
+                            for (const [wordId, stat] of Object.entries(userStats.difficultWordStats)) {
+                                if (activeIds.has(wordId) || deletedIds.has(wordId)) {
+                                    cleanedStats[wordId] = stat;
+                                }
+                            }
+                            userStats.difficultWordStats = cleanedStats;
+                        }
+
+                        // 2. Limit vocabulary deleted store
+                        if (Array.isArray(deletedDataStore)) {
+                            deletedDataStore = normalizeVocabularyStore(deletedDataStore);
+                            if (deletedDataStore.length > 100) {
+                                deletedDataStore = deletedDataStore.slice(0, 100);
+                            }
+                            window.deletedDataStore = deletedDataStore;
+                        }
+
+                        // 3. Limit test history
+                        if (Array.isArray(testHistoryStore)) {
+                            if (testHistoryStore.length > 150) {
+                                testHistoryStore = testHistoryStore.slice(-150);
+                            }
+                            window.testHistoryStore = testHistoryStore;
+                        }
+
+                        // 4. Limit game history
+                        if (Array.isArray(gameHistoryStore)) {
+                            if (gameHistoryStore.length > 50) {
+                                gameHistoryStore = gameHistoryStore.slice(0, 50);
+                            }
+                            window.gameHistoryStore = gameHistoryStore;
+                        }
+
+                        // 5. Limit roleplay history
+                        if (Array.isArray(rolePlayHistoryStore)) {
+                            if (rolePlayHistoryStore.length > 50) {
+                                rolePlayHistoryStore = rolePlayHistoryStore.slice(0, 50);
+                            }
+                            window.rolePlayHistoryStore = rolePlayHistoryStore;
+                        }
+
+                        // 6. Limit grammar history
+                        if (Array.isArray(grammarHistoryStore)) {
+                            if (grammarHistoryStore.length > 50) {
+                                grammarHistoryStore = grammarHistoryStore.slice(0, 50);
+                            }
+                            window.grammarHistoryStore = grammarHistoryStore;
+                        }
+
+                        // 7. Limit story histories
+                        storyHistoryStore = normalizeStoryHistoryStore(storyHistoryStore).slice(0, 50);
+                        deletedStoryStore = normalizeStoryHistoryStore(deletedStoryStore).slice(0, 50);
+                        window.storyHistoryStore = storyHistoryStore;
+                        window.deletedStoryStore = deletedStoryStore;
+
+                        // 8. Limit deleted history stores (trash)
+                        if (Array.isArray(deletedTestHistoryStore)) {
+                            if (deletedTestHistoryStore.length > 20) {
+                                deletedTestHistoryStore = deletedTestHistoryStore.slice(0, 20);
+                            }
+                            window.deletedTestHistoryStore = deletedTestHistoryStore;
+                        }
+                        if (Array.isArray(deletedRolePlayHistoryStore)) {
+                            if (deletedRolePlayHistoryStore.length > 20) {
+                                deletedRolePlayHistoryStore = deletedRolePlayHistoryStore.slice(0, 20);
+                            }
+                            window.deletedRolePlayHistoryStore = deletedRolePlayHistoryStore;
+                        }
+                        if (Array.isArray(deletedGrammarHistoryStore)) {
+                            if (deletedGrammarHistoryStore.length > 20) {
+                                deletedGrammarHistoryStore = deletedGrammarHistoryStore.slice(0, 20);
+                            }
+                            window.deletedGrammarHistoryStore = deletedGrammarHistoryStore;
+                        }
+                        if (Array.isArray(deletedGameHistoryStore)) {
+                            if (deletedGameHistoryStore.length > 20) {
+                                deletedGameHistoryStore = deletedGameHistoryStore.slice(0, 20);
+                            }
+                            window.deletedGameHistoryStore = deletedGameHistoryStore;
+                        }
+                    }
                     function getDifficultWordStat(wordId) {
                         normalizeUserStatsState();
                         if (!wordId) return null;
@@ -4922,6 +5009,7 @@
                     function sanitizeDataMapForFirestore(dataMap) {
                         if (!dataMap) return dataMap;
                         const copy = { ...dataMap };
+                        delete copy.globalCache;
                         if (Array.isArray(copy.englishDataStore)) {
                             copy.englishDataStore = copy.englishDataStore.map(item => {
                                 if (item.imageB64 || item.imageData) {
@@ -7207,8 +7295,7 @@
                             return;
                         }
                         persistCurrentScopedPreferences();
-                        storyHistoryStore = normalizeStoryHistoryStore(storyHistoryStore);
-                        deletedStoryStore = normalizeStoryHistoryStore(deletedStoryStore);
+                        normalizeAllStores();
                         if (!userStats.dailyMissions) {
                             userStats.dailyMissions = { vocabAddedCounter: 0, lastLength: englishDataStore ? englishDataStore.length : 0, playedGame: 0, login: false, lastMissionDate: null };
                         }
@@ -7277,8 +7364,7 @@
                     }
                     async function saveLocalOnly() {
                         persistCurrentScopedPreferences();
-                        storyHistoryStore = normalizeStoryHistoryStore(storyHistoryStore);
-                        deletedStoryStore = normalizeStoryHistoryStore(deletedStoryStore);
+                        normalizeAllStores();
                         const dataMap = {
                             "englishDataStore": englishDataStore,
                             "deletedDataStore": deletedDataStore,
@@ -7488,6 +7574,7 @@
                         }
                         normalizeUserStatsState();
                         userStats.difficultWords = userStats.difficultWords.filter((id) => englishDataStore.some((item) => item.id === id));
+                        normalizeAllStores();
                         if (cloudData.userSettings && typeof applyUserSettings === "function") {
                             applyUserSettings(cloudData.userSettings);
                         }
