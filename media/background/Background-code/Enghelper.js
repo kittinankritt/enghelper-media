@@ -28074,7 +28074,13 @@
                         if (useAI) {
                             mg_showTTSLoader("เตรียมความพร้อมระบบ AI...", "กำลังคัดเลือกคำศัพท์ 1 เซ็ต (15 คำ) และสังเคราะห์เสียงด้วย AI");
                         }
-                        const randomizedDb = mg_shuffle([...window.englishDataStore]);
+                        const pool = getCurrentGameVocabularyPool(15);
+                        let randomizedDb = mg_shuffle([...pool]);
+                        if (randomizedDb.length < 15) {
+                            while (randomizedDb.length < 15) {
+                                randomizedDb.push(...mg_shuffle([...pool]));
+                            }
+                        }
                         const selected15 = randomizedDb.slice(0, 15);
                         for (let i = 0; i < selected15.length; i++) {
                             const item = selected15[i];
@@ -28203,8 +28209,13 @@
 
                         mg_showTTSLoader("เตรียมเกม Sound Match...", "ตรวจสอบและสร้างเสียงถาวรสำหรับคำศัพท์ที่นำมาเล่น...");
 
-                        const fullList = mg_shuffle([...window.englishDataStore]);
-                        if (fullList.length < 20) { while (fullList.length < 20) fullList.push(...fullList); }
+                        const pool = getCurrentGameVocabularyPool(20);
+                        let fullList = mg_shuffle([...pool]);
+                        if (fullList.length < 20) {
+                            while (fullList.length < 20) {
+                                fullList.push(...mg_shuffle([...pool]));
+                            }
+                        }
                         const game2Words = fullList.slice(0, 20);
 
                         for (let roundIdx = 0; roundIdx < 4; roundIdx++) {
@@ -28454,7 +28465,11 @@
                         if (useAI) {
                             mg_showTTSLoader("เตรียมบอร์ดและเสียงพากย์...", "สุ่มคำศัพท์เป้าหมายและจัดหาเสียงพากย์สำหรับบอร์ดคำตอบที่ถูกต้องด้วย AI");
                         }
-                        const fullPool = window.englishDataStore.filter(w => (w.synonyms && w.synonyms.length > 0) || (w.antonyms && w.antonyms.length > 0));
+                        let pool = getCurrentGameVocabularyPool(5);
+                        let fullPool = pool.filter(w => (w.synonyms && w.synonyms.length > 0) || (w.antonyms && w.antonyms.length > 0));
+                        if (fullPool.length < 5) {
+                            fullPool = window.englishDataStore.filter(w => (w.synonyms && w.synonyms.length > 0) || (w.antonyms && w.antonyms.length > 0));
+                        }
                         const randomizedDb = mg_shuffle([...fullPool]);
                         const selected15 = randomizedDb.slice(0, Math.min(15, randomizedDb.length));
                         if (selected15.length === 0) {
@@ -29047,7 +29062,11 @@
                         const statsHtml = `<div class="mg-stat-item" style="color: #22c55e; font-weight: 600;"><i class="fi fi-rr-list"></i> รอบที่ ${mg_g4.round}/5</div>`;
                         mg_updateHeaderStats(statsHtml);
                         if (mg_g4.cachedAudioUrl) { URL.revokeObjectURL(mg_g4.cachedAudioUrl); mg_g4.cachedAudioUrl = null; }
-                        const pool = window.englishDataStore.filter(w => (w.example && w.example.trim() !== "") || (w.examples && w.examples.length > 0));
+                        let vocabPool = getCurrentGameVocabularyPool(5);
+                        let pool = vocabPool.filter(w => (w.example && w.example.trim() !== "") || (w.examples && w.examples.length > 0));
+                        if (pool.length === 0) {
+                            pool = window.englishDataStore.filter(w => (w.example && w.example.trim() !== "") || (w.examples && w.examples.length > 0));
+                        }
                         if (pool.length === 0) {
                             showToast2("ไม่มีประโยคตัวอย่างในคลังคำศัพท์เพื่อเล่นเกมนี้", "error");
                             document.getElementById('mini-games-dialog').close();
@@ -29421,8 +29440,8 @@
                         const totalWords = Array.isArray(englishDataStore) ? englishDataStore.length : 0;
                         const difficultCount = Array.isArray(userStats?.difficultWords) ? userStats.difficultWords.length : 0;
                         const commonMeta = [
-                            { icon: "fi fi-rr-book-bookmark", text: `${totalWords} \u0E04\u0E33\u0E43\u0E19\u0E04\u0E25\u0E31\u0E07` },
-                            { icon: "fi fi-rr-bullseye", text: difficultCount > 0 ? `${difficultCount} \u0E04\u0E33\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19` : "\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E1D\u0E36\u0E01\u0E15\u0E48\u0E2D" }
+                            { icon: "fi fi-rr-book-bookmark", text: `${totalWords} \u0E04\u0E33\u0E43\u0E1B\u0E04\u0E25\u0E31\u0E07` },
+                            { icon: "fi fi-rr-bullseye", text: difficultCount > 0 ? `${difficultCount} \u0E04\u0E33\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19` : "\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E1D\u0E36ก\u0E15\u0E48\u0E2D" }
                         ];
                         const profiles = {
                             flashcards: {
@@ -29444,13 +29463,13 @@
                             swipe: {
                                 signature: "game:swipe",
                                 badge: "\u0E15\u0E31\u0E14\u0E2A\u0E34\u0E19\u0E43\u0E08\u0E44\u0E27",
-                                title: "\u0E14\u0E39\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E14\u0E49\u0E27\u0E22 Word Swipe",
-                                description: "\u0E1D\u0E36\u0E01\u0E41\u0E22\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E43\u0E2B\u0E49\u0E44\u0E27\u0E02\u0E36\u0E49\u0E19 \u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E2D\u0E22\u0E32\u0E01\u0E27\u0E31\u0E14\u0E04\u0E27\u0E32\u0E21\u0E04\u0E38\u0E49\u0E19\u0E04\u0E33\u0E41\u0E1A\u0E1A\u0E44\u0E21\u0E48\u0E2B\u0E19\u0E31\u0E01\u0E40\u0E01\u0E34\u0E19\u0E44\u0E1B",
+                                title: "\u0E14\u0E39\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07 Word Swipe",
+                                description: "\u0E1D\u0E36\u0E01\u0E41\u0E22\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07\u0E43\u0E2B\u0E49\u0E44\u0E27\u0E02\u0E36\u0E49\u0E19 \u0E40\u0E2B\u0E22\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E27\u0E31\u0E19\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E3A\u0E1A\u0E1A \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E04\u0E33\u0E17\u0E35\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E1B\u0E47\u0E19\u0E2B\u0E48\u0E27\u0E07",
                                 visualIcon: "fi fi-rr-subscription-alt",
                                 visualLabel: "SWIPE",
                                 chips: [
-                                    { icon: "fi fi-rr-cursor-finger", text: "\u0E15\u0E31\u0E14\u0E2A\u0E34\u0E19\u0E43\u0E08\u0E40\u0E23\u0E47\u0E27" },
-                                    { icon: "fi fi-rr-shuffle", text: "\u0E14\u0E39\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22" }
+                                    { icon: "fi fi-rr-cursor-finger", text: "\u0E15\u0E31\u0E14\u0E2A\u0E34\u0E19\u0E43\u0E08\u0E44\u0E27" },
+                                    { icon: "fi fi-rr-shuffle", text: "\u0E14\u0E39\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07" }
                                 ],
                                 meta: [
                                     { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 4 \u0E19\u0E32\u0E17\u0E35" },
@@ -29459,14 +29478,14 @@
                             },
                             match: {
                                 signature: "game:match",
-                                badge: "\u0E08\u0E33\u0E40\u0E1B\u0E47\u0E19\u0E04\u0E39\u0E48",
-                                title: "\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E33\u0E01\u0E31\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E43\u0E19 Memory Match",
-                                description: "\u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E01\u0E32\u0E23\u0E14\u0E39\u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E08\u0E33\u0E04\u0E33\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E44\u0E14\u0E49\u0E08\u0E23\u0E34\u0E07 \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E04\u0E33\u0E17\u0E35\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E2B\u0E47\u0E19\u0E27\u0E48\u0E32\u0E22\u0E31\u0E07\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19",
+                                badge: "\u0E08\u0E33\u0E40\u0E1B\u0E47\u0E19\u0E04\u0E33\u0E04\u0E39\u0E48",
+                                title: "\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E33\u0E01\u0E31\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07\u0E43\u0E19 Memory Match",
+                                description: "\u0E40\u0E2B\u0E22\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E01\u0E32\u0E23\u0E14\u0E39\u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E08\u0E33\u0E04\u0E33\u0E1E\u0E23\u0E49\u0E25\u0E21\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07\u0E43\u0E14\u0E49\u0E08\u0E23\u0E34\u0E07 \u0E42\u0E14\u0E22\u0E40\u0E09\u0E1E\u0E32\u0E30\u0E04\u0E33\u0E17\u0E35\u0E48\u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E2B\u0E47\u0E19\u0E27\u0E32\u0E22\u0E31\u0E07\u0E04\u0E27\u0E23\u0E17บท\u0E27\u0E19",
                                 visualIcon: "fi fi-rr-puzzle-alt",
                                 visualLabel: "MATCH",
                                 chips: [
-                                    { icon: "fi fi-rr-puzzle-alt", text: "\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22" },
-                                    { icon: "fi fi-rr-brain-circuit", text: difficultCount > 0 ? "\u0E2D\u0E48\u0E32\u0E19\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01\u0E32\u0E23\u0E08\u0E33" : "\u0E1D\u0E36\u0E01\u0E08\u0E33\u0E40\u0E1B\u0E47\u0E19\u0E20\u0E32\u0E1E" }
+                                    { icon: "fi fi-rr-puzzle-alt", text: "\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E22\u0E31\u0E48\u0E07" },
+                                    { icon: "fi fi-rr-brain-circuit", text: difficultCount > 0 ? "\u0E2D\u0E48\u0E32\u0E19\u0E1E\u0E24\u0E15\u0E34\u0E01\u0E23\u0E23\u0E21\u0E01า\u0E23\u0E08\u0E33" : "\u0E1D\u0E36\u0E01\u0E08\u0E33\u0E40\u0E1B\u0E47\u0E19\u0E20\u0E32\u0E1E" }
                                 ],
                                 meta: [
                                     { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 5 \u0E19\u0E32\u0E17\u0E35" },
@@ -29477,7 +29496,7 @@
                                 signature: "game:typing",
                                 badge: "Recall \u0E40\u0E23\u0E47\u0E27",
                                 title: "\u0E14\u0E36\u0E07\u0E04\u0E33\u0E2D\u0E2D\u0E01\u0E21\u0E32\u0E43\u0E0A\u0E49\u0E14\u0E49\u0E27\u0E22 Typing Attack",
-                                description: "\u0E1D\u0E36\u0E01\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E41\u0E25\u0E30\u0E40\u0E23\u0E35\u0E22\u0E01\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E08\u0E32\u0E01\u0E04\u0E27\u0E32\u0E21\u0E08\u0E33\u0E43\u0E2B\u0E49\u0E44\u0E27\u0E02\u0E36\u0E49\u0E19 \u0E40\u0E2B\u0E21\u0E32\u0E30\u0E40\u0E21\u0E37\u0E48\u0E2D\u0E04\u0E25\u0E31\u0E07\u0E04\u0E33\u0E40\u0E23\u0E34\u0E48\u0E21\u0E40\u0E22\u0E2D\u0E30\u0E41\u0E25\u0E49\u0E27",
+                                description: "\u0E1D\u0E36\u0E01\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E41\u0E25\u0E35\u0E22\u0E01\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E08\u0E32\u0E01\u0E04\u0E27\u0E32\u0E21\u0E08\u0E33\u0E43\u0E2B\u0E49\u0E44\u0E27\u0E02\u0E36\u0E49\u0E19 \u0E40\u0E2B\u0E22\u0E32\u0E30\u0E40\u0E21\u0E37\u0E48\u0E2D\u0E04\u0E25\u0E31\u0E07\u0E04\u0E33\u0E40\u0E23\u0E34\u0E48\u0E21\u0E40\u0E22\u0E2D\u0E3E\u0E41\u0E25\u0E49\u0E27",
                                 visualIcon: "fi fi-rr-keyboard",
                                 visualLabel: "TYPE",
                                 chips: [
@@ -29488,23 +29507,89 @@
                                     { icon: "fi fi-rr-hourglass-end", text: "\u0E43\u0E0A\u0E49\u0E40\u0E27\u0E25\u0E32 5 \u0E19\u0E32\u0E17\u0E35" },
                                     commonMeta[0]
                                 ]
+                            },
+                            "mini-game-1": {
+                                signature: "game:mini-game-1",
+                                badge: "Listen & Spell",
+                                title: "ฟังและสะกด Listen & Type",
+                                description: "ฝึกทักษะการฟังเสียงพากย์คำศัพท์ภาษาอังกฤษ แล้วพิมพ์สะกดคำให้ถูกต้องตามเสียงพากย์ AI",
+                                visualIcon: "fi fi-rr-headphones",
+                                visualLabel: "SPELL",
+                                chips: [
+                                    { icon: "fi fi-rr-headphones", text: "ฝึกการฟัง" },
+                                    { icon: "fi fi-rr-keyboard", text: "พิมพ์สะกดคำ" }
+                                ],
+                                meta: [
+                                    { icon: "fi fi-rr-hourglass-end", text: "ใช้เวลา 3 นาที" },
+                                    commonMeta[0]
+                                ]
+                            },
+                            "mini-game-2": {
+                                signature: "game:mini-game-2",
+                                badge: "Sound Matching",
+                                title: "จับคู่เสียงพากย์ Sound Match",
+                                description: "ฝึกการแยกแยะคำศัพท์จากการออกเสียงด้วยการจับคู่การสะกดและเสียงพากย์ AI",
+                                visualIcon: "fi fi-rr-volume",
+                                visualLabel: "LISTEN",
+                                chips: [
+                                    { icon: "fi fi-rr-volume", text: "จดจำเสียงพากย์" },
+                                    { icon: "fi fi-rr-check", text: "จับคู่เสียง" }
+                                ],
+                                meta: [
+                                    { icon: "fi fi-rr-hourglass-end", text: "ใช้เวลา 3 นาที" },
+                                    commonMeta[0]
+                                ]
+                            },
+                            "mini-game-3": {
+                                signature: "game:mini-game-3",
+                                badge: "Synonyms & Antonyms",
+                                title: "ยิงฟองสบู่ Bubble Shooter",
+                                description: "ท้าทายสมองด้วยการเล็งและยิงคำพ้อง (Synonyms) หรือคำตรงข้าม (Antonyms)",
+                                visualIcon: "fi fi-rr-rocket",
+                                visualLabel: "SHOOT",
+                                chips: [
+                                    { icon: "fi fi-rr-rocket", text: "คำพ้องและคำตรงข้าม" },
+                                    { icon: "fi fi-rr-sparkles", text: "โหมดเกมยิง" }
+                                ],
+                                meta: [
+                                    { icon: "fi fi-rr-hourglass-end", text: "ใช้เวลา 4 นาที" },
+                                    commonMeta[0]
+                                ]
+                            },
+                            "mini-game-4": {
+                                signature: "game:mini-game-4",
+                                badge: "Sentence Builder",
+                                title: "เรียงประโยค Sentence Builder",
+                                description: "ลากวางและจัดเรียงบล็อกคำศัพท์ให้เป็นประโยคตัวอย่างภาษาอังกฤษที่ถูกต้องตามไวยากรณ์บริบท",
+                                visualIcon: "fi fi-rr-text-check",
+                                visualLabel: "BUILD",
+                                chips: [
+                                    { icon: "fi fi-rr-text-check", text: "เรียงต่อประโยค" },
+                                    { icon: "fi fi-rr-book-open", text: "เรียนรู้จากบริบท" }
+                                ],
+                                meta: [
+                                    { icon: "fi fi-rr-hourglass-end", text: "ใช้เวลา 4 นาที" },
+                                    commonMeta[0]
+                                ]
                             }
                         };
                         const profile = profiles[type] || {
                             signature: `game:${type}`,
                             badge: "Smart Game",
-                            title: GAME_LABELS[type] || "\u0E40\u0E01\u0E21\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C",
-                            description: "\u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E40\u0E01\u0E21\u0E17\u0E35\u0E48\u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E08\u0E31\u0E07\u0E2B\u0E27\u0E30\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19\u0E02\u0E2D\u0E07\u0E04\u0E38\u0E13\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49",
+                            title: GAME_LABELS[type] || "เกมคำศัพท์",
+                            description: "ระบบเลือกเกมที่เหมาะกับจังหวะการเรียนของคุณตอนนี้",
                             visualIcon: "fi fi-rr-gamepad",
                             visualLabel: "PLAY",
-                            chips: [{ icon: "fi fi-rr-sparkles", text: "AI \u0E41\u0E19\u0E30\u0E19\u0E33" }],
+                            chips: [{ icon: "fi fi-rr-sparkles", text: "AI แนะแนว" }],
                             meta: commonMeta
                         };
                         return {
                             ...profile,
-                            reason: reason || "\u0E2D\u0E34\u0E07\u0E08\u0E32\u0E01\u0E08\u0E33\u0E19\u0E27\u0E19\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C \u0E04\u0E33\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E17\u0E1A\u0E17\u0E27\u0E19 \u0E41\u0E25\u0E30\u0E40\u0E01\u0E21\u0E17\u0E35\u0E48\u0E40\u0E1E\u0E34\u0E48\u0E07\u0E40\u0E25\u0E48\u0E19\u0E44\u0E1B"
+                            reason: reason || "อิงจากจำนวนคำศัพท์ คำที่ควรทบทวน และเกมที่เพิ่งเล่นไป"
                         };
                     }
+
+                    
                     function createSmartGameCandidate(type, score, reason) {
                         if (!GAME_LABELS[type]) return null;
                         const profile = getSmartGameProfile(type, reason);
@@ -29535,20 +29620,20 @@
                         }, {});
                         const candidates = [];
                         let flashcardsScore = 14;
-                        let flashcardsReason = "\u0E41\u0E1F\u0E25\u0E0A\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E0A\u0E48\u0E27\u0E22\u0E14\u0E39\u0E44\u0E14\u0E49\u0E40\u0E23\u0E47\u0E27\u0E27\u0E48\u0E32\u0E04\u0E33\u0E44\u0E2B\u0E19\u0E22\u0E31\u0E07\u0E04\u0E38\u0E49\u0E19\u0E41\u0E25\u0E30\u0E04\u0E33\u0E44\u0E2B\u0E19\u0E22\u0E31\u0E07\u0E15\u0E49\u0E2D\u0E07\u0E17\u0E1A\u0E17\u0E27\u0E19\u0E40\u0E1E\u0E34\u0E48\u0E21";
+                        let flashcardsReason = "แฟลชการ์ดช่วยดูได้เร็วว่าคำไหนยังคุ้นและคำไหนยังต้องทบทวนเพิ่ม";
                         if (totalWords < 8) {
                             flashcardsScore += 22;
-                            flashcardsReason = "\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E04\u0E25\u0E31\u0E07\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E40\u0E22\u0E2D\u0E30\u0E21\u0E32\u0E01 \u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E25\u0E22\u0E1E\u0E32\u0E44\u0E1B\u0E17\u0E1A\u0E17\u0E27\u0E19\u0E41\u0E1A\u0E1A\u0E41\u0E1F\u0E25\u0E0A\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E01\u0E48\u0E2D\u0E19\u0E08\u0E30\u0E04\u0E38\u0E49\u0E21\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14";
+                            flashcardsReason = "ตอนนี้คลังคำศัพท์ยังไม่เยอะมาก ระบบเลยพาไปทบทวนแบบแฟลชการ์ดก่อนจะคุ้มที่สุด";
                         } else if (difficultCount > 0) {
                             flashcardsScore += 16;
-                            flashcardsReason = "\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E21\u0E35\u0E04\u0E33\u0E17\u0E35\u0E48\u0E04\u0E27\u0E23\u0E40\u0E19\u0E49\u0E19\u0E2D\u0E22\u0E39\u0E48\u0E43\u0E19\u0E23\u0E30\u0E1A\u0E1A \u0E41\u0E1F\u0E25\u0E0A\u0E01\u0E32\u0E23\u0E4C\u0E14\u0E08\u0E30\u0E0A\u0E48\u0E27\u0E22\u0E14\u0E39\u0E44\u0E14\u0E49\u0E44\u0E27\u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E08\u0E33\u0E04\u0E33\u0E1E\u0E27\u0E01\u0E19\u0E35\u0E49\u0E44\u0E14\u0E49\u0E14\u0E35\u0E02\u0E36\u0E49\u0E19\u0E41\u0E04\u0E48\u0E44\u0E2B\u0E19";
+                            flashcardsReason = "ตอนนี้มีคำที่ควรเน้นอยู่ในระบบ แฟลชการ์ดจะช่วยดูได้ไวว่าคุณจำคำพวกนี้ได้ดีแค่ไหน";
                         } else if ((historyCounts.flashcards || 0) === 0) {
                             flashcardsScore += 5;
                         }
                         flashcardsScore -= getRecentSmartGamePenalty("flashcards");
                         candidates.push(createSmartGameCandidate("flashcards", Math.max(1, flashcardsScore), flashcardsReason));
                         let swipeScore2 = 12;
-                        let swipeReason = "Word Swipe \u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E01\u0E32\u0E23\u0E14\u0E39\u0E01\u0E32\u0E23\u0E15\u0E31\u0E14\u0E2A\u0E34\u0E19\u0E43\u0E08\u0E44\u0E27\u0E46 \u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E41\u0E22\u0E01\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E44\u0E14\u0E49\u0E41\u0E21\u0E48\u0E19\u0E41\u0E04\u0E48\u0E44\u0E2B\u0E19";
+                        let swipeReason = "Word Swipe เหมาะกับการดูการตัดสินใจไวๆ ว่าคุณแยกความหมายได้แม่นแค่ไหน";
                         if (totalWords >= 12) {
                             swipeScore2 += 7;
                         }
@@ -29561,10 +29646,10 @@
                         swipeScore2 -= getRecentSmartGamePenalty("swipe");
                         candidates.push(createSmartGameCandidate("swipe", Math.max(1, swipeScore2), swipeReason));
                         let matchScore = 13;
-                        let matchReason = "Memory Match \u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E01\u0E32\u0E23\u0E14\u0E39\u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E33\u0E01\u0E31\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E44\u0E14\u0E49\u0E41\u0E21\u0E48\u0E19\u0E08\u0E23\u0E34\u0E07\u0E2B\u0E23\u0E37\u0E2D\u0E22\u0E31\u0E07 \u0E44\u0E21\u0E48\u0E43\u0E0A\u0E48\u0E41\u0E04\u0E48\u0E04\u0E38\u0E49\u0E19\u0E15\u0E32";
+                        let matchReason = "Memory Match เหมาะกับความแม่นยำในการจับคู่คำและความหมาย ไม่ใช่แค่คุ้นตา";
                         if (difficultCount > 0) {
                             matchScore += 16;
-                            matchReason = "\u0E15\u0E2D\u0E19\u0E19\u0E35\u0E49\u0E21\u0E35\u0E04\u0E33\u0E17\u0E35\u0E48\u0E22\u0E31\u0E07\u0E15\u0E49\u0E2D\u0E07\u0E40\u0E19\u0E49\u0E19\u0E2D\u0E22\u0E39\u0E48 \u0E23\u0E30\u0E1A\u0E1A\u0E40\u0E25\u0E22\u0E40\u0E25\u0E37\u0E2D\u0E01 Memory Match \u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E14\u0E39\u0E27\u0E48\u0E32\u0E04\u0E38\u0E13\u0E08\u0E31\u0E1A\u0E04\u0E39\u0E48\u0E04\u0E33\u0E01\u0E31\u0E1A\u0E04\u0E27\u0E32\u0E21\u0E2B\u0E21\u0E32\u0E22\u0E44\u0E14\u0E49\u0E41\u0E21\u0E48\u0E19\u0E02\u0E36\u0E49\u0E19\u0E2B\u0E23\u0E37\u0E2D\u0E22\u0E31\u0E07";
+                            matchReason = "ตอนนี้มีคำที่ยังต้องเน้นอยู่ ระบบเลยเลือก Memory Match เพื่อดูว่าคุณจับคู่คำกับความหมายได้แม่นยำขึ้นหรือยัง";
                         }
                         if (totalWords >= 16) {
                             matchScore += 4;
@@ -29575,7 +29660,7 @@
                         matchScore -= getRecentSmartGamePenalty("match");
                         candidates.push(createSmartGameCandidate("match", Math.max(1, matchScore), matchReason));
                         let typingScoreCandidate = 10;
-                        let typingReason = "Typing Attack \u0E40\u0E2B\u0E21\u0E32\u0E30\u0E01\u0E31\u0E1A\u0E01\u0E32\u0E23\u0E14\u0E36\u0E07\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E2D\u0E2D\u0E01\u0E21\u0E32\u0E43\u0E0A\u0E49\u0E43\u0E2B\u0E49\u0E44\u0E27\u0E02\u0E36\u0E49\u0E19\u0E41\u0E25\u0E30\u0E1D\u0E36\u0E01 recall \u0E41\u0E1A\u0E1A\u0E17\u0E31\u0E19\u0E17\u0E35";
+                        let typingReason = "Typing Attack เหมาะกับการดึงคำศัพท์ออกมาใช้ให้ไวขึ้นและฝึก recall แบบทันที";
                         if (totalWords >= 20) {
                             typingScoreCandidate += 10;
                         }
@@ -29587,8 +29672,68 @@
                         }
                         typingScoreCandidate -= getRecentSmartGamePenalty("typing");
                         candidates.push(createSmartGameCandidate("typing", Math.max(1, typingScoreCandidate), typingReason));
+
+                        // mini-game-1 (Listen & Type)
+                        let mg1Score = 10;
+                        let mg1Reason = "ฝึกทักษะการสะกดคำด้วยการฟังเสียงพากย์ของ AI แล้วพิมพ์ให้ถูกต้องทันที";
+                        if (totalWords >= 15) {
+                            mg1Score += 6;
+                        }
+                        if ((historyCounts["mini-game-1"] || 0) === 0) {
+                            mg1Score += 4;
+                        }
+                        mg1Score -= getRecentSmartGamePenalty("mini-game-1");
+                        candidates.push(createSmartGameCandidate("mini-game-1", Math.max(1, mg1Score), mg1Reason));
+
+                        // mini-game-2 (Sound Match)
+                        let mg2Score = 11;
+                        let mg2Reason = "ฝึกการแยกแยะคำศัพท์จากการออกเสียงด้วยการจับคู่การสะกดและเสียงพากย์ AI";
+                        if (difficultCount > 0) {
+                            mg2Score += 7;
+                        }
+                        if (totalWords >= 20) {
+                            mg2Score += 4;
+                        }
+                        if ((historyCounts["mini-game-2"] || 0) === 0) {
+                            mg2Score += 3;
+                        }
+                        mg2Score -= getRecentSmartGamePenalty("mini-game-2");
+                        candidates.push(createSmartGameCandidate("mini-game-2", Math.max(1, mg2Score), mg2Reason));
+
+                        // mini-game-3 (Bubble Word Shooter)
+                        let hasSynAnt = englishDataStore.some(w => (w.synonyms && w.synonyms.length > 0) || (w.antonyms && w.antonyms.length > 0));
+                        if (hasSynAnt) {
+                            let mg3Score = 12;
+                            let mg3Reason = "ท้าทายสมองด้วยการจับคู่คำพ้อง (Synonyms) หรือคำตรงข้าม (Antonyms) ในเกมยิงฟองสบู่";
+                            if (difficultCount > 0) {
+                                mg3Score += 5;
+                            }
+                            if ((historyCounts["mini-game-3"] || 0) === 0) {
+                                mg3Score += 3;
+                            }
+                            mg3Score -= getRecentSmartGamePenalty("mini-game-3");
+                            candidates.push(createSmartGameCandidate("mini-game-3", Math.max(1, mg3Score), mg3Reason));
+                        }
+
+                        // mini-game-4 (Sentence Builder)
+                        let hasExamples = englishDataStore.some(w => (w.example && w.example.trim() !== "") || (w.examples && w.examples.length > 0));
+                        if (hasExamples) {
+                            let mg4Score = 10;
+                            let mg4Reason = "ฝึกฝนการประกอบคำศัพท์เข้าด้วยกันเป็นประโยคตัวอย่างภาษาอังกฤษที่สมบูรณ์";
+                            if (totalWords >= 10) {
+                                mg4Score += 5;
+                            }
+                            if ((historyCounts["mini-game-4"] || 0) === 0) {
+                                mg4Score += 3;
+                            }
+                            mg4Score -= getRecentSmartGamePenalty("mini-game-4");
+                            candidates.push(createSmartGameCandidate("mini-game-4", Math.max(1, mg4Score), mg4Reason));
+                        }
+
                         return candidates.filter(Boolean).sort((a, b) => b.score - a.score);
                     }
+
+                    
                     function pickSmartGameRecommendation(candidates) {
                         if (!Array.isArray(candidates) || candidates.length === 0) return null;
                         const shortlist = candidates.slice(0, Math.min(3, candidates.length));
@@ -29694,7 +29839,7 @@
                         const candidates = buildSmartGameCandidates();
                         const recommendation = pickSmartGameRecommendation(candidates);
                         currentSmartGameRecommendation = recommendation;
-                        currentSmartGameRecommendationOptions = candidates.slice(0, 4);
+                        currentSmartGameRecommendationOptions = candidates; // Show all candidates to avoid truncation
 
 
 
