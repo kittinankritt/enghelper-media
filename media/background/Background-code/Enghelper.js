@@ -6676,6 +6676,30 @@
                         }
                         return null;
                     }
+                    window.enghelperTtsSpeed = 1.0;
+
+                    function enghelperPlayPopSound() {
+                        try {
+                            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                            if (!AudioCtx) return;
+                            const ctx = new AudioCtx();
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(350, ctx.currentTime);
+                            osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.07);
+                            gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.07);
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.start();
+                            osc.stop(ctx.currentTime + 0.07);
+                        } catch (e) {
+                            console.warn('Pop sound error:', e);
+                        }
+                    }
+                    window.enghelperPlayPopSound = enghelperPlayPopSound;
+
                     async function speak(text, lang = "en-GB", options = {}) {
                         if (!text || text.trim() === "") return;
                         if (currentAudioPlayer && lastAudioText === text) {
@@ -6695,6 +6719,7 @@
                             if (synth) {
                                 const utterThis = new SpeechSynthesisUtterance(text);
                                 utterThis.lang = "th-TH";
+                                utterThis.rate = window.enghelperTtsSpeed || 1.0;
                                 synth.speak(utterThis);
                             }
                             return;
@@ -6704,6 +6729,7 @@
                             if (cached && cached.url) {
                                 console.log("Playing from cache:", cached.source);
                                 currentAudioPlayer = new Audio(cached.url);
+                                currentAudioPlayer.playbackRate = window.enghelperTtsSpeed || 1.0;
                                 currentAudioPlayer.onended = () => {
                                     currentAudioPlayer = null;
                                     lastAudioText = null;
@@ -6720,6 +6746,7 @@
                             if (!wavBlob) return;
                             const audioUrl = URL.createObjectURL(wavBlob);
                             currentAudioPlayer = new Audio(audioUrl);
+                            currentAudioPlayer.playbackRate = window.enghelperTtsSpeed || 1.0;
                             currentAudioPlayer.onended = () => {
                                 URL.revokeObjectURL(audioUrl);
                                 currentAudioPlayer = null;
@@ -6739,6 +6766,7 @@
                                 if (synth.speaking) synth.cancel();
                                 const utterThis = new SpeechSynthesisUtterance(text);
                                 utterThis.lang = lang;
+                                utterThis.rate = window.enghelperTtsSpeed || 1.0;
                                 synth.speak(utterThis);
                             }
                         }
