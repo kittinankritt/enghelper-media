@@ -60038,7 +60038,260 @@ body.warm-sepia-mode .grammar-concept-card {
 }
 
 
+
+
+
 /* =========================================================================
-   END OF CLAYMORPHISM PHASE 1 — FULL CONSISTENCY OVERHAUL
+   CLAYMORPHISM PHASE 2 — ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================= */
+
+/* ── 2.1 PAGE TRANSITION ANIMATIONS ── */
+@keyframes pageFadeSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+        filter: blur(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+.home-focus-view:not([style*="display: none"]),
+#dashboard-view:not([style*="display: none"]),
+.bento-grid-dashboard {
+    animation: pageFadeSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+/* ── 2.2 DIALOG OPEN & CLOSE ANIMATIONS ── */
+@keyframes clayPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.85) translateY(24px);
+        filter: blur(8px);
+    }
+    65% {
+        transform: scale(1.025) translateY(-3px);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes backdropFadeBlur {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+}
+
+dialog[open],
+.standard-dialog[open],
+.profile-modern-dialog[open] {
+    animation: clayPopIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+dialog::backdrop {
+    animation: backdropFadeBlur 0.3s ease-out forwards !important;
+}
+
+/* ── 2.3 CARD INTERACTION SQUISH & SPRING-BACK ── */
+.home-insight-pill,
+.home-focus-card,
+.data-capsule,
+.grammar-topic-btn,
+.profile-quick-btn,
+.match-tile,
+.swipe-card,
+.test-history-item,
+.vocab-smart-card {
+    will-change: transform, box-shadow;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease !important;
+}
+
+.home-insight-pill:active,
+.home-focus-card:active,
+.data-capsule:active,
+.grammar-topic-btn:active,
+.profile-quick-btn:active,
+.match-tile:active,
+.test-history-item:active {
+    transform: scale(0.95) translateY(2px) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out !important;
+}
+
+/* ── 2.4 CLAY SKELETON SHIMMER LOADING ── */
+@keyframes clayShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.clay-skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.85) 50%,
+        rgba(255, 255, 255, 0.4) 100%
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: clayShimmer 1.6s infinite ease-in-out !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.04), inset -2px -2px 4px rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="dark"] .clay-skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.04) 100%
+    ) !important;
+    background-size: 200% 100% !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.03) !important;
+}
+
+/* ── 2.5 FLOATING PARTICLE AMBIENCE FOR HOME VIEW ── */
+@keyframes floatParticle1 {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    50% {
+        transform: translateY(-18px) rotate(6deg) scale(1.05);
+    }
+}
+
+@keyframes floatParticle2 {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    50% {
+        transform: translateY(15px) rotate(-5deg) scale(0.95);
+    }
+}
+
+.home-focus-shell::after {
+    content: "";
+    position: absolute;
+    top: 8%;
+    right: 5%;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(var(--theme-rgb), 0.15), rgba(var(--theme-rgb), 0.02));
+    box-shadow: var(--clay-shadow-sphere);
+    pointer-events: none;
+    z-index: 0;
+    animation: floatParticle1 7s ease-in-out infinite !important;
+}
+
+/* ── 2.6 TACTILE BUTTON PRESSING (HAPTIC MICRO-ANIMATION) ── */
+button:not(:disabled),
+.dialog-audio-btn,
+.audio-btn,
+.home-ai-send-btn,
+.home-ai-icon-btn,
+.home-ai-tool-btn,
+.profile-action-chip,
+.clear-btn,
+.tts-btn {
+    will-change: transform, box-shadow;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+button:not(:disabled):active,
+.dialog-audio-btn:active,
+.audio-btn:active,
+.home-ai-send-btn:active,
+.home-ai-icon-btn:active,
+.home-ai-tool-btn:active,
+.profile-action-chip:active {
+    transform: scale(0.92) translateY(1.5px) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+    transition: transform 0.06s ease-out, box-shadow 0.06s ease-out !important;
+}
+
+/* ── 2.7 STAGGERED LIST ENTRY ANIMATIONS ── */
+@keyframes staggeredSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.data-list-container .data-capsule,
+.test-history-item,
+.grammar-topic-btn,
+.home-insight-pill {
+    animation: staggeredSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.data-list-container .data-capsule:nth-child(1),
+.test-history-item:nth-child(1),
+.grammar-topic-btn:nth-child(1),
+.home-insight-pill:nth-child(1) { animation-delay: 0.04s; }
+
+.data-list-container .data-capsule:nth-child(2),
+.test-history-item:nth-child(2),
+.grammar-topic-btn:nth-child(2),
+.home-insight-pill:nth-child(2) { animation-delay: 0.08s; }
+
+.data-list-container .data-capsule:nth-child(3),
+.test-history-item:nth-child(3),
+.grammar-topic-btn:nth-child(3),
+.home-insight-pill:nth-child(3) { animation-delay: 0.12s; }
+
+.data-list-container .data-capsule:nth-child(4),
+.test-history-item:nth-child(4),
+.grammar-topic-btn:nth-child(4),
+.home-insight-pill:nth-child(4) { animation-delay: 0.16s; }
+
+.data-list-container .data-capsule:nth-child(5),
+.test-history-item:nth-child(5),
+.grammar-topic-btn:nth-child(5) { animation-delay: 0.20s; }
+
+.data-list-container .data-capsule:nth-child(6),
+.test-history-item:nth-child(6),
+.grammar-topic-btn:nth-child(6) { animation-delay: 0.24s; }
+
+.data-list-container .data-capsule:nth-child(7),
+.test-history-item:nth-child(7) { animation-delay: 0.28s; }
+
+.data-list-container .data-capsule:nth-child(8),
+.test-history-item:nth-child(8) { animation-delay: 0.32s; }
+
+/* ── ACCESSIBILITY: RESPECT REDUCED MOTION PREFERENCE ── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* =========================================================================
+   END OF CLAYMORPHISM PHASE 2 — ANIMATIONS & MICRO-INTERACTIONS
    ========================================================================= */
 
