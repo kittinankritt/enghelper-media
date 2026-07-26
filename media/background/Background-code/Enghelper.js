@@ -8793,18 +8793,56 @@
                             }
                         });
                     }
+                    function getLevenshteinDistance(a, b) {
+                        if (!a.length) return b.length;
+                        if (!b.length) return a.length;
+                        const matrix = [];
+                        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+                        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+                        for (let i = 1; i <= b.length; i++) {
+                            for (let j = 1; j <= a.length; j++) {
+                                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                                    matrix[i][j] = matrix[i - 1][j - 1];
+                                } else {
+                                    matrix[i][j] = Math.min(
+                                        matrix[i - 1][j - 1] + 1,
+                                        matrix[i][j - 1] + 1,
+                                        matrix[i - 1][j] + 1
+                                    );
+                                }
+                            }
+                        }
+                        return matrix[b.length][a.length];
+                    }
+
                     function applyFilterAndRender() {
                         const query2 = englishDataInput.value.toLowerCase().trim();
                         lastFilterQuery = query2;
+                        if (query2 && query2.length >= 2) {
+                            try {
+                                const history = JSON.parse(localStorage.getItem("enghelper_search_history") || "[]");
+                                if (!history.includes(query2)) {
+                                    history.unshift(query2);
+                                    if (history.length > 10) history.pop();
+                                    localStorage.setItem("enghelper_search_history", JSON.stringify(history));
+                                }
+                            } catch (e) {}
+                        }
                         const filteredData = englishDataStore.filter((item) => {
                             const posMatch = !activeVocabPosFilter || normalizeVocabPos(item.pos) === activeVocabPosFilter;
                             if (!posMatch) return false;
                             if (!query2) return true;
-                            const englishMatch = item.englishData.toLowerCase().includes(query2);
+                            const engLower = item.englishData.toLowerCase();
+                            const englishMatch = engLower.includes(query2);
                             const thaiMatch = item.thaiExplanation && item.thaiExplanation.toLowerCase().includes(query2);
                             const synonymMatch = item.synonyms && item.synonyms.some((s) => s.toLowerCase().includes(query2));
                             const antonymMatch = item.antonyms && item.antonyms.some((a) => a.toLowerCase().includes(query2));
-                            return englishMatch || thaiMatch || synonymMatch || antonymMatch;
+                            let fuzzyMatch = false;
+                            if (!englishMatch && !thaiMatch && query2.length >= 3) {
+                                const dist = getLevenshteinDistance(engLower, query2);
+                                fuzzyMatch = dist <= (query2.length > 5 ? 2 : 1);
+                            }
+                            return englishMatch || thaiMatch || synonymMatch || antonymMatch || fuzzyMatch;
                         });
                         sortAndRenderEnglishDataList(filteredData);
                     }
@@ -9479,17 +9517,26 @@
                             const displayEnglish = highlightSearchText(item.englishData, lastFilterQuery);
                             const displayThai = item.thaiExplanation ? highlightSearchText(item.thaiExplanation, lastFilterQuery) : "";
                             const thaiTextPart = displayThai ? `<span class="thai-text">(${displayThai})</span>` : "";
+                            const srsReps = item.srs?.repetitions || 0;
+                            let srsClass = "srs-stage-new", srsText = "New";
+                            if (srsReps >= 5) { srsClass = "srs-stage-mastered"; srsText = "Mastered"; }
+                            else if (srsReps >= 3) { srsClass = "srs-stage-review"; srsText = "Review"; }
+                            else if (srsReps >= 1) { srsClass = "srs-stage-learning"; srsText = "Learning"; }
+
                             capsule.innerHTML = `
-                                <!-- \u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14\u0E17\u0E35\u0E48 1: \u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C + \u0E04\u0E33\u0E41\u0E1B\u0E25 -->
+                                <!-- บรรทัดที่ 1: คำศัพท์ + คำแปล -->
                                 <div class="capsule-row-top">
                                     <span class="english-text">${displayEnglish}</span>
                                     ${thaiTextPart}
                                 </div>
 
-                                <!-- \u0E1A\u0E23\u0E23\u0E17\u0E31\u0E14\u0E17\u0E35\u0E48 2: POS (\u0E0B\u0E49\u0E32\u0E22) + \u0E1B\u0E38\u0E48\u0E21\u0E15\u0E48\u0E32\u0E07\u0E46 (\u0E02\u0E27\u0E32) -->
+                                <!-- บรรทัดที่ 2: POS (ซ้าย) + SRS Badge + ปุ่มต่างๆ (ขวา) -->
                                 <div class="capsule-row-bottom">
-                                    <!-- \u0E01\u0E23\u0E2D\u0E1A\u0E2A\u0E35\u0E1B\u0E23\u0E30\u0E40\u0E20\u0E17\u0E04\u0E33 -->
-                                    <span class="pos-badge-pill">${item.pos || "General"}</span>
+                                    <!-- กรอบสีประเภทคำ + SRS Level Badge -->
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                        <span class="pos-badge-pill">${item.pos || "General"}</span>
+                                        <span class="srs-badge ${srsClass}">${srsText}</span>
+                                    </div>
 
                                     <!-- \u0E01\u0E25\u0E38\u0E48\u0E21\u0E1B\u0E38\u0E48\u0E21\u0E44\u0E2D\u0E04\u0E2D\u0E19 -->
                                     <div class="capsule-actions-group">
@@ -42482,11 +42529,75 @@
                     }
                 }, { passive: true });
 
-                window.addEventListener("resize", () => {
-                    if (activeInput && isAltDown && previewPopup.style.display === "flex") {
-                        positionPopup(activeInput);
+                // ===== CLAYMORPHISM PHASE 3 — KEYBOARD SHORTCUTS, TOUCH SWIPE & MILESTONES =====
+                document.addEventListener("keydown", (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f") {
+                        const searchInput = document.getElementById("english-data-input") || document.getElementById("vocab-search-input");
+                        if (searchInput && document.activeElement !== searchInput) {
+                            e.preventDefault();
+                            searchInput.focus();
+                            try { searchInput.select(); } catch (err) {}
+                        }
+                    } else if (e.key === "Escape") {
+                        const openDialogs = document.querySelectorAll("dialog[open]");
+                        openDialogs.forEach(dialog => {
+                            try { dialog.close(); } catch (err) {}
+                        });
                     }
+                });
+
+                document.addEventListener("touchstart", (e) => {
+                    const dialog = e.target.closest("dialog[open]");
+                    if (!dialog) return;
+                    const touch = e.touches[0];
+                    dialog._touchStartX = touch.clientX;
+                    dialog._touchStartY = touch.clientY;
                 }, { passive: true });
+
+                document.addEventListener("touchend", (e) => {
+                    const dialog = e.target.closest("dialog[open]");
+                    if (!dialog || dialog._touchStartX == null) return;
+                    const touch = e.changedTouches[0];
+                    const diffX = touch.clientX - dialog._touchStartX;
+                    const diffY = touch.clientY - dialog._touchStartY;
+                    if ((diffX > 120 && Math.abs(diffY) < 80) || (diffY > 140 && Math.abs(diffX) < 80)) {
+                        try { dialog.close(); } catch (err) {}
+                    }
+                    dialog._touchStartX = null;
+                    dialog._touchStartY = null;
+                }, { passive: true });
+
+                window.checkVocabMilestone = function(count) {
+                    const milestones = [10, 25, 50, 100, 250, 500, 1000];
+                    if (milestones.includes(count)) {
+                        try {
+                            const milestoneKey = `milestone_celebrated_${count}`;
+                            if (!localStorage.getItem(milestoneKey)) {
+                                localStorage.setItem(milestoneKey, "true");
+                                if (typeof showMilestoneCelebration === "function") showMilestoneCelebration(count);
+                            }
+                        } catch (e) {}
+                    }
+                };
+
+                function showMilestoneCelebration(count) {
+                    let dialog = document.getElementById("milestone-dialog");
+                    if (!dialog) {
+                        dialog = document.createElement("dialog");
+                        dialog.id = "milestone-dialog";
+                        dialog.className = "standard-dialog";
+                        document.body.appendChild(dialog);
+                    }
+                    dialog.innerHTML = `
+                        <div class="milestone-celebration-card">
+                            <div class="milestone-badge-icon"><i class="fi fi-sr-trophy"></i></div>
+                            <h2 style="margin: 0 0 8px 0; color: var(--primary-color);">ยินดีด้วย! ความสำเร็จใหม่ 🎉</h2>
+                            <p style="font-size: 1.1rem; margin: 0 0 16px 0; color: var(--text-color);">สะสมคำศัพท์ครบ <strong>${count} คำ</strong> แล้ว!</p>
+                            <button class="guided-empty-btn" onclick="this.closest('dialog').close()">ลุยต่อเลย! 🚀</button>
+                        </div>
+                    `;
+                    try { dialog.showModal(); } catch (e) {}
+                }
             });
 
         },
