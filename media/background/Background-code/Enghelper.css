@@ -31,7 +31,7 @@
     font-weight: normal;
     font-style: normal;
     font-display: swap;
-});
+}
 
 /* --- CUSTOM FONT: Bangna --- */
 @font-face {
@@ -59016,4 +59016,1029 @@ body.warm-sepia-mode .grammar-concept-card {
     border-color: #e0d0a6 !important;
 }
 
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — FULL CONSISTENCY OVERHAUL
+   Section 1.1: HOME FOCUS VIEW
+   ========================================================================= */
+
+/* ── HOME GREETING TOPLINE PILL — Clay Surface ── */
+.home-greeting-topline {
+    background: rgba(255, 255, 255, 0.82) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-greeting-topline:hover {
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.08), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── HOME GREETING TITLE — Clay Emboss Text ── */
+.home-greeting-title {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06), -1px -1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── HOME INSIGHT PILLS — Clay Raised Cards ── */
+.home-insight-pill {
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-insight-pill:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(var(--theme-rgb), 0.25) !important;
+}
+
+.home-insight-pill:active {
+    transform: translateY(0) scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── HOME INSIGHT PILL ICON — Clay Sphere ── */
+.home-insight-pill i {
+    border-radius: 14px !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-insight-pill:hover i {
+    transform: scale(1.08) !important;
+}
+
+/* ── HOME AI COMPOSER SHELL — Clay Dark Surface ── */
+.home-ai-composer-shell {
+    border-radius: var(--clay-radius) !important;
+    box-shadow:
+        8px 8px 20px rgba(0, 0, 0, 0.25),
+        -4px -4px 12px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.06),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.2),
+        0 24px 70px rgba(0, 0, 0, 0.18) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-ai-composer-shell:focus-within {
+    box-shadow:
+        8px 8px 22px rgba(0, 0, 0, 0.28),
+        -4px -4px 14px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 6px rgba(0, 0, 0, 0.22),
+        0 28px 80px rgba(0, 0, 0, 0.22),
+        0 0 0 2px rgba(95, 255, 188, 0.12) !important;
+    border-color: rgba(95, 255, 188, 0.2) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ── HOME AI BUTTONS — Clay Spheres ── */
+.home-ai-tool-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2), -2px -2px 6px rgba(255, 255, 255, 0.04), inset 1px 1px 3px rgba(255, 255, 255, 0.08), inset -1px -1px 3px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-ai-tool-btn:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25), -3px -3px 8px rgba(255, 255, 255, 0.05), inset 1px 1px 3px rgba(255, 255, 255, 0.1), inset -1px -1px 3px rgba(0, 0, 0, 0.18) !important;
+}
+
+.home-ai-tool-btn:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+.home-ai-icon-btn {
+    border-radius: 50% !important;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2), -2px -2px 6px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.1), inset -2px -2px 5px rgba(0, 0, 0, 0.2) !important;
+    border: 1.5px solid rgba(126, 146, 255, 0.15) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-ai-icon-btn:hover {
+    transform: translateY(-2px) scale(1.08) !important;
+    box-shadow: 5px 5px 14px rgba(0, 0, 0, 0.25), -3px -3px 8px rgba(255, 255, 255, 0.05), inset 3px 3px 6px rgba(255, 255, 255, 0.12), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+.home-ai-icon-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2), inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -1px -1px 3px rgba(255, 255, 255, 0.06) !important;
+}
+
+.home-ai-send-btn {
+    border-radius: 50% !important;
+    box-shadow: 4px 4px 12px rgba(28, 195, 212, 0.3), -2px -2px 6px rgba(255, 255, 255, 0.08), inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 16px 34px rgba(28, 195, 212, 0.28) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-ai-send-btn:hover {
+    transform: translateY(-2px) scale(1.08) !important;
+    box-shadow: 5px 5px 16px rgba(28, 195, 212, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.1), inset 3px 3px 6px rgba(255, 255, 255, 0.3), inset -2px -2px 5px rgba(0, 0, 0, 0.12), 0 18px 36px rgba(28, 195, 212, 0.34) !important;
+}
+
+.home-ai-send-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: 2px 2px 6px rgba(28, 195, 212, 0.2), inset 3px 3px 8px rgba(0, 0, 0, 0.15), inset -1px -1px 3px rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ── HOME FOCUS CARDS (Quick Access / WOTD / Missions) — Clay Surface ── */
+.home-focus-card {
+    background: rgba(255, 255, 255, 0.82) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-focus-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 8px 8px 22px rgba(0, 0, 0, 0.09), -5px -5px 16px rgba(255, 255, 255, 0.9), inset 2px 2px 6px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── HOME FOCUS CARD TITLE — Clay Emboss ── */
+.home-focus-card-title {
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3), -1px -1px 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── HOME WOTD ITEMS — Clay Inset Panels ── */
+.home-wotd-item {
+    border-radius: var(--clay-radius-small) !important;
+    background: linear-gradient(160deg, rgba(var(--theme-rgb), 0.08), rgba(var(--theme-rgb), 0.04)) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.5), 3px 3px 8px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-wotd-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.03), inset -2px -2px 6px rgba(255, 255, 255, 0.6), 5px 5px 14px rgba(0, 0, 0, 0.06), -3px -3px 8px rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ── HOME WOTD AUDIO BUTTON — Clay Sphere ── */
+.home-wotd-audio-btn {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.home-wotd-audio-btn:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.06) !important;
+}
+
+.home-wotd-audio-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── HOME WOTD POS BADGE — Clay Pill ── */
+.home-wotd-pos {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.06), -1px -1px 3px rgba(255, 255, 255, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── HOME DAILY MISSIONS LIST — Clay Inset ── */
+.home-daily-missions-list {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.7), 2px 2px 6px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── HOME VIEW DARK MODE ── */
+[data-theme="dark"] .home-greeting-topline {
+    background: rgba(24, 23, 34, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+[data-theme="dark"] .home-greeting-title {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), -1px -1px 2px rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .home-insight-pill {
+    background: rgba(24, 23, 34, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+[data-theme="dark"] .home-insight-pill:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme="dark"] .home-insight-pill i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .home-ai-composer-shell {
+    box-shadow:
+        8px 8px 22px rgba(0, 0, 0, 0.4),
+        -4px -4px 12px rgba(255, 255, 255, 0.02),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.05),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.3),
+        0 24px 70px rgba(0, 0, 0, 0.25) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .home-focus-card {
+    background: rgba(24, 23, 34, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+[data-theme="dark"] .home-focus-card:hover {
+    box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.35), -4px -4px 14px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.07), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme="dark"] .home-wotd-item {
+    background: linear-gradient(160deg, rgba(var(--theme-rgb), 0.12), rgba(var(--theme-rgb), 0.06)) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04), 3px 3px 8px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .home-wotd-audio-btn {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .home-daily-missions-list {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04), 2px 2px 6px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── HOME VIEW MOBILE RESPONSIVE ── */
+@media (max-width: 769px) {
+    .home-insight-pill {
+        border-radius: 16px !important;
+    }
+
+    .home-insight-pill i {
+        border-radius: 12px !important;
+    }
+
+    .home-focus-card {
+        border-radius: 22px !important;
+    }
+
+    .home-ai-composer-shell {
+        border-radius: 24px !important;
+    }
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.2: DATA DETAILS DIALOG
+   ========================================================================= */
+
+/* ── DATA DETAILS DIALOG CONTAINER — Clay Surface ── */
+#data-details-dialog {
+    border-radius: var(--clay-radius) !important;
+    border: var(--clay-border) !important;
+    box-shadow: var(--clay-shadow-combined), 0 24px 60px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* ── VOCAB DIALOG TOOLBAR — Clay Raised Bar ── */
+.vocab-dialog-toolbar {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 6px rgba(255, 255, 255, 0.7), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* ── DIALOG AUDIO BUTTONS — Clay Spheres ── */
+.dialog-audio-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dialog-audio-btn:hover {
+    transform: scale(1.12) rotate(5deg) !important;
+    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.dialog-audio-btn:active {
+    transform: scale(0.9) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* Audio btn highlighted variant */
+.dialog-audio-btn.highlight {
+    box-shadow: var(--clay-shadow-sphere), 0 0 12px rgba(var(--theme-rgb), 0.15) !important;
+}
+
+/* ── VIEW MODE POS BADGE — Clay Pill ── */
+.view-mode-pos-badge {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.08), -1px -1px 3px rgba(255, 255, 255, 0.5), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── VIEW MODE ITEMS — Clay Inset Cards ── */
+#data-details-dialog .view-mode-item {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 5px rgba(255, 255, 255, 0.6), 3px 3px 8px rgba(0, 0, 0, 0.04), -2px -2px 6px rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog .view-mode-item:hover {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.02), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 4px 4px 12px rgba(0, 0, 0, 0.06), -3px -3px 8px rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ── VIEW MODE SECTIONS GRID — Clay Layout ── */
+.view-mode-sections-grid {
+    gap: 14px !important;
+}
+
+.view-mode-root-frequency-grid {
+    gap: 14px !important;
+}
+
+/* ── FORM SECTION BLOCKS (Edit mode) — Clay Panels ── */
+#data-details-dialog .form-section-block {
+    border-radius: var(--clay-radius-small) !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 6px rgba(255, 255, 255, 0.7), var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* ── FORM INPUTS — Clay Inset ── */
+#data-details-dialog input[type="text"],
+#data-details-dialog select,
+#data-details-dialog textarea {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 6px rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog input[type="text"]:focus,
+#data-details-dialog select:focus,
+#data-details-dialog textarea:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 6px rgba(255, 255, 255, 0.8), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.25) !important;
+}
+
+/* ── ROOT DATA CAPSULE — Clay Card ── */
+#data-details-dialog .root-data-capsule {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog .root-data-capsule:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+/* ── ROOT CEFR CHIP — Clay Pill ── */
+#data-details-dialog .root-cefr-chip {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog .root-cefr-chip.active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.08), inset -2px -2px 4px rgba(255, 255, 255, 0.5), var(--clay-shadow-pressed) !important;
+}
+
+/* ── CLEAR BUTTON — Clay ── */
+#data-details-dialog .clear-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#data-details-dialog .clear-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+/* ── DATA DETAILS DARK MODE ── */
+[data-theme="dark"] #data-details-dialog {
+    box-shadow: var(--clay-shadow-combined), 0 24px 60px rgba(0, 0, 0, 0.3) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] .vocab-dialog-toolbar {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .dialog-audio-btn {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(30, 30, 48, 0.8) !important;
+}
+
+[data-theme="dark"] .dialog-audio-btn:hover {
+    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.3), -3px -3px 8px rgba(255, 255, 255, 0.04), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -2px -2px 5px rgba(0, 0, 0, 0.25) !important;
+    background: rgba(40, 40, 60, 0.9) !important;
+}
+
+[data-theme="dark"] #data-details-dialog .view-mode-item {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15), inset -2px -2px 5px rgba(255, 255, 255, 0.04), 3px 3px 8px rgba(0, 0, 0, 0.15), -2px -2px 6px rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #data-details-dialog .form-section-block {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.03), var(--clay-shadow-small) !important;
+}
+
+[data-theme="dark"] #data-details-dialog input[type="text"],
+[data-theme="dark"] #data-details-dialog select,
+[data-theme="dark"] #data-details-dialog textarea {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #data-details-dialog .root-data-capsule {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.3: VOCAB LIBRARY DIALOG (INTERNAL)
+   ========================================================================= */
+
+/* ── DATA CAPSULES (Vocab List Items) — Clay Raised Cards ── */
+.data-list-container .data-capsule {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.data-list-container .data-capsule:hover {
+    transform: translateY(-3px) scale(1.005) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+    border-left: 4px solid var(--primary-color) !important;
+}
+
+.data-list-container .data-capsule:active {
+    transform: translateY(0) scale(0.99) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── DATA CAPSULE LEFT STRIP — Clay Rounded ── */
+.data-capsule::before {
+    border-top-left-radius: var(--clay-radius-small) !important;
+    border-bottom-left-radius: var(--clay-radius-small) !important;
+    box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ── DATA CAPSULE POS TAG — Clay Pill ── */
+.data-capsule-header .pos {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.08), -1px -1px 3px rgba(255, 255, 255, 0.4), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ── DATA CAPSULE ACTION BUTTONS — Clay ── */
+.data-capsule-actions button {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.data-capsule-actions button:hover {
+    transform: scale(1.08) translateY(-1px) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.data-capsule-actions button:active {
+    transform: scale(0.94) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── AUDIO BUTTON IN LIST — Clay Sphere ── */
+.audio-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.audio-btn:hover {
+    transform: scale(1.15) rotate(8deg) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+.audio-btn:active {
+    transform: scale(0.9) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── VOCAB SEARCH PANEL — Clay Inset ── */
+.add-content-section.vocab-search-panel {
+    border-radius: var(--clay-radius-small) !important;
+}
+
+.add-content-section input[type="text"] {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.add-content-section input[type="text"]:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* ── VOCAB SORT PANEL — Clay Bar ── */
+.vocab-sort-panel {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.03), inset -2px -2px 4px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ── VOCAB SMART RECOMMENDATION CARD — Clay Raised ── */
+.vocab-smart-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined), 0 4px 16px rgba(var(--theme-rgb), 0.08) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.vocab-smart-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 8px 8px 22px rgba(0, 0, 0, 0.09), -5px -5px 16px rgba(255, 255, 255, 0.9), inset 2px 2px 6px rgba(255, 255, 255, 0.65), inset -2px -2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ── VOCAB LIBRARY DARK MODE ── */
+[data-theme="dark"] .data-list-container .data-capsule {
+    background-color: rgba(30, 25, 45, 0.85) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+[data-theme="dark"] .data-list-container .data-capsule:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.07), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme="dark"] .data-capsule-header .pos {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(255, 255, 255, 0.04), inset 1px 1px 2px rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .data-capsule-actions button {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .add-content-section input[type="text"] {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .vocab-sort-panel {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .vocab-smart-card {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.4: GRAMMAR DIALOG (INTERNAL)
+   ========================================================================= */
+
+/* ── GRAMMAR LESSON WRAPPER — Clay Container ── */
+.grammar-lesson-wrapper {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── GRAMMAR LESSON CONTAINER — Clay Surface ── */
+#grammar-lesson-container {
+    border-radius: var(--clay-radius-small) !important;
+}
+
+/* ── GRAMMAR TOPIC SELECTION BUTTONS — Clay Cards ── */
+.grammar-topic-btn {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.grammar-topic-btn:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.grammar-topic-btn:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── GRAMMAR TOPIC BTN ICON — Clay Sphere ── */
+.grammar-topic-btn i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.grammar-topic-btn:hover i {
+    transform: scale(1.1) !important;
+}
+
+/* ── GRAMMAR TOPIC INPUT — Clay Inset ── */
+#grammar-topic-input {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#grammar-topic-input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* ── GRAMMAR KEY TAKEAWAY — Clay Highlight ── */
+#grammar-lesson-container .key-takeaway {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.04), inset -2px -2px 4px rgba(255, 255, 255, 0.5), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ── GRAMMAR DARK MODE ── */
+[data-theme="dark"] .grammar-lesson-wrapper {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15), inset -2px -2px 5px rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .grammar-topic-btn {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .grammar-topic-btn:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.07), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme="dark"] .grammar-topic-btn i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #grammar-topic-input {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #grammar-lesson-container .key-takeaway {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.04), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.5: STORY & ROLEPLAY DIALOGS
+   ========================================================================= */
+
+/* ── STORY CONTENT CONTAINER — Clay Surface ── */
+#story-content-container {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── STORY AUDIO PLAYER — Clay Bar ── */
+#story-content-view #custom-audio-player {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* ── STORY PLAYER BUTTONS — Clay Spheres ── */
+#story-content-view #custom-audio-player #player-play-btn {
+    border-radius: 50% !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#story-content-view #custom-audio-player #player-play-btn:hover {
+    transform: scale(1.08) !important;
+}
+
+#story-content-view #custom-audio-player #player-play-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+#story-content-view #custom-audio-player .tts-btn,
+#story-content-view #custom-audio-player #player-speed-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#story-content-view #custom-audio-player .tts-btn:hover,
+#story-content-view #custom-audio-player #player-speed-btn:hover {
+    transform: translateY(-1px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+/* ── STORY GENERATE ANOTHER BTN — Clay ── */
+#story-content-view #custom-audio-player #generate-another-story-btn {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: 3px 3px 8px rgba(var(--theme-rgb), 0.15), -2px -2px 5px rgba(255, 255, 255, 0.5), inset 1px 1px 3px rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#story-content-view #custom-audio-player #generate-another-story-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+}
+
+/* ── STORY PLAYER SEEK SLIDER — Clay Inset Track ── */
+#story-content-view #custom-audio-player #player-seek-slider {
+    border-radius: var(--clay-radius-pill) !important;
+}
+
+/* ── STORY HIGHLIGHTED WORDS — Clay Highlight ── */
+#story-content-container b {
+    border-radius: 6px !important;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.04), -1px -1px 2px rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#story-content-container b:hover {
+    box-shadow: 2px 2px 6px rgba(var(--theme-rgb), 0.15), -1px -1px 3px rgba(255, 255, 255, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── STORY DARK MODE ── */
+[data-theme="dark"] #story-content-container {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15), inset -2px -2px 5px rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #story-content-view #custom-audio-player {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: var(--clay-border) !important;
+}
+
+[data-theme="dark"] #story-content-view #custom-audio-player #player-play-btn {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #story-content-view #custom-audio-player .tts-btn,
+[data-theme="dark"] #story-content-view #custom-audio-player #player-speed-btn {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.6: TEST ME & GAMES DIALOGS
+   ========================================================================= */
+
+/* ── GAME SELECTION CARDS — already have clay in section 11 of feature popups ── */
+/* Adding deeper clay to internal game elements */
+
+/* ── SWIPE GAME CARDS — Clay 3D Cards ── */
+#swipe-game-dialog .swipe-card,
+.swipe-card {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: var(--clay-shadow-combined), 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* ── MATCH GAME TILES — Clay Sphere-like Tiles ── */
+#match-game-dialog .match-tile,
+.match-tile {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.match-tile:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.1), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.match-tile:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+.match-tile.matched {
+    box-shadow: 4px 4px 12px rgba(16, 185, 129, 0.2), -2px -2px 6px rgba(255, 255, 255, 0.5), inset 2px 2px 5px rgba(255, 255, 255, 0.3), inset -2px -2px 4px rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ── TYPING GAME INPUT — Clay Inset ── */
+#typing-game-dialog input,
+.typing-game-input {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.6) !important;
+    border: 1.5px solid rgba(0, 0, 0, 0.04) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#typing-game-dialog input:focus,
+.typing-game-input:focus {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.06), inset -2px -2px 5px rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(var(--theme-rgb), 0.12) !important;
+    border-color: rgba(var(--theme-rgb), 0.2) !important;
+}
+
+/* ── TEST HISTORY ITEMS — Clay Cards ── */
+.test-history-item {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.test-history-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+}
+
+/* ── COMMON HISTORY ITEMS — Clay ── */
+.common-history-content {
+    border-radius: var(--clay-radius-small) !important;
+}
+
+/* ── GAMES DARK MODE ── */
+[data-theme="dark"] .swipe-card {
+    box-shadow: var(--clay-shadow-combined), 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+    border: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .match-tile {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .match-tile:hover {
+    box-shadow: 7px 7px 18px rgba(0, 0, 0, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.07), inset -2px -2px 5px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme="dark"] #typing-game-dialog input {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.04) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .test-history-item {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* =========================================================================
+   CLAYMORPHISM PHASE 1 — Section 1.7: PROFILE & SETTINGS REMAINING
+   ========================================================================= */
+
+/* ── PROFILE AVATAR — Clay Sphere ── */
+.profile-avatar-large,
+.profile-avatar-wrapper img {
+    box-shadow: var(--clay-shadow-sphere), 0 8px 24px rgba(var(--theme-rgb), 0.15) !important;
+    border: 3px solid rgba(255, 255, 255, 0.6) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.profile-avatar-large:hover,
+.profile-avatar-large.clickable:hover {
+    box-shadow: 6px 6px 16px rgba(var(--theme-rgb), 0.25), -4px -4px 10px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.06) !important;
+    transform: scale(1.05) !important;
+}
+
+/* ── PROFILE PANEL — Clay Surface (already has clay, refining) ── */
+.profile-panel {
+    border-radius: var(--clay-radius) !important;
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.03), inset -2px -2px 6px rgba(255, 255, 255, 0.7), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.54) !important;
+    transition: var(--clay-transition) !important;
+}
+
+/* ── PROFILE META ROW CHIPS — Clay Pills ── */
+#profile-dialog.profile-account-dialog .profile-meta-row .profile-action-chip {
+    border-radius: var(--clay-radius-pill) !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+#profile-dialog.profile-account-dialog .profile-meta-row .profile-action-chip:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+}
+
+#profile-dialog.profile-account-dialog .profile-meta-row .profile-action-chip:active {
+    transform: scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── PROFILE QUICK BUTTONS — Enhanced Clay ── */
+.profile-quick-btn {
+    border-radius: var(--clay-radius-small) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.profile-quick-btn:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.09), -5px -5px 14px rgba(255, 255, 255, 0.9), inset 2px 2px 5px rgba(255, 255, 255, 0.7), inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.profile-quick-btn:active {
+    transform: translateY(0) scale(0.97) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── PROFILE QUICK BTN ICON — Clay Sphere ── */
+.profile-quick-btn i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.profile-quick-btn:hover i {
+    transform: scale(1.1) !important;
+}
+
+/* ── SETTINGS RANGE SLIDER — Clay Track ── */
+#settings-dialog input[type="range"] {
+    border-radius: var(--clay-radius-pill) !important;
+}
+
+#settings-dialog input[type="range"]::-webkit-slider-thumb {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── PROFILE/SETTINGS DARK MODE ── */
+[data-theme="dark"] .profile-avatar-large,
+[data-theme="dark"] .profile-avatar-wrapper img {
+    box-shadow: var(--clay-shadow-sphere), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+    border: 3px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .profile-panel {
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.03), var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] #profile-dialog.profile-account-dialog .profile-meta-row .profile-action-chip {
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .profile-quick-btn {
+    box-shadow: var(--clay-shadow-combined) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .profile-quick-btn i {
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+
+/* =========================================================================
+   END OF CLAYMORPHISM PHASE 1 — FULL CONSISTENCY OVERHAUL
+   ========================================================================= */
 
