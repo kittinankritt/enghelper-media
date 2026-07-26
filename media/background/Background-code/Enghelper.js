@@ -125,6 +125,351 @@
                     ].some((placeholder) => lowered.includes(String(placeholder).toLowerCase()));
                 }
 
+                // Safe JSON Parse Helper
+                function safeJsonParse(jsonString, fallback = null) {
+                    if (!jsonString) return fallback;
+                    try {
+                        return JSON.parse(jsonString);
+                    } catch (e) {
+                        console.warn("safeJsonParse error:", e);
+                        return fallback;
+                    }
+                }
+                window.safeJsonParse = safeJsonParse;
+
+                // Quick Contextual Dictionary Pop-up (Claymorphism & AI Integration)
+                function enghelperInitQuickDictPopup() {
+                    if (document.getElementById('enghelper-quick-dict-popup')) return;
+
+                    const popup = document.createElement('div');
+                    popup.id = 'enghelper-quick-dict-popup';
+                    popup.className = 'enghelper-quick-dict-popup';
+                    popup.style.display = 'none';
+                    popup.innerHTML = `
+                        <div class="enghelper-quick-dict-header">
+                            <span class="enghelper-quick-dict-word" id="quick-dict-word-text">Word</span>
+                            <div class="enghelper-quick-dict-actions">
+                                <button class="enghelper-quick-dict-btn" id="quick-dict-audio-btn" title="ฟังเสียงอ่าน"><i class="fi fi-rr-volume"></i></button>
+                                <button class="enghelper-quick-dict-btn" id="quick-dict-close-btn" title="ปิด"><i class="fi fi-rr-cross"></i></button>
+                            </div>
+                        </div>
+                        <div class="enghelper-quick-dict-body">
+                            <div style="margin-bottom: 6px;">
+                                <span class="enghelper-quick-dict-pos" id="quick-dict-pos-tag" style="display:none;">pos</span>
+                                <span class="enghelper-quick-dict-ipa" id="quick-dict-ipa-text">/.../</span>
+                            </div>
+                            <div class="enghelper-quick-dict-trans" id="quick-dict-trans-text">กำลังโหลดคำแปล...</div>
+                        </div>
+                        <button class="enghelper-quick-dict-add-btn" id="quick-dict-add-btn">
+                            <i class="fi fi-rr-plus"></i> เพิ่มลงคลังศัพท์
+                        </button>
+                    `;
+                    document.body.appendChild(popup);
+
+                    const wordEl = popup.querySelector('#quick-dict-word-text');
+                    const posEl = popup.querySelector('#quick-dict-pos-tag');
+                    const ipaEl = popup.querySelector('#quick-dict-ipa-text');
+                    const transEl = popup.querySelector('#quick-dict-trans-text');
+                    const audioBtn = popup.querySelector('#quick-dict-audio-btn');
+                    const closeBtn = popup.querySelector('#quick-dict-close-btn');
+                    const addBtn = popup.querySelector('#quick-dict-add-btn');
+
+                    let currentSelectedWord = '';
+                    let currentWordData = null;
+
+                    closeBtn.addEventListener('click', () => {
+                        popup.style.display = 'none';
+                    });
+
+                    audioBtn.addEventListener('click', () => {
+                        if (currentSelectedWord && 'speechSynthesis' in window) {
+                            window.speechSynthesis.cancel();
+                            const u = new SpeechSynthesisUtterance(currentSelectedWord);
+                            u.lang = 'en-US';
+                            u.rate = 0.9;
+                            window.speechSynthesis.speak(u);
+                        }
+                    });
+
+                    addBtn.addEventListener('click', () => {
+                        if (!currentSelectedWord) return;
+
+                        try {
+                            const rawItems = localStorage.getItem("vocab_items") || "[]";
+                            const items = safeJsonParse(rawItems, []);
+                            const exists = items.some(i => (i.word || i.englishData || "").toLowerCase() === currentSelectedWord.toLowerCase());
+                            if (!exists) {
+                                items.unshift({
+                                    id: 'vocab_' + Date.now(),
+                                    word: currentSelectedWord,
+                                    englishData: currentSelectedWord,
+                                    thaiData: currentWordData?.translation || currentSelectedWord,
+                                    pos: currentWordData?.pos || 'noun',
+                                    ipa: currentWordData?.ipa || '',
+                                    createdAt: new Date().toISOString()
+                                });
+                                localStorage.setItem("vocab_items", JSON.stringify(items));
+                            }
+                        } catch (e) {
+                            console.warn("Failed saving vocab item:", e);
+                        }
+
+                        popup.style.display = 'none';
+                        const toastMsg = `✨ บันทึก "${currentSelectedWord}" ลงคลังศัพท์เรียบร้อยแล้ว!`;
+                        if (typeof window.showToast === 'function') {
+                            window.showToast(toastMsg, "success", 6000, {
+                                text: "พาไปดู",
+                                onClick: () => {
+                                    const vocabBtn = document.getElementById("vocab-library-btn-sidebar") || document.getElementById("home-insight-vocab-btn");
+                                    if (vocabBtn) vocabBtn.click();
+                                    const searchInput = document.getElementById("vocab-search-input") || document.getElementById("search-vocab");
+                                    if (searchInput) {
+                                        searchInput.value = currentSelectedWord;
+                                        searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    document.addEventListener('mouseup', (e) => {
+                        if (popup.contains(e.target)) return;
+                        const sel = window.getSelection();
+                        const selectedText = sel ? sel.toString().trim() : '';
+
+                        if (selectedText && selectedText.length >= 2 && selectedText.length <= 40 && /^[a-zA-Z\s'-]+$/.test(selectedText)) {
+                            currentSelectedWord = selectedText;
+                            currentWordData = { word: selectedText };
+                            wordEl.textContent = selectedText;
+                            posEl.style.display = 'none';
+                            ipaEl.textContent = 'Looking up...';
+                            transEl.textContent = 'กำลังโหลดคำแปลด่วน...';
+
+                            try {
+                                const range = sel.getRangeAt(0);
+                                const rect = range.getBoundingClientRect();
+
+                                let top = rect.bottom + window.scrollY + 8;
+                                let left = rect.left + window.scrollX;
+
+                                if (left + 320 > window.innerWidth) {
+                                    left = Math.max(10, window.innerWidth - 330);
+                                }
+
+                                popup.style.top = `${top}px`;
+                                popup.style.left = `${left}px`;
+                                popup.style.display = 'block';
+
+                                fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(selectedText.toLowerCase())}`)
+                                    .then(r => r.ok ? r.json() : null)
+                                    .then(data => {
+                                        if (data && data[0]) {
+                                            const phon = data[0].phonetics.find(p => p.text) || {};
+                                            const pos = data[0].meanings[0]?.partOfSpeech || '';
+                                            const def = data[0].meanings[0]?.definitions[0]?.definition || '';
+
+                                            currentWordData.pos = pos;
+                                            currentWordData.ipa = phon.text || `/${selectedText}/`;
+                                            currentWordData.translation = def || selectedText;
+
+                                            if (pos) {
+                                                posEl.textContent = pos;
+                                                posEl.style.display = 'inline-block';
+                                            }
+                                            ipaEl.textContent = phon.text || `/${selectedText}/`;
+                                            transEl.innerHTML = def ? `<strong>${pos ? `[${pos}] ` : ''}</strong>${def}` : selectedText;
+                                        } else {
+                                            ipaEl.textContent = `/${selectedText}/`;
+                                            transEl.textContent = selectedText;
+                                        }
+                                    })
+                                    .catch(() => {
+                                        ipaEl.textContent = `/${selectedText}/`;
+                                        transEl.textContent = selectedText;
+                                    });
+                            } catch (err) {
+                                console.warn("Dict popup error:", err);
+                            }
+                        }
+                    });
+                }
+
+                // AI Pronunciation Evaluator (Web Speech API)
+                function enghelperEvaluateSpeechPronunciation(targetWord, callback) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) {
+                        alert('Browser ของคุณยังไม่รองรับ Speech Recognition');
+                        return;
+                    }
+
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'en-US';
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onresult = (event) => {
+                        const spokenText = event.results[0][0].transcript.trim().toLowerCase();
+                        const target = targetWord.trim().toLowerCase();
+
+                        let score = 0;
+                        if (spokenText === target) {
+                            score = 100;
+                        } else if (spokenText.includes(target) || target.includes(spokenText)) {
+                            score = 75;
+                        } else {
+                            const len = Math.max(spokenText.length, target.length);
+                            score = Math.max(20, Math.round((1 - Math.abs(spokenText.length - target.length) / len) * 60));
+                        }
+
+                        callback({ spokenText, score });
+                    };
+
+                    recognition.onerror = (e) => {
+                        console.warn('Speech recognition error:', e);
+                        callback({ spokenText: '', score: 0, error: e.error });
+                    };
+
+                    recognition.start();
+                }
+                window.enghelperEvaluateSpeechPronunciation = enghelperEvaluateSpeechPronunciation;
+
+                // Spaced Repetition System (SRS) Manager
+                function enghelperCalculateNextSrsReview(wordObj, rating) {
+                    let interval = wordObj.srsInterval || 1;
+                    let ease = wordObj.srsEase || 2.5;
+
+                    if (rating === 1) {
+                        interval = 1;
+                        ease = Math.max(1.3, ease - 0.2);
+                    } else if (rating === 2) {
+                        interval = Math.round(interval * ease);
+                        if (interval < 2) interval = 2;
+                    } else if (rating === 3) {
+                        interval = Math.round(interval * ease * 1.3);
+                        ease += 0.15;
+                        if (interval < 4) interval = 4;
+                    }
+
+                    const nextDate = new Date();
+                    nextDate.setDate(nextDate.getDate() + interval);
+
+                    return {
+                        srsInterval: interval,
+                        srsEase: parseFloat(ease.toFixed(2)),
+                        nextReviewDate: nextDate.toISOString()
+                    };
+                }
+                window.enghelperCalculateNextSrsReview = enghelperCalculateNextSrsReview;
+
+                // Touch Swipe Gestures Engine for 3D Flashcards
+                function enghelperInitTouchSwipeFlashcards() {
+                    const card = document.getElementById('flashcard-content');
+                    if (!card || card.dataset.swipeInitialized) return;
+                    card.dataset.swipeInitialized = 'true';
+
+                    if (!card.querySelector('.swipe-right')) {
+                        const rightOverlay = document.createElement('div');
+                        rightOverlay.className = 'flashcard-swipe-overlay swipe-right';
+                        rightOverlay.innerHTML = '<i class="fi fi-rr-check"></i> จำได้แล้ว';
+                        card.appendChild(rightOverlay);
+                    }
+                    if (!card.querySelector('.swipe-left')) {
+                        const leftOverlay = document.createElement('div');
+                        leftOverlay.className = 'flashcard-swipe-overlay swipe-left';
+                        leftOverlay.innerHTML = '<i class="fi fi-rr-refresh"></i> ทบทวนอีก';
+                        card.appendChild(leftOverlay);
+                    }
+
+                    let startX = 0, startY = 0, currentX = 0, isDragging = false;
+
+                    const handleStart = (e) => {
+                        const touch = e.touches ? e.touches[0] : e;
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        isDragging = true;
+                        card.classList.add('flashcard-swiping');
+                    };
+
+                    const handleMove = (e) => {
+                        if (!isDragging) return;
+                        const touch = e.touches ? e.touches[0] : e;
+                        currentX = touch.clientX - startX;
+                        const diffY = touch.clientY - startY;
+
+                        if (Math.abs(currentX) > Math.abs(diffY)) {
+                            if (e.cancelable) e.preventDefault();
+                            const rotateDeg = currentX * 0.08;
+                            card.style.transform = `translateX(${currentX}px) rotate(${rotateDeg}deg)`;
+
+                            if (currentX > 60) {
+                                card.classList.add('flashcard-swiping-right');
+                                card.classList.remove('flashcard-swiping-left');
+                            } else if (currentX < -60) {
+                                card.classList.add('flashcard-swiping-left');
+                                card.classList.remove('flashcard-swiping-right');
+                            } else {
+                                card.classList.remove('flashcard-swiping-right', 'flashcard-swiping-left');
+                            }
+                        }
+                    };
+
+                    const handleEnd = () => {
+                        if (!isDragging) return;
+                        isDragging = false;
+                        card.classList.remove('flashcard-swiping', 'flashcard-swiping-right', 'flashcard-swiping-left');
+
+                        if (currentX > 100) {
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            card.style.transition = 'transform 0.3s ease';
+                            card.style.transform = 'translateX(150%) rotate(30deg)';
+                            setTimeout(() => {
+                                card.style.transition = '';
+                                card.style.transform = '';
+                                const easyBtn = document.getElementById('fc-btn-easy') || document.getElementById('fc-remembered-btn') || document.querySelector('.fc-action-remember');
+                                if (easyBtn) easyBtn.click();
+                            }, 300);
+                        } else if (currentX < -100) {
+                            if (navigator.vibrate) navigator.vibrate(30);
+                            card.style.transition = 'transform 0.3s ease';
+                            card.style.transform = 'translateX(-150%) rotate(-30deg)';
+                            setTimeout(() => {
+                                card.style.transition = '';
+                                card.style.transform = '';
+                                const hardBtn = document.getElementById('fc-btn-hard') || document.getElementById('fc-review-btn') || document.querySelector('.fc-action-review');
+                                if (hardBtn) hardBtn.click();
+                            }, 300);
+                        } else {
+                            card.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            card.style.transform = '';
+                            setTimeout(() => { card.style.transition = ''; }, 250);
+                        }
+                        currentX = 0;
+                    };
+
+                    card.addEventListener('touchstart', handleStart, { passive: true });
+                    card.addEventListener('touchmove', handleMove, { passive: false });
+                    card.addEventListener('touchend', handleEnd);
+                    card.addEventListener('mousedown', handleStart);
+                    window.addEventListener('mousemove', handleMove);
+                    window.addEventListener('mouseup', handleEnd);
+                }
+                window.enghelperInitTouchSwipeFlashcards = enghelperInitTouchSwipeFlashcards;
+
+                // Initialize features on load
+                setTimeout(() => {
+                    enghelperInitQuickDictPopup();
+                    enghelperInitTouchSwipeFlashcards();
+
+                    const srsBtn = document.getElementById('enghelper-srs-start-btn');
+                    if (srsBtn) {
+                        srsBtn.addEventListener('click', () => {
+                            const testNav = document.getElementById('test-me-btn-sidebar') || document.getElementById('card-review');
+                            if (testNav) testNav.click();
+                        });
+                    }
+                }, 1000);
+
+
                 const SPELLING_VARIANTS = {
                     color: ["colour"],
                     colour: ["color"],
@@ -12566,6 +12911,52 @@
                             </div>
                         `;
                     }
+                    function enghelperFormatGrammarText(rawText) {
+                        if (!rawText) return '';
+                        const paragraphs = rawText.split(/(?:\r?\n)+/).filter(p => p.trim());
+                        if (paragraphs.length === 0) return '';
+
+                        let html = '<div class="grammar-formatted-container">';
+                        paragraphs.forEach(paragraph => {
+                            let trimmed = paragraph.trim();
+                            if (trimmed.includes('•') || trimmed.includes('* ') || trimmed.includes('- ')) {
+                                const items = trimmed.split(/(?:\s*[•*-]\s+)/).filter(i => i.trim());
+                                html += '<div class="grammar-concept-card">';
+                                items.forEach(item => {
+                                    let formattedItem = item
+                                        .replace(/\*\*(.*?)\*\*/g, '<span class="grammar-highlight">$1</span>')
+                                        .replace(/`([^`]+)`/g, '<code>$1</code>');
+                                    html += `
+                                        <div class="grammar-bullet-item">
+                                            <i class="fi fi-rr-angle-small-right grammar-bullet-icon"></i>
+                                            <div>${formattedItem}</div>
+                                        </div>
+                                    `;
+                                });
+                                html += '</div>';
+                            } else if (trimmed.includes('ข้อควรจำ') || trimmed.includes('คำเตือน') || trimmed.startsWith('**ข้อควรจำ')) {
+                                let formattedNotice = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                                html += `
+                                    <div class="grammar-note-box">
+                                        <i class="fi fi-rr-info"></i> ${formattedNotice}
+                                    </div>
+                                `;
+                            } else {
+                                let formattedParagraph = trimmed
+                                    .replace(/\*\*(.*?)\*\*/g, '<span class="grammar-highlight">$1</span>')
+                                    .replace(/`([^`]+)`/g, '<code>$1</code>');
+                                html += `
+                                    <div class="grammar-concept-card">
+                                        <div style="line-height:1.75;">${formattedParagraph}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        html += '</div>';
+                        return html;
+                    }
+                    window.enghelperFormatGrammarText = enghelperFormatGrammarText;
+
                     function renderGrammarLesson(data, fromHistory = false) {
                         delete grammarLessonContainer.dataset.grammarGenerationRenderedTask;
                         grammarLessonContainer.innerHTML = "";
@@ -12582,11 +12973,28 @@
                         wrapper.className = "grammar-lesson-wrapper";
                         const headerDiv = document.createElement("div");
                         const safeLessonTopic = getSafeGrammarTopicLabel(data?.topic);
+                        const formattedConcept = enghelperFormatGrammarText(data.concept_th || data.explanation_th || "");
                         headerDiv.innerHTML = `
-                            <span class="grammar-header-badge">${data.difficulty || "General"}</span>
-                            <h1 class="grammar-main-title">${safeLessonTopic}</h1>
-                            <p class="grammar-concept-text">${data.concept_th || data.explanation_th || ""}</p>
+                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                                <span class="grammar-header-badge">${data.difficulty || "General"}</span>
+                                <button class="enghelper-reading-mode-toggle ${document.body.classList.contains('warm-sepia-mode') ? 'active' : ''}" id="grammar-reading-toggle">
+                                    <i class="fi fi-rr-eye"></i> Reading Mode (ถนอมสายตา)
+                                </button>
+                            </div>
+                            <h1 class="grammar-main-title" style="margin-top:10px;">${safeLessonTopic}</h1>
+                            ${formattedConcept}
                         `;
+                        const readingToggle = headerDiv.querySelector('#grammar-reading-toggle');
+                        if (readingToggle) {
+                            readingToggle.onclick = () => {
+                                document.body.classList.toggle('warm-sepia-mode');
+                                const isSepia = document.body.classList.contains('warm-sepia-mode');
+                                readingToggle.classList.toggle('active', isSepia);
+                                if (typeof window.showToast === 'function') {
+                                    window.showToast(isSepia ? 'เปิดโหมด Warm Sepia (ถนอมสายตา)' : 'เปิดโหมดแสงปกติ', 'info', 2500);
+                                }
+                            };
+                        }
                         wrapper.appendChild(headerDiv);
                         if (data.structure_formula) {
                             const formulaDiv = document.createElement("div");
