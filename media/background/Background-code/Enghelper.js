@@ -2083,6 +2083,7 @@
                         recentRecommendations: []
                     },
                     grammarInsightSignals: [],
+                    learningMistakes: [],
                     learningActivityLog: [],
                     smartStoryLauncher: {
                         lastRecommendedSignature: null,
@@ -3596,6 +3597,22 @@
                             createdAt: typeof entry?.createdAt === "string" ? entry.createdAt : null
                         })).filter((entry) => entry.topicKey).slice(0, 20) : [];
                     }
+                    function normalizeLearningMistakes() {
+                        userStats.learningMistakes = Array.isArray(userStats.learningMistakes) ? userStats.learningMistakes.map((entry) => ({
+                            id: String(entry?.id || generateId()).trim(),
+                            type: String(entry?.type || "general").trim(),
+                            label: String(entry?.label || "").trim(),
+                            source: String(entry?.source || "unknown").trim(),
+                            original: String(entry?.original || "").trim(),
+                            corrected: String(entry?.corrected || "").trim(),
+                            explanation: String(entry?.explanation || "").trim(),
+                            severity: String(entry?.severity || "medium").trim(),
+                            count: Math.max(1, parseInt(entry?.count, 10) || 1),
+                            lastSeenAt: typeof entry?.lastSeenAt === "string" ? entry.lastSeenAt : (typeof entry?.createdAt === "string" ? entry.createdAt : (/* @__PURE__ */ new Date()).toISOString()),
+                            createdAt: typeof entry?.createdAt === "string" ? entry.createdAt : (/* @__PURE__ */ new Date()).toISOString()
+                        })).filter((entry) => entry.type && (entry.label || entry.original || entry.explanation)).sort((a, b) => new Date(b.lastSeenAt) - new Date(a.lastSeenAt)).slice(0, 160) : [];
+                        return userStats.learningMistakes;
+                    }
                     function normalizeSmartStoryLauncherState() {
                         const rawState = userStats.smartStoryLauncher && typeof userStats.smartStoryLauncher === "object" ? userStats.smartStoryLauncher : {};
                         const recentRecommendations = Array.isArray(rawState.recentRecommendations) ? rawState.recentRecommendations.map((entry) => ({
@@ -3738,6 +3755,7 @@
                         normalizeSmartRolePlayLauncherState();
                         normalizeSmartGrammarLauncherState();
                         normalizeGrammarInsightSignals();
+                        normalizeLearningMistakes();
                         normalizeSmartStoryLauncherState();
                         normalizeSmartStreakLauncherState();
                         userStats.longestStreak = Math.max(userStats.longestStreak || 0, userStats.currentStreak || 0);
@@ -8028,6 +8046,7 @@
                         if (homeLearningMinutes) homeLearningMinutes.textContent = userStats.todayStudyMinutes || 0;
                         updateStudyTime();
                         renderGoalProgressUI();
+                        renderLearningInsightDashboard();
                     }
                     async function loadData() {
                         console.log("Cloud-only mode: skipping persistent local data load.");
@@ -8271,6 +8290,206 @@
                         return entry;
                     }
                     window.logTodayLearningActivity = logTodayLearningActivity;
+                    const LEARNING_MISTAKE_LABELS = {
+                        article: "Articles: a / an / the",
+                        articles: "Articles: a / an / the",
+                        tense: "Tense",
+                        preposition: "Prepositions",
+                        prepositions: "Prepositions",
+                        word_order: "Word order",
+                        sentence_structure: "Sentence structure",
+                        vocabulary: "Vocabulary choice",
+                        naturalness: "Naturalness",
+                        pronunciation: "Pronunciation",
+                        rhythm: "Rhythm",
+                        stress: "Word stress",
+                        spelling: "Spelling",
+                        punctuation: "Punctuation",
+                        grammar: "Grammar",
+                        general: "English usage"
+                    };
+                    function normalizeLearningMistakeType(value = "") {
+                        const raw = String(value || "").toLowerCase().trim().replace(/[\s-]+/g, "_");
+                        if (!raw) return "general";
+                        if (raw.includes("article")) return "article";
+                        if (raw.includes("preposition")) return "preposition";
+                        if (raw.includes("tense") || raw.includes("verb")) return "tense";
+                        if (raw.includes("order")) return "word_order";
+                        if (raw.includes("structure")) return "sentence_structure";
+                        if (raw.includes("pronunciation") || raw.includes("sound")) return "pronunciation";
+                        if (raw.includes("rhythm")) return "rhythm";
+                        if (raw.includes("stress")) return "stress";
+                        if (raw.includes("vocab") || raw.includes("word_choice")) return "vocabulary";
+                        if (raw.includes("natural")) return "naturalness";
+                        if (raw.includes("spell")) return "spelling";
+                        if (raw.includes("punct")) return "punctuation";
+                        if (raw.includes("grammar")) return "grammar";
+                        return raw.slice(0, 40);
+                    }
+                    function getLearningMistakeLabel(type = "general", fallback = "") {
+                        const normalized = normalizeLearningMistakeType(type);
+                        return fallback || LEARNING_MISTAKE_LABELS[normalized] || normalized.replace(/_/g, " ");
+                    }
+                    function getLearningMistakeSummary(limit = 3) {
+                        const mistakes = normalizeLearningMistakes();
+                        const grouped = mistakes.reduce((acc, entry) => {
+                            const type = normalizeLearningMistakeType(entry.type);
+                            if (!acc[type]) {
+                                acc[type] = {
+                                    type,
+                                    label: getLearningMistakeLabel(type, entry.label),
+                                    count: 0,
+                                    sources: new Set(),
+                                    latest: null
+                                };
+                            }
+                            acc[type].count += entry.count || 1;
+                            if (entry.source) acc[type].sources.add(entry.source);
+                            if (!acc[type].latest || new Date(entry.lastSeenAt) > new Date(acc[type].latest.lastSeenAt)) {
+                                acc[type].latest = entry;
+                                if (entry.label) acc[type].label = getLearningMistakeLabel(type, entry.label);
+                            }
+                            return acc;
+                        }, {});
+                        return Object.values(grouped).sort((a, b) => {
+                            const countDiff = b.count - a.count;
+                            if (countDiff) return countDiff;
+                            return new Date(b.latest?.lastSeenAt || 0) - new Date(a.latest?.lastSeenAt || 0);
+                        }).slice(0, limit).map((entry) => ({
+                            ...entry,
+                            sources: Array.from(entry.sources)
+                        }));
+                    }
+                    function recordLearningMistake(input = {}, options = {}) {
+                        const type = normalizeLearningMistakeType(input.type || input.errorType || input.category);
+                        const now = (/* @__PURE__ */ new Date()).toISOString();
+                        const original = String(input.original || input.originalFragment || input.target || "").trim();
+                        const corrected = String(input.corrected || input.correction || "").trim();
+                        const explanation = String(input.explanation || input.feedback || "").trim();
+                        const label = getLearningMistakeLabel(type, String(input.label || "").trim());
+                        if (!original && !corrected && !explanation) return null;
+                        const mistakes = normalizeLearningMistakes();
+                        const signature = [
+                            type,
+                            String(input.source || "unknown").trim(),
+                            original.toLowerCase().slice(0, 80),
+                            corrected.toLowerCase().slice(0, 80)
+                        ].join("|");
+                        const existing = mistakes.find((entry) => [
+                            normalizeLearningMistakeType(entry.type),
+                            entry.source,
+                            entry.original.toLowerCase().slice(0, 80),
+                            entry.corrected.toLowerCase().slice(0, 80)
+                        ].join("|") === signature);
+                        const entry = existing || {
+                            id: generateId(),
+                            type,
+                            label,
+                            source: String(input.source || "unknown").trim(),
+                            original,
+                            corrected,
+                            explanation,
+                            severity: String(input.severity || "medium").trim(),
+                            count: 0,
+                            createdAt: now,
+                            lastSeenAt: now
+                        };
+                        entry.type = type;
+                        entry.label = label;
+                        entry.source = String(input.source || entry.source || "unknown").trim();
+                        entry.original = original || entry.original;
+                        entry.corrected = corrected || entry.corrected;
+                        entry.explanation = explanation || entry.explanation;
+                        entry.severity = String(input.severity || entry.severity || "medium").trim();
+                        entry.count = (entry.count || 0) + 1;
+                        entry.lastSeenAt = now;
+                        userStats.learningMistakes = [entry, ...mistakes.filter((item) => item.id !== entry.id)].slice(0, 160);
+                        logTodayLearningActivity("learning_mistake", {
+                            type,
+                            label,
+                            source: entry.source,
+                            original: entry.original,
+                            corrected: entry.corrected
+                        }, { dedupeKey: `${signature}:${getLocalDateKey()}` });
+                        renderLearningInsightDashboard();
+                        if (options.persist && typeof saveData === "function") {
+                            saveData();
+                        }
+                        return entry;
+                    }
+                    window.recordLearningMistake = recordLearningMistake;
+                    function getDailyChallengePlan() {
+                        const topMistakes = getLearningMistakeSummary(2);
+                        const dueWords = typeof getWordsForReview === "function" ? getWordsForReview().slice(0, 2) : [];
+                        const plan = [];
+                        if (dueWords.length) {
+                            plan.push({
+                                icon: "fi fi-rr-books",
+                                text: `ทบทวนคำศัพท์ ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
+                            });
+                        }
+                        if (topMistakes[0]) {
+                            plan.push({
+                                icon: "fi fi-rr-badge-check",
+                                text: `แก้ประโยคสั้น ๆ โดยโฟกัส ${topMistakes[0].label}`
+                            });
+                        }
+                        if (topMistakes[1]) {
+                            plan.push({
+                                icon: "fi fi-rr-comments",
+                                text: `ซ้อมบทสนทนา 2 เทิร์น เพื่อใช้ ${topMistakes[1].label} ให้คล่องขึ้น`
+                            });
+                        }
+                        if (!plan.length) {
+                            plan.push(
+                                { icon: "fi fi-rr-edit", text: "ตรวจประโยคภาษาอังกฤษ 1 ประโยค แล้วอ่านคำอธิบายภาษาไทย" },
+                                { icon: "fi fi-rr-microphone", text: "ฝึกออกเสียงคำหรือประโยคสั้น 1 ครั้ง" }
+                            );
+                        }
+                        return plan.slice(0, 3);
+                    }
+                    function renderLearningInsightDashboard() {
+                        const listEl = document.getElementById("mistake-dashboard-list");
+                        const planEl = document.getElementById("daily-challenge-plan");
+                        if (!listEl && !planEl) return;
+                        const topMistakes = getLearningMistakeSummary(3);
+                        if (listEl) {
+                            if (!topMistakes.length) {
+                                listEl.innerHTML = `
+                                    <div class="mistake-empty-state">
+                                        <i class="fi fi-rr-badge-check"></i>
+                                        <span>ตรวจประโยคหรือฝึกพูด แล้วระบบจะสรุปจุดที่ควรฝึกให้ที่นี่</span>
+                                    </div>
+                                `;
+                            } else {
+                                listEl.innerHTML = topMistakes.map((item) => {
+                                    const latest = item.latest || {};
+                                    const meta = latest.explanation || latest.original || "ระบบพบจากกิจกรรมล่าสุดของคุณ";
+                                    return `
+                                        <div class="mistake-insight-item" data-mistake-type="${escapeHtml(item.type)}">
+                                            <div>
+                                                <div class="mistake-insight-title">
+                                                    <i class="fi fi-rr-target"></i>
+                                                    <span>${escapeHtml(item.label)}</span>
+                                                </div>
+                                                <span class="mistake-insight-meta">${escapeHtml(truncateText(meta, 90))}</span>
+                                            </div>
+                                            <span class="mistake-insight-count">${item.count}</span>
+                                        </div>
+                                    `;
+                                }).join("");
+                            }
+                        }
+                        if (planEl) {
+                            planEl.innerHTML = getDailyChallengePlan().map((step) => `
+                                <div class="daily-challenge-step">
+                                    <i class="${escapeHtml(step.icon)}"></i>
+                                    <span>${escapeHtml(step.text)}</span>
+                                </div>
+                            `).join("");
+                        }
+                    }
+                    window.renderLearningInsightDashboard = renderLearningInsightDashboard;
                     function updateStreak() {
                         const todayKey = getLocalDateKey();
                         const lastLogin = userStats.lastLoginDate;
@@ -8440,6 +8659,29 @@
                                 break;
                             case "daily_goal":
                                 break;
+                            case "smart_challenge": {
+                                const topMistake = getLearningMistakeSummary(1)[0];
+                                if (topMistake?.type === "pronunciation") {
+                                    const latest = topMistake.latest;
+                                    if (latest?.original && typeof practicePronunciation === "function") {
+                                        practicePronunciation(latest.original);
+                                        break;
+                                    }
+                                }
+                                if (topMistake && typeof openGrammarCheckInsideVocabLibrary === "function") {
+                                    openGrammarCheckInsideVocabLibrary();
+                                    if (grammarCheckInput) {
+                                        grammarCheckInput.placeholder = `ลองเขียน 1 ประโยคที่ใช้ ${topMistake.label}`;
+                                    }
+                                    break;
+                                }
+                                if (typeof openGrammarCheckInsideVocabLibrary === "function") {
+                                    openGrammarCheckInsideVocabLibrary();
+                                } else {
+                                    document.getElementById("learn-grammar-dialog")?.showModal();
+                                }
+                                break;
+                            }
                         }
                     };
                     function incrementDailyMissionProgress(missionId, amount = 1) {
@@ -16724,7 +16966,7 @@
                             showToast2("\u0E01\u0E23\u0E38\u0E13\u0E32\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A", "error");
                             return;
                         }
-                        const prompt = `You are an English grammar assistant. Analyze the following text from a language learner. Identify errors, explain them simply in Thai, and provide the corrected full text. Respond in JSON format only. The JSON object must have two keys: "correctedText" (a string with the full corrected text) and "errors" (an array of objects, where each object has "originalFragment" and "explanation" keys). If there are no errors, the 'errors' array should be empty.`;
+                        const prompt = `You are a kind English grammar assistant for Thai learners. Analyze the following text. Identify errors, explain them simply in Thai without scolding, and provide the corrected full text. Also classify each error with one short errorType such as article, tense, preposition, word_order, vocabulary, naturalness, spelling, punctuation, or grammar. Respond in JSON format only.`;
                         const payload = {
                             contents: [{
                                 role: "user", parts: [{
@@ -16745,7 +16987,10 @@
                                                 type: "OBJECT",
                                                 properties: {
                                                     originalFragment: { type: "STRING" },
-                                                    explanation: { type: "STRING" }
+                                                    correctedFragment: { type: "STRING" },
+                                                    errorType: { type: "STRING" },
+                                                    explanation: { type: "STRING" },
+                                                    severity: { type: "STRING" }
                                                 },
                                                 required: ["originalFragment", "explanation"]
                                             }
@@ -16763,6 +17008,22 @@
                     function renderGrammarCheckResults(results) {
                         grammarCheckResultsContainer.style.display = "block";
                         recordGrammarInsightSignals(results, grammarCheckInput?.value || "");
+                        const mistakeEntries = Array.isArray(results.errors) ? results.errors.map((error) => recordLearningMistake({
+                            type: error.errorType || error.type || "grammar",
+                            source: "grammar-check",
+                            original: error.originalFragment || grammarCheckInput?.value || "",
+                            corrected: error.correctedFragment || results.correctedText || "",
+                            explanation: error.explanation || "",
+                            severity: error.severity || "medium"
+                        })).filter(Boolean) : [];
+                        if (mistakeEntries.length) {
+                            logTodayLearningActivity("grammar_check", {
+                                label: "ตรวจแกรมมาร์",
+                                mistakeCount: mistakeEntries.length,
+                                correctedText: results.correctedText || ""
+                            }, { dedupeKey: `grammar-check:${Date.now()}` });
+                            saveData();
+                        }
                         const correctedTextP = document.createElement("p");
                         correctedTextP.textContent = results.correctedText;
                         correctedTextContainer.innerHTML = "<h4>\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E41\u0E01\u0E49\u0E44\u0E02\u0E41\u0E25\u0E49\u0E27</h4>";
@@ -16773,7 +17034,9 @@
                             results.errors.forEach((error) => {
                                 const errorDiv = document.createElement("div");
                                 errorDiv.classList.add("grammar-error-item");
-                                errorDiv.innerHTML = `<p><strong>"${error.originalFragment}"</strong> ${error.explanation}</p>`;
+                                const typeLabel = getLearningMistakeLabel(error.errorType || "grammar");
+                                const corrected = error.correctedFragment ? ` &rarr; <strong>${escapeHtml(error.correctedFragment)}</strong>` : "";
+                                errorDiv.innerHTML = `<p><span class="history-type-badge">${escapeHtml(typeLabel)}</span> <strong>"${escapeHtml(error.originalFragment || "")}"</strong>${corrected} ${escapeHtml(error.explanation || "")}</p>`;
                                 errorExplanationContainer.appendChild(errorDiv);
                             });
                         } else {
@@ -17478,19 +17741,58 @@
                         }
                     }
                     async function handleRolePlayFeedback() {
-                        const prompt = `Please analyze the user's side of the following conversation and provide constructive feedback. Focus on grammar, vocabulary choice, and naturalness. Keep the feedback concise and encouraging, formatted as a simple paragraph in Thai. The user's messages are the ones with role 'user'.`;
+                        const prompt = `Please analyze the user's side of the following conversation and provide constructive feedback for a Thai English learner. Focus on grammar, vocabulary choice, naturalness, and tone. Keep the main feedback concise and encouraging in Thai. Also return up to 5 concrete issues. Each issue must include errorType, originalFragment, correctedFragment, and Thai explanation. The user's messages are the ones with role 'user'. Respond in JSON only.`;
                         const feedbackPayload = {
                             contents: [...currentRolePlaySession.messages, { role: "user", parts: [{ text: prompt }] }],
                             generationConfig: {
                                 responseMimeType: "application/json",
-                                responseSchema: { type: "OBJECT", properties: { feedback: { type: "STRING" } }, required: ["feedback"] }
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        feedback: { type: "STRING" },
+                                        issues: {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    errorType: { type: "STRING" },
+                                                    originalFragment: { type: "STRING" },
+                                                    correctedFragment: { type: "STRING" },
+                                                    explanation: { type: "STRING" }
+                                                },
+                                                required: ["errorType", "originalFragment", "explanation"]
+                                            }
+                                        }
+                                    },
+                                    required: ["feedback"]
+                                }
                             }
                         };
                         const aiData = await callGemini(feedbackPayload, aiRolePlayDialogLoading, getRolePlayFeedbackBtn, { contextScope: "roleplay" });
                         if (aiData && aiData.feedback) {
-                            aiRolePlayFeedbackArea.innerHTML = `<h4>\u0E02\u0E49\u0E2D\u0E40\u0E2A\u0E19\u0E2D\u0E41\u0E19\u0E30</h4><p>${aiData.feedback.replace(/\n/g, "<br>")}</p>`;
+                            const issues = Array.isArray(aiData.issues) ? aiData.issues.slice(0, 5) : [];
+                            issues.forEach((issue) => recordLearningMistake({
+                                type: issue.errorType || "naturalness",
+                                source: "roleplay",
+                                original: issue.originalFragment || "",
+                                corrected: issue.correctedFragment || "",
+                                explanation: issue.explanation || ""
+                            }));
+                            const issueHtml = issues.length ? `
+                                <div class="roleplay-feedback-issues" style="display:grid; gap:8px; margin-top:12px;">
+                                    ${issues.map((issue) => `
+                                        <div class="grammar-error-item">
+                                            <span class="history-type-badge">${escapeHtml(getLearningMistakeLabel(issue.errorType || "naturalness"))}</span>
+                                            <p style="margin:6px 0 0 0;"><strong>${escapeHtml(issue.originalFragment || "")}</strong>${issue.correctedFragment ? ` &rarr; <strong>${escapeHtml(issue.correctedFragment)}</strong>` : ""}</p>
+                                            <p style="margin:4px 0 0 0;">${escapeHtml(issue.explanation || "")}</p>
+                                        </div>
+                                    `).join("")}
+                                </div>
+                            ` : "";
+                            aiRolePlayFeedbackArea.innerHTML = `<h4>\u0E02\u0E49\u0E2D\u0E40\u0E2A\u0E19\u0E2D\u0E41\u0E19\u0E30</h4><p>${escapeHtml(aiData.feedback).replace(/\n/g, "<br>")}</p>${issueHtml}`;
                             aiRolePlayFeedbackArea.style.display = "block";
                             aiRolePlayFeedbackArea.scrollIntoView({ behavior: "smooth" });
+                            if (issues.length) saveData();
                         } else {
                             showToast2("\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E23\u0E31\u0E1A Feedback \u0E44\u0E14\u0E49\u0E43\u0E19\u0E02\u0E13\u0E30\u0E19\u0E35\u0E49", "error");
                         }
@@ -20574,7 +20876,18 @@
                             heardText: heard,
                             score,
                             phonetic: currentPronunciationPhonetic || ""
-                        }, { persist: true });
+                        }, { persist: score >= 80 });
+                        if (score < 80) {
+                            recordLearningMistake({
+                                type: "pronunciation",
+                                label: "Pronunciation",
+                                source: "speaking-practice",
+                                original: target,
+                                corrected: heard,
+                                explanation: score >= 50 ? "\u0E43\u0E01\u0E25\u0E49\u0E40\u0E04\u0E35\u0E22\u0E07\u0E41\u0E25\u0E49\u0E27 \u0E04\u0E27\u0E23\u0E1D\u0E36\u0E01\u0E0B\u0E49\u0E33\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E40\u0E01\u0E47\u0E1A\u0E08\u0E31\u0E07\u0E2B\u0E27\u0E30\u0E41\u0E25\u0E30\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E43\u0E2B\u0E49\u0E0A\u0E31\u0E14\u0E02\u0E36\u0E49\u0E19" : "\u0E23\u0E30\u0E1A\u0E1A\u0E44\u0E14\u0E49\u0E22\u0E34\u0E19\u0E15\u0E48\u0E32\u0E07\u0E08\u0E32\u0E01\u0E40\u0E1B\u0E49\u0E32\u0E2B\u0E21\u0E32\u0E22 \u0E04\u0E27\u0E23\u0E1D\u0E36\u0E01\u0E0A\u0E49\u0E32\u0E46 \u0E2D\u0E35\u0E01\u0E23\u0E2D\u0E1A",
+                                severity: score >= 50 ? "medium" : "high"
+                            }, { persist: true });
+                        }
                         pronunciationResultBox.classList.remove("hidden");
                         if (currentPronunciationParent && target.split(/\s+/).length === 1 && score >= 100) {
                             pronunciationBackToParentBtn.classList.remove("hidden");
@@ -27212,6 +27525,7 @@
                         document.getElementById("stat-vocab").textContent = englishDataStore.length;
                         updateStudyTime();
                         renderGoalProgressUI();
+                        renderLearningInsightDashboard();
                         if (goalMinutesInput) goalMinutesInput.value = userStats.dailyGoalMinutes;
                         updateLevelSystem();
                         renderBadges();
