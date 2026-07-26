@@ -11950,6 +11950,176 @@ dialog.fc-dialog-locked[open] {
     border-color: rgba(var(--theme-rgb), 0.1);
 }
 
+.learning-insight-panel {
+    position: relative;
+    z-index: 1;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: color-mix(in srgb, var(--surface-color) 86%, white 14%);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.learning-insight-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.learning-insight-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-bottom: 3px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(var(--theme-rgb), 0.1);
+    color: var(--primary-color);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.learning-insight-head h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.learning-insight-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(var(--theme-rgb), 0.24);
+}
+
+.mistake-dashboard-list {
+    display: grid;
+    gap: 8px;
+}
+
+.mistake-insight-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+}
+
+.mistake-insight-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.mistake-insight-title i {
+    color: var(--primary-color);
+}
+
+.mistake-insight-meta {
+    display: block;
+    margin-top: 2px;
+    color: var(--light-text-color);
+    font-size: 0.75rem;
+    line-height: 1.35;
+}
+
+.mistake-insight-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 28px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(var(--theme-rgb), 0.12);
+    color: var(--primary-color);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.mistake-empty-state {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.58);
+    color: var(--light-text-color);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.mistake-empty-state i {
+    color: var(--success-color);
+    font-size: 1rem;
+}
+
+.daily-challenge-plan {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.daily-challenge-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--light-text-color);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.daily-challenge-step i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(var(--theme-rgb), 0.1);
+    color: var(--primary-color);
+    flex: 0 0 auto;
+}
+
+[data-theme="dark"] .learning-insight-panel,
+[data-theme="dark"] .mistake-insight-item,
+[data-theme="dark"] .mistake-empty-state {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 520px) {
+    .learning-insight-head {
+        flex-direction: column;
+    }
+
+    .learning-insight-action {
+        width: 100%;
+    }
+}
+
 .mission-checkbox {
     width: 24px;
     height: 24px;
@@ -60682,4 +60852,3 @@ button:not(:disabled):active,
 /* =========================================================================
    END OF CLAYMORPHISM OVERRIDES — ALL 5 PHASES COMPLETED
    ========================================================================= */
-
