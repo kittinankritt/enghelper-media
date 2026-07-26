@@ -60291,7 +60291,177 @@ button:not(:disabled):active,
     }
 }
 
+
+
+
 /* =========================================================================
-   END OF CLAYMORPHISM PHASE 2 — ANIMATIONS & MICRO-INTERACTIONS
+   CLAYMORPHISM PHASE 3 — UX/UI FLOW IMPROVEMENTS
+   ========================================================================= */
+
+/* ── 3.1 SRS BADGES & LEVEL INDICATORS ── */
+.srs-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 3px 9px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.02em !important;
+    text-transform: uppercase !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.06), inset 1px 1px 2px rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+.srs-badge.srs-stage-new {
+    background: rgba(59, 130, 246, 0.14) !important;
+    color: #2563eb !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.srs-badge.srs-stage-learning {
+    background: rgba(245, 158, 11, 0.14) !important;
+    color: #d97706 !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.srs-badge.srs-stage-review {
+    background: rgba(168, 85, 247, 0.14) !important;
+    color: #9333ea !important;
+    border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+.srs-badge.srs-stage-mastered {
+    background: rgba(16, 185, 129, 0.14) !important;
+    color: #059669 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+[data-theme="dark"] .srs-badge.srs-stage-new {
+    background: rgba(59, 130, 246, 0.22) !important;
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .srs-badge.srs-stage-learning {
+    background: rgba(245, 158, 11, 0.22) !important;
+    color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .srs-badge.srs-stage-review {
+    background: rgba(168, 85, 247, 0.22) !important;
+    color: #c084fc !important;
+}
+
+[data-theme="dark"] .srs-badge.srs-stage-mastered {
+    background: rgba(16, 185, 129, 0.22) !important;
+    color: #34d399 !important;
+}
+
+/* ── 3.2 RECENT SEARCH CHIPS ── */
+.recent-search-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+    padding: 10px 14px !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-radius: var(--clay-radius-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.03) !important;
+}
+
+.recent-search-chip {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 12px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    color: var(--text-color) !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    box-shadow: var(--clay-shadow-small) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.recent-search-chip:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .recent-search-container {
+    background: rgba(24, 23, 34, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .recent-search-chip {
+    background: rgba(35, 33, 50, 0.85) !important;
+    color: #f6f4fb !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── 3.3 GUIDED EMPTY STATE ACTION BUTTONS ── */
+.guided-empty-actions {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-top: 18px !important;
+}
+
+.guided-empty-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 20px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    color: white !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: var(--clay-shadow-combined) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.guided-empty-btn:hover {
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow: var(--clay-shadow-sphere), 0 10px 24px rgba(var(--theme-rgb), 0.25) !important;
+}
+
+.guided-empty-btn:active {
+    transform: scale(0.95) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+/* ── 3.4 MILESTONE CELEBRATION DIALOG ── */
+.milestone-celebration-card {
+    text-align: center !important;
+    padding: 32px 24px !important;
+}
+
+.milestone-badge-icon {
+    width: 84px !important;
+    height: 84px !important;
+    margin: 0 auto 16px auto !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 2.8rem !important;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+    color: white !important;
+    box-shadow: var(--clay-shadow-sphere), 0 0 30px rgba(245, 158, 11, 0.4) !important;
+    border: 3px solid rgba(255, 255, 255, 0.8) !important;
+    animation: bounce 1.2s infinite ease-in-out !important;
+}
+
+/* =========================================================================
+   END OF CLAYMORPHISM PHASE 3 — UX/UI FLOW IMPROVEMENTS
    ========================================================================= */
 
