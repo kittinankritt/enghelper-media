@@ -3047,6 +3047,11 @@
                     const homeInsightVocabBtn = document.getElementById("home-insight-vocab-btn");
                     const homeInsightStreakBtn = document.getElementById("home-insight-streak-btn");
                     const homeInsightReviewBtn = document.getElementById("home-insight-review-btn");
+                    const homeQuickStartActions = document.querySelectorAll("[data-home-action]");
+                    const homeCoachTitle = document.getElementById("home-coach-title");
+                    const homeCoachReason = document.getElementById("home-coach-reason");
+                    const homeCoachPlan = document.getElementById("home-coach-plan");
+                    const homeCoachStartBtn = document.getElementById("home-coach-start-btn");
                     const flashcardsBtnSidebar = document.getElementById("flashcards-btn-sidebar");
                     const testMeBtnSidebar = document.getElementById("test-me-btn-sidebar");
                     const vocabLibraryBtnSidebar = document.getElementById("vocab-library-btn-sidebar");
@@ -8769,6 +8774,92 @@
                         }
                     }
                     window.renderLearningInsightDashboard = renderLearningInsightDashboard;
+                    function getHomeCoachReason(profile, topMistake, dueCount) {
+                        const focus = Array.isArray(profile?.recommendedFocus) ? profile.recommendedFocus[0] : null;
+                        if (dueCount > 0 && focus?.type === "srs_review") {
+                            return `วันนี้มีคำศัพท์รอทบทวน ${dueCount} คำ ระบบเลยแนะนำให้เริ่มจากการจำแบบเว้นระยะก่อน`;
+                        }
+                        if (topMistake) {
+                            return `ระบบเห็นว่าคุณพลาดเรื่อง ${topMistake.label} บ่อยที่สุดช่วงนี้ เลยจัดกิจกรรมสั้น ๆ ให้ฝึกซ้ำแบบพอดี`;
+                        }
+                        if (focus?.reason) {
+                            return focus.reason;
+                        }
+                        return "ระบบจะเลือกกิจกรรมจากคำศัพท์ที่ควรทบทวนและจุดอ่อนล่าสุดของคุณ";
+                    }
+                    function renderHomeCoachPanel() {
+                        if (!homeCoachTitle && !homeCoachReason && !homeCoachPlan) return;
+                        const profile = refreshLearningProfileSnapshot("home-coach");
+                        const focus = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus[0] : null;
+                        const topMistake = getLearningMistakeSummary(1)[0] || null;
+                        const dueCount = typeof getWordsForReview === "function" ? getWordsForReview().length : 0;
+                        const plan = getDailyChallengePlan();
+                        if (homeCoachTitle) {
+                            homeCoachTitle.textContent = focus?.label && focus.type !== "baseline_check"
+                                ? `วันนี้โฟกัส: ${focus.label}`
+                                : "เริ่มฝึก 5 นาทีจากประโยคจริง";
+                        }
+                        if (homeCoachReason) {
+                            homeCoachReason.textContent = getHomeCoachReason(profile, topMistake, dueCount);
+                        }
+                        if (homeCoachPlan) {
+                            const steps = plan.length ? plan : [
+                                { icon: "fi fi-rr-edit", text: "ตรวจประโยคภาษาอังกฤษ 1 ประโยค" },
+                                { icon: "fi fi-rr-books", text: "บันทึกคำศัพท์ที่เจอใหม่" },
+                                { icon: "fi fi-rr-microphone", text: "ฝึกพูดตาม 1 ประโยคสั้น" }
+                            ];
+                            homeCoachPlan.innerHTML = steps.map((step) => `
+                                <div class="home-coach-step">
+                                    <i class="${escapeHtml(step.icon || "fi fi-rr-target")}"></i>
+                                    <span>${escapeHtml(step.text || "")}</span>
+                                </div>
+                            `).join("");
+                        }
+                    }
+                    window.renderHomeCoachPanel = renderHomeCoachPanel;
+                    function handleHomeQuickStartAction(action) {
+                        const selectedAction = String(action || "").trim();
+                        switch (selectedAction) {
+                            case "writing":
+                                resetGrammarCheckPanel?.();
+                                openGrammarCheckInsideVocabLibrary?.();
+                                if (grammarCheckInput) {
+                                    grammarCheckInput.placeholder = "เขียนประโยค ย่อหน้า email หรือ essay สั้น ๆ แล้วให้ Enghelper ช่วยตรวจแบบเข้าใจง่าย...";
+                                    grammarCheckInput.focus();
+                                }
+                                showToast2("เริ่มจากเขียนประโยคจริงของคุณได้เลยครับ", "info");
+                                break;
+                            case "grammar":
+                                resetGrammarCheckPanel?.();
+                                openGrammarCheckInsideVocabLibrary?.();
+                                if (grammarCheckInput) {
+                                    grammarCheckInput.placeholder = "วางประโยคภาษาอังกฤษที่อยากให้ตรวจ แล้วระบบจะอธิบายเป็นภาษาไทยแบบไม่ดุ...";
+                                    grammarCheckInput.focus();
+                                }
+                                break;
+                            case "speaking":
+                                if (typeof practicePronunciation === "function") {
+                                    practicePronunciation("I want to improve my English today.");
+                                }
+                                break;
+                            case "vocab":
+                                if (vocabLibraryDialog && !vocabLibraryDialog.open) {
+                                    vocabLibraryDialog.showModal();
+                                }
+                                vocabLibraryDialog?.classList.add("active");
+                                break;
+                            case "test":
+                                if (testMeDialog && !testMeDialog.open) {
+                                    testMeDialog.showModal();
+                                }
+                                break;
+                            default:
+                                if (typeof window.handleMissionClick === "function") {
+                                    window.handleMissionClick("smart_challenge");
+                                }
+                        }
+                    }
+                    window.handleHomeQuickStartAction = handleHomeQuickStartAction;
                     function updateStreak() {
                         const todayKey = getLocalDateKey();
                         const lastLogin = userStats.lastLoginDate;
@@ -15432,6 +15523,7 @@
                             smartStreakDialog.showModal();
                         }
                     }
+                    window.openSmartStreakDialog = openSmartStreakDialog;
                     function launchSmartStreakFromBanner(source = "banner") {
                         updateSmartStreakBannerContent();
                         openSmartStreakDialog(source);
@@ -27242,21 +27334,23 @@
                         }
                         currentView = viewName;
                     }
-                    const handleDashboardSidebarClick = () => {
-                        showDashboardView();
-                        const greeting = document.querySelector("#dashboard-view .greeting-large-title");
-                        if (greeting) {
-                            greeting.scrollIntoView({ behavior: "smooth", block: "center" });
-                        } else {
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                        }
+                    const handleHomeSidebarClick = () => {
+                        showHomeView();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                     };
-                    if (homeBtnSidebarCopy) homeBtnSidebarCopy.addEventListener("click", handleDashboardSidebarClick);
+                    if (homeBtnSidebarCopy) homeBtnSidebarCopy.addEventListener("click", handleHomeSidebarClick);
                     if (homeInsightVocabBtn) homeInsightVocabBtn.addEventListener("click", () => vocabLibraryBtnSidebar?.click());
-                    if (homeInsightStreakBtn) homeInsightStreakBtn.addEventListener("click", () => homeBtnSidebarCopy?.click());
+                    if (homeInsightStreakBtn) homeInsightStreakBtn.addEventListener("click", () => {
+                        if (typeof window.openSmartStreakDialog === "function") {
+                            window.openSmartStreakDialog("home");
+                        } else {
+                            homeBtnSidebarCopy?.click();
+                        }
+                    });
                     if (homeInsightReviewBtn) homeInsightReviewBtn.addEventListener("click", () => testMeBtnSidebar?.click());
                     function showHomeView() {
-                        showDashboardView();
+                        setMainView("home");
+                        renderDashboard();
                     }
                     function showDashboardView() {
                         setMainView("dashboard");
@@ -27901,6 +27995,7 @@
                         updateStudyTime();
                         renderGoalProgressUI();
                         renderLearningInsightDashboard();
+                        renderHomeCoachPanel();
                         if (goalMinutesInput) goalMinutesInput.value = userStats.dailyGoalMinutes;
                         updateLevelSystem();
                         renderBadges();
@@ -28617,7 +28712,7 @@
                     }
                     loadData();
                     renderDashboard();
-                    showDashboardView();
+                    showHomeView();
                     setInterval(() => {
                         console.log("Auto-updating dashboard...");
                         renderDashboard();
@@ -34173,6 +34268,18 @@
                                 }
                             });
                         }
+                        homeQuickStartActions?.forEach((button) => {
+                            button.addEventListener("click", () => {
+                                handleHomeQuickStartAction(button.dataset.homeAction);
+                            });
+                        });
+                        homeCoachStartBtn?.addEventListener("click", () => {
+                            if (typeof window.handleMissionClick === "function") {
+                                window.handleMissionClick("smart_challenge");
+                            } else {
+                                handleHomeQuickStartAction("grammar");
+                            }
+                        });
                         if (quickAddBannerInput) {
                             const showBannerStarterCommands = () => {
                                 if (!quickAddBannerInput.value.trim()) {
