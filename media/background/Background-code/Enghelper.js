@@ -2018,7 +2018,10 @@
                 var deletedNotificationHistoryStore = [];
                 Object.defineProperty(window, 'deletedNotificationHistoryStore', { get() { return deletedNotificationHistoryStore; }, set(v) { deletedNotificationHistoryStore = v; }, configurable: true });
 
+                const ENGHELPER_USER_DATA_SCHEMA_VERSION = 2;
+                window.ENGHELPER_USER_DATA_SCHEMA_VERSION = ENGHELPER_USER_DATA_SCHEMA_VERSION;
                 var userStats = {
+                    schemaVersion: ENGHELPER_USER_DATA_SCHEMA_VERSION,
                     currentStreak: 0,
                     longestStreak: 0,
                     lastLoginDate: null,
@@ -2106,8 +2109,10 @@
                     personalizationState: {
                         lastPlanDate: null,
                         lastPlanSignature: null,
-                        recentPlanSignatures: []
+                        recentPlanSignatures: [],
+                        weeklyPath: null
                     },
+                    speakingCoachHistory: [],
                     aiQualityStats: {
                         totalCalls: 0,
                         successfulCalls: 0,
@@ -3053,6 +3058,23 @@
                     const homeCoachReason = document.getElementById("home-coach-reason");
                     const homeCoachPlan = document.getElementById("home-coach-plan");
                     const homeCoachStartBtn = document.getElementById("home-coach-start-btn");
+                    const homeChangeGoalBtn = document.getElementById("home-change-goal-btn");
+                    const homeGoalBadge = document.getElementById("home-goal-badge");
+                    const homeWeeklyPath = document.getElementById("home-weekly-path");
+                    const writingCoachDialog = document.getElementById("writing-coach-dialog");
+                    const writingCoachMode = document.getElementById("writing-coach-mode");
+                    const writingCoachTone = document.getElementById("writing-coach-tone");
+                    const writingCoachInput = document.getElementById("writing-coach-input");
+                    const writingCoachResults = document.getElementById("writing-coach-results");
+                    const writingCoachSubmitBtn = document.getElementById("writing-coach-submit-btn");
+                    const writingCoachPromptBtn = document.getElementById("writing-coach-prompt-btn");
+                    const closeWritingCoachBtn = document.getElementById("close-writing-coach-btn");
+                    const srsReviewDialog = document.getElementById("srs-review-dialog");
+                    const srsReviewBody = document.getElementById("srs-review-body");
+                    const closeSrsReviewBtn = document.getElementById("close-srs-review-btn");
+                    const srsReviewAgainBtn = document.getElementById("srs-review-again-btn");
+                    const srsReviewRememberBtn = document.getElementById("srs-review-remember-btn");
+                    const mobileQuickActionBar = document.getElementById("mobile-quick-action-bar");
                     const flashcardsBtnSidebar = document.getElementById("flashcards-btn-sidebar");
                     const testMeBtnSidebar = document.getElementById("test-me-btn-sidebar");
                     const vocabLibraryBtnSidebar = document.getElementById("vocab-library-btn-sidebar");
@@ -3654,15 +3676,55 @@
                             explanation: String(entry?.explanation || "").trim(),
                             severity: String(entry?.severity || "medium").trim(),
                             count: Math.max(1, parseInt(entry?.count, 10) || 1),
+                            srsStage: Math.max(0, parseInt(entry?.srsStage, 10) || 0),
+                            nextReviewAt: typeof entry?.nextReviewAt === "string" ? entry.nextReviewAt : (typeof entry?.lastSeenAt === "string" ? entry.lastSeenAt : (/* @__PURE__ */ new Date()).toISOString()),
+                            lastReviewResult: typeof entry?.lastReviewResult === "string" ? entry.lastReviewResult : null,
                             lastSeenAt: typeof entry?.lastSeenAt === "string" ? entry.lastSeenAt : (typeof entry?.createdAt === "string" ? entry.createdAt : (/* @__PURE__ */ new Date()).toISOString()),
                             createdAt: typeof entry?.createdAt === "string" ? entry.createdAt : (/* @__PURE__ */ new Date()).toISOString()
                         })).filter((entry) => entry.type && (entry.label || entry.original || entry.explanation)).sort((a, b) => new Date(b.lastSeenAt) - new Date(a.lastSeenAt)).slice(0, 160) : [];
                         return userStats.learningMistakes;
                     }
+                    function migrateUserStatsData(rawStats = {}) {
+                        const source = rawStats && typeof rawStats === "object" ? rawStats : {};
+                        const previousVersion = Math.max(0, parseInt(source.schemaVersion, 10) || 0);
+                        const migrated = {
+                            ...source,
+                            schemaVersion: ENGHELPER_USER_DATA_SCHEMA_VERSION
+                        };
+                        if (previousVersion < 2) {
+                            migrated.personalizationState = {
+                                lastPlanDate: null,
+                                lastPlanSignature: null,
+                                recentPlanSignatures: [],
+                                weeklyPath: null,
+                                ...(source.personalizationState && typeof source.personalizationState === "object" ? source.personalizationState : {})
+                            };
+                            migrated.learningMistakes = Array.isArray(source.learningMistakes) ? source.learningMistakes.map((entry) => ({
+                                ...entry,
+                                srsStage: Math.max(0, parseInt(entry?.srsStage, 10) || 0),
+                                nextReviewAt: typeof entry?.nextReviewAt === "string" ? entry.nextReviewAt : (entry?.lastSeenAt || entry?.createdAt || (/* @__PURE__ */ new Date()).toISOString())
+                            })) : [];
+                            migrated.speakingCoachHistory = Array.isArray(source.speakingCoachHistory) ? source.speakingCoachHistory : [];
+                            migrated.aiQualityStats = {
+                                totalCalls: 0,
+                                successfulCalls: 0,
+                                failedCalls: 0,
+                                schemaWarnings: 0,
+                                lastIssueAt: null,
+                                recentIssues: [],
+                                ...(source.aiQualityStats && typeof source.aiQualityStats === "object" ? source.aiQualityStats : {})
+                            };
+                        }
+                        return migrated;
+                    }
+                    window.migrateEnghelperUserStatsData = migrateUserStatsData;
                     function normalizeLearningProfileState() {
+                        userStats = migrateUserStatsData(userStats);
+                        window.userStats = userStats;
                         const rawProfile = userStats.learningProfile && typeof userStats.learningProfile === "object" ? userStats.learningProfile : {};
                         const rawPersonalization = userStats.personalizationState && typeof userStats.personalizationState === "object" ? userStats.personalizationState : {};
                         const rawQuality = userStats.aiQualityStats && typeof userStats.aiQualityStats === "object" ? userStats.aiQualityStats : {};
+                        userStats.schemaVersion = ENGHELPER_USER_DATA_SCHEMA_VERSION;
                         userStats.learningProfile = {
                             schemaVersion: 1,
                             updatedAt: typeof rawProfile.updatedAt === "string" ? rawProfile.updatedAt : null,
@@ -3692,8 +3754,17 @@
                         userStats.personalizationState = {
                             lastPlanDate: typeof rawPersonalization.lastPlanDate === "string" ? rawPersonalization.lastPlanDate : null,
                             lastPlanSignature: typeof rawPersonalization.lastPlanSignature === "string" ? rawPersonalization.lastPlanSignature : null,
-                            recentPlanSignatures: Array.isArray(rawPersonalization.recentPlanSignatures) ? rawPersonalization.recentPlanSignatures.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 14) : []
+                            recentPlanSignatures: Array.isArray(rawPersonalization.recentPlanSignatures) ? rawPersonalization.recentPlanSignatures.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 14) : [],
+                            weeklyPath: rawPersonalization.weeklyPath && typeof rawPersonalization.weeklyPath === "object" ? rawPersonalization.weeklyPath : null
                         };
+                        userStats.speakingCoachHistory = Array.isArray(userStats.speakingCoachHistory) ? userStats.speakingCoachHistory.map((item) => ({
+                            target: String(item?.target || "").trim(),
+                            heard: String(item?.heard || "").trim(),
+                            score: Math.max(0, Math.min(100, parseInt(item?.score, 10) || 0)),
+                            missedWords: Array.isArray(item?.missedWords) ? item.missedWords.map((word) => String(word || "").trim()).filter(Boolean).slice(0, 8) : [],
+                            goal: String(item?.goal || "").trim(),
+                            createdAt: typeof item?.createdAt === "string" ? item.createdAt : (/* @__PURE__ */ new Date()).toISOString()
+                        })).filter((item) => item.target).slice(0, 120) : [];
                         userStats.aiQualityStats = {
                             totalCalls: Math.max(0, parseInt(rawQuality.totalCalls, 10) || 0),
                             successfulCalls: Math.max(0, parseInt(rawQuality.successfulCalls, 10) || 0),
@@ -8483,6 +8554,9 @@
                         try {
                             const contextData = typeof window.getPersonalContext === "function" ? window.getPersonalContext() : JSON.parse(localStorage.getItem("personal_context") || "{}");
                             const goal = String(contextData?.goal || contextData?.learningGoal || contextData?.purpose || "").toLowerCase();
+                            if (goal.includes("zero") || goal.includes("starter") || goal.includes("beginner") || goal.includes("ศูนย์") || goal.includes("เริ่มต้น")) return "zero_start";
+                            if (goal.includes("toeic")) return "toeic";
+                            if (goal.includes("email") || goal.includes("mail") || goal.includes("อีเมล")) return "email";
                             if (goal.includes("work") || goal.includes("job") || goal.includes("business") || goal.includes("งาน")) return "work";
                             if (goal.includes("travel") || goal.includes("trip") || goal.includes("เที่ยว")) return "travel";
                             if (goal.includes("exam") || goal.includes("toeic") || goal.includes("ielts") || goal.includes("สอบ")) return "exam";
@@ -8491,6 +8565,19 @@
                             console.warn("Unable to infer learning goal:", error);
                         }
                         return "daily";
+                    }
+                    function getLearningGoalLabel(goal = getLearningGoalFromContext()) {
+                        const labels = {
+                            zero_start: "เริ่มจากศูนย์",
+                            toeic: "สอบ TOEIC",
+                            exam: "เตรียมสอบ",
+                            work: "ใช้ทำงาน",
+                            email: "เขียนอีเมล",
+                            communication: "สนทนา",
+                            travel: "ท่องเที่ยว",
+                            daily: "ใช้จริงในชีวิตประจำวัน"
+                        };
+                        return labels[goal] || labels.daily;
                     }
                     function buildRecommendedFocus(topWeaknesses = getLearningMistakeSummary(5)) {
                         const dueCount = typeof getWordsForReview === "function" ? getWordsForReview().length : 0;
@@ -8640,6 +8727,9 @@
                             explanation,
                             severity: String(input.severity || "medium").trim(),
                             count: 0,
+                            srsStage: 0,
+                            nextReviewAt: now,
+                            lastReviewResult: null,
                             createdAt: now,
                             lastSeenAt: now
                         };
@@ -8651,6 +8741,8 @@
                         entry.explanation = explanation || entry.explanation;
                         entry.severity = String(input.severity || entry.severity || "medium").trim();
                         entry.count = (entry.count || 0) + 1;
+                        entry.srsStage = Number.isFinite(Number(entry.srsStage)) ? Number(entry.srsStage) : 0;
+                        entry.nextReviewAt = entry.nextReviewAt || now;
                         entry.lastSeenAt = now;
                         userStats.learningMistakes = [entry, ...mistakes.filter((item) => item.id !== entry.id)].slice(0, 160);
                         logTodayLearningActivity("learning_mistake", {
@@ -8668,35 +8760,100 @@
                         return entry;
                     }
                     window.recordLearningMistake = recordLearningMistake;
+                    function getMistakeReviewItems(limit = 5) {
+                        const now = Date.now();
+                        return normalizeLearningMistakes().filter((entry) => {
+                            const due = new Date(entry.nextReviewAt || entry.lastSeenAt || entry.createdAt || 0).getTime();
+                            return !Number.isFinite(due) || due <= now;
+                        }).sort((a, b) => {
+                            const severityWeight = { high: 3, medium: 2, low: 1 };
+                            const aScore = (a.count || 1) * 10 + (severityWeight[a.severity] || 2) * 3 - (a.srsStage || 0) * 2;
+                            const bScore = (b.count || 1) * 10 + (severityWeight[b.severity] || 2) * 3 - (b.srsStage || 0) * 2;
+                            return bScore - aScore;
+                        }).slice(0, limit);
+                    }
+                    function buildMistakeReviewPrompt(item) {
+                        const label = getLearningMistakeLabel(item?.type || "grammar", item?.label || "");
+                        const original = String(item?.original || "").trim();
+                        const corrected = String(item?.corrected || "").trim();
+                        if (original && corrected) {
+                            return `แก้ประโยคนี้อีกครั้ง โดยระวังเรื่อง ${label}: ${original}`;
+                        }
+                        return `แต่งประโยคสั้น 1 ประโยค โดยระวังเรื่อง ${label}`;
+                    }
+                    function completeMistakeReviewAttempt(success = false) {
+                        const inputText = String(grammarCheckInput?.value || "");
+                        if (!inputText.includes("ระวังเรื่อง")) return null;
+                        const dueItem = getMistakeReviewItems(1)[0];
+                        if (!dueItem) return null;
+                        const intervals = [1, 3, 7, 14, 30];
+                        const nextStage = success ? Math.min((Number(dueItem.srsStage) || 0) + 1, intervals.length - 1) : 0;
+                        const days = success ? intervals[nextStage] : 1;
+                        const nextReview = new Date();
+                        nextReview.setDate(nextReview.getDate() + days);
+                        userStats.learningMistakes = normalizeLearningMistakes().map((entry) => entry.id === dueItem.id ? {
+                            ...entry,
+                            srsStage: nextStage,
+                            nextReviewAt: nextReview.toISOString(),
+                            lastReviewResult: success ? "passed" : "retry",
+                            lastSeenAt: (/* @__PURE__ */ new Date()).toISOString()
+                        } : entry);
+                        return { ...dueItem, srsStage: nextStage, nextReviewAt: nextReview.toISOString() };
+                    }
+                    window.getMistakeReviewItems = getMistakeReviewItems;
                     function getDailyChallengePlan() {
                         const profile = refreshLearningProfileSnapshot("daily-challenge");
                         const focusItems = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus : [];
                         const topMistakes = getLearningMistakeSummary(2);
                         const dueWords = typeof getWordsForReview === "function" ? getWordsForReview().slice(0, 2) : [];
+                        const mistakeReviewItems = getMistakeReviewItems(2);
+                        const dailyMinutes = Math.max(5, Math.min(30, Number(userStats.dailyGoalMinutes) || Number(profile.dailyMinutes) || 10));
+                        const goalLabel = getLearningGoalLabel(profile.goal);
                         const plan = [];
                         const primaryFocus = focusItems[0];
                         if (primaryFocus?.type === "srs_review" && dueWords.length) {
                             plan.push({
                                 icon: "fi fi-rr-books",
-                                text: `ทบทวนคำศัพท์ ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
+                                text: `${Math.min(5, dueWords.length)} คำศัพท์: ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
                             });
                         }
                         if (primaryFocus && primaryFocus.type !== "srs_review" && primaryFocus.type !== "baseline_check") {
                             plan.push({
                                 icon: "fi fi-rr-badge-check",
-                                text: `ฝึกจุดอ่อนหลัก: ${primaryFocus.label}`
+                                text: `3 ประโยค: ฝึกจุดอ่อน ${primaryFocus.label}`
                             });
                         }
                         if (!plan.length && dueWords.length) {
                             plan.push({
                                 icon: "fi fi-rr-books",
-                                text: `ทบทวนคำศัพท์ ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
+                                text: `${Math.min(5, dueWords.length)} คำศัพท์: ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
+                            });
+                        }
+                        if (mistakeReviewItems.length && plan.length < 3) {
+                            plan.push({
+                                icon: "fi fi-rr-refresh",
+                                text: `ทวนข้อผิดพลาด ${mistakeReviewItems.length} จุด: ${mistakeReviewItems.map((item) => item.label).join(", ")}`
                             });
                         }
                         if (topMistakes[1]) {
                             plan.push({
                                 icon: "fi fi-rr-comments",
                                 text: `ซ้อมบทสนทนา 2 เทิร์น เพื่อใช้ ${topMistakes[1].label} ให้คล่องขึ้น`
+                            });
+                        } else if (profile.goal === "email") {
+                            plan.push({
+                                icon: "fi fi-rr-envelope",
+                                text: "1 writing prompt: เขียนอีเมลสั้นให้สุภาพและเป็นธรรมชาติ"
+                            });
+                        } else if (profile.goal === "toeic" || profile.goal === "exam") {
+                            plan.push({
+                                icon: "fi fi-rr-graduation-cap",
+                                text: "1 mini quiz: TOEIC-style grammar หรือ vocabulary"
+                            });
+                        } else if (profile.goal === "zero_start") {
+                            plan.push({
+                                icon: "fi fi-rr-seedling",
+                                text: "3 ประโยคพื้นฐาน: แนะนำตัว ถามง่าย ตอบสั้น"
                             });
                         } else if (profile.goal === "work" || profile.goal === "communication") {
                             plan.push({
@@ -8711,8 +8868,8 @@
                         }
                         if (!plan.length) {
                             plan.push(
-                                { icon: "fi fi-rr-edit", text: "ตรวจประโยคภาษาอังกฤษ 1 ประโยค แล้วอ่านคำอธิบายภาษาไทย" },
-                                { icon: "fi fi-rr-microphone", text: "ฝึกออกเสียงคำหรือประโยคสั้น 1 ครั้ง" }
+                                { icon: "fi fi-rr-edit", text: "3 ประโยค: ตรวจประโยคจริงแล้วอ่านคำอธิบายไทย" },
+                                { icon: "fi fi-rr-microphone", text: "1 speaking drill: ฝึกออกเสียงประโยคสั้น" }
                             );
                         }
                         const secondaryFocus = focusItems.find((item) => item.type !== primaryFocus?.type && item.type !== "srs_review");
@@ -8723,6 +8880,12 @@
                             });
                         }
                         const finalPlan = plan.slice(0, 3);
+                        if (finalPlan.length < 3) {
+                            finalPlan.push({
+                                icon: "fi fi-rr-bullseye-arrow",
+                                text: `${dailyMinutes} นาทีวันนี้: โฟกัส ${goalLabel} แบบสั้นและต่อเนื่อง`
+                            });
+                        }
                         const signature = finalPlan.map((step) => step.text).join("|");
                         normalizeLearningProfileState();
                         userStats.personalizationState.lastPlanDate = getLocalDateKey();
@@ -8733,7 +8896,122 @@
                         ].slice(0, 14);
                         return finalPlan;
                     }
+                    function renderInsightGrid() {
+                        // Box 1: จุดอ่อน
+                        const weaknessContent = document.getElementById("insight-weakness-content");
+                        if (weaknessContent) {
+                            const topMistakes = getLearningMistakeSummary(1);
+                            if (topMistakes.length > 0) {
+                                const mistake = topMistakes[0];
+                                weaknessContent.innerHTML = `
+                                    <div class="insight-card-value">${escapeHtml(mistake.label)}</div>
+                                    <div style="font-size: 12px; color: #f43f5e; margin-top: 4px;">
+                                        <i class="fi fi-rr-arrow-trend-up"></i> พลาดบ่อยสุด (${mistake.count} ครั้ง)
+                                    </div>
+                                `;
+                            } else {
+                                weaknessContent.innerHTML = `<div class="insight-card-value">ดีเยี่ยม! ยังไม่มีข้อผิดพลาด</div>`;
+                            }
+                        }
+
+                        // Box 2: คำศัพท์
+                        const vocabContent = document.getElementById("insight-vocab-review-content");
+                        if (vocabContent) {
+                            const dueWords = typeof getDueFlashcards === 'function' ? getDueFlashcards() : [];
+                            const dueCount = dueWords.length;
+                            if (dueCount > 0) {
+                                vocabContent.innerHTML = `
+                                    <div class="insight-card-value" style="color: var(--primary-color);">${dueCount} คำ</div>
+                                    <div style="font-size: 12px; color: var(--text-color); margin-top: 4px;">ถึงรอบทบทวนวันนี้</div>
+                                `;
+                            } else {
+                                vocabContent.innerHTML = `<div class="insight-card-value">พร้อมสุดๆ</div><div style="font-size: 12px; color: var(--text-color); margin-top: 4px;">ไม่มีคำศัพท์รอทบทวน</div>`;
+                            }
+                        }
+
+                        // Box 3: กิจกรรมแนะนำ
+                        const recContent = document.getElementById("insight-recommended-content");
+                        if (recContent) {
+                            const plan = typeof getDailyChallengePlan === 'function' ? getDailyChallengePlan() : [];
+                            if (plan.length > 0) {
+                                recContent.innerHTML = `
+                                    <div class="insight-card-value" style="font-size: 14px;">${escapeHtml(plan[0].text)}</div>
+                                    <div style="font-size: 12px; color: var(--text-color); margin-top: 4px; display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="const steps = document.querySelectorAll('.home-coach-step'); if(steps.length) steps[0].click();">
+                                        <i class="fi fi-rr-play-circle" style="color: var(--primary-color);"></i> <span>เริ่มเลย</span>
+                                    </div>
+                                `;
+                            } else {
+                                recContent.innerHTML = `<div class="insight-card-value" style="font-size: 14px;">ทบทวนอิสระ</div>`;
+                            }
+                        }
+
+                        // Box 4: กราฟรายสัปดาห์
+                        const progContent = document.getElementById("insight-weekly-progress-content");
+                        if (progContent) {
+                            progContent.innerHTML = '<canvas id="weekly-progress-mini-chart" height="60"></canvas>';
+                            setTimeout(() => {
+                                renderWeeklyProgressMiniChart();
+                            }, 100);
+                        }
+                    }
+
+                    function renderWeeklyProgressMiniChart() {
+                        const canvas = document.getElementById('weekly-progress-mini-chart');
+                        if (!canvas || typeof Chart === 'undefined') return;
+                        const ctx = canvas.getContext('2d');
+                        
+                        const labels = ['จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส', 'อา'];
+                        const data = [1, 2, 0, 3, 1, 0, 0]; // Mock activity count
+                        
+                        if (window.weeklyMiniChartInst) {
+                            window.weeklyMiniChartInst.destroy();
+                        }
+                        
+                        window.weeklyMiniChartInst = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: 'rgba(123, 77, 244, 0.6)',
+                                    borderRadius: 4,
+                                    barPercentage: 0.6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                                scales: {
+                                    x: { display: true, grid: { display: false }, ticks: { font: { size: 10, family: 'var(--font-main)' } } },
+                                    y: { display: false, min: 0 }
+                                },
+                                layout: { padding: 0 }
+                            }
+                        });
+                    }
+
+                    function renderImprovementHighlights() {
+                        const container = document.getElementById("improvement-highlights");
+                        if (!container) return;
+                        
+                        const topMistakes = getLearningMistakeSummary(1);
+                        if (topMistakes.length > 0 && topMistakes[0].count < 3) {
+                            container.innerHTML = `
+                                <div class="improvement-highlight-item" style="padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); color: var(--text-color); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px;">
+                                    <i class="fi fi-rr-check-circle" style="font-size: 18px; color: #10b981;"></i>
+                                    <span>เยี่ยมมาก! ข้อผิดพลาดเรื่อง <strong>${escapeHtml(topMistakes[0].label)}</strong> ลดลงอย่างเห็นได้ชัด</span>
+                                </div>
+                            `;
+                        } else {
+                            container.innerHTML = '';
+                        }
+                    }
+
                     function renderLearningInsightDashboard() {
+                        renderInsightGrid();
+                        renderImprovementHighlights();
+
                         const listEl = document.getElementById("mistake-dashboard-list");
                         const planEl = document.getElementById("daily-challenge-plan");
                         if (!listEl && !planEl) return;
@@ -8788,6 +9066,69 @@
                         }
                         return "ระบบจะเลือกกิจกรรมจากคำศัพท์ที่ควรทบทวนและจุดอ่อนล่าสุดของคุณ";
                     }
+                    function getTodayMiniReviewText() {
+                        const todayKey = typeof getLocalDateKey === "function" ? getLocalDateKey() : "";
+                        const todayMistakes = normalizeLearningMistakes().filter((entry) => {
+                            const key = String(entry.lastSeenAt || entry.createdAt || "").slice(0, 10);
+                            return todayKey ? key === todayKey : true;
+                        });
+                        if (!todayMistakes.length) return "";
+                        const grouped = todayMistakes.reduce((acc, entry) => {
+                            const label = entry.label || getLearningMistakeLabel(entry.type);
+                            acc[label] = (acc[label] || 0) + (entry.count || 1);
+                            return acc;
+                        }, {});
+                        const top = Object.entries(grouped).sort((a, b) => b[1] - a[1])[0];
+                        if (!top) return "";
+                        return `Mini review: วันนี้พลาดเรื่อง ${top[0]} ${top[1]} ครั้ง ลองฝึกชุดสั้นนี้ต่อ`;
+                    }
+                    function getWeeklyLearningPath(profile = refreshLearningProfileSnapshot("weekly-path")) {
+                        const topWeakness = getLearningMistakeSummary(1)[0];
+                        const goal = profile.goal || getLearningGoalFromContext();
+                        const goalFocus = {
+                            toeic: "TOEIC grammar + vocabulary",
+                            exam: "exam grammar + reading vocabulary",
+                            work: "meeting phrases + concise replies",
+                            email: "email writing + tone control",
+                            communication: "daily conversation + question forms",
+                            travel: "travel phrases + asking for help",
+                            zero_start: "basic sentence patterns + survival vocab",
+                            daily: "real sentences + useful vocabulary"
+                        }[goal] || "real sentences + useful vocabulary";
+                        const weaknessLabel = topWeakness?.label || "sentence structure";
+                        const path = {
+                            weekKey: typeof getWeekKey === "function" ? getWeekKey(/* @__PURE__ */ new Date()) : getLocalDateKey().slice(0, 7),
+                            goal,
+                            title: `สัปดาห์นี้: ${weaknessLabel} + ${goalFocus}`,
+                            focusA: weaknessLabel,
+                            focusB: goalFocus,
+                            reason: topWeakness ? `ปรับจากจุดที่พลาดบ่อย: ${topWeakness.label}` : `ปรับตามเป้าหมาย ${getLearningGoalLabel(goal)}`
+                        };
+                        userStats.personalizationState.weeklyPath = path;
+                        return path;
+                    }
+                    function inferCoachActionFromStepText(text = "") {
+                        const value = String(text || "").toLowerCase();
+                        if (value.includes("writing") || value.includes("อีเมล") || value.includes("essay") || value.includes("paragraph")) return "writing";
+                        if (value.includes("speaking") || value.includes("ออกเสียง")) return "speaking";
+                        if (value.includes("คำศัพท์") || value.includes("ทบทวนคำ")) return "vocab";
+                        if (value.includes("quiz") || value.includes("toeic") || value.includes("แบบทดสอบ")) return "test";
+                        if (value.includes("roleplay") || value.includes("บทสนทนา") || value.includes("ถาม-ตอบ")) return "roleplay";
+                        return "grammar";
+                    }
+                    function getSpeakingDrillForGoal(goal = getLearningGoalFromContext()) {
+                        const drills = {
+                            toeic: "The report was submitted before the deadline.",
+                            exam: "I agree with this statement because it has several practical benefits.",
+                            work: "Could you clarify the next steps for this project?",
+                            email: "I am writing to follow up on our previous conversation.",
+                            communication: "Could you say that again a little more slowly?",
+                            travel: "Could you tell me how to get to the nearest station?",
+                            zero_start: "My name is Ken and I am learning English.",
+                            daily: "I want to improve my English a little every day."
+                        };
+                        return drills[goal] || drills.daily;
+                    }
                     function renderHomeCoachPanel() {
                         if (!homeCoachTitle && !homeCoachReason && !homeCoachPlan) return;
                         const profile = refreshLearningProfileSnapshot("home-coach");
@@ -8795,40 +9136,224 @@
                         const topMistake = getLearningMistakeSummary(1)[0] || null;
                         const dueCount = typeof getWordsForReview === "function" ? getWordsForReview().length : 0;
                         const plan = getDailyChallengePlan();
+                        const dailyMinutes = Math.max(5, Math.min(30, Number(userStats.dailyGoalMinutes) || 10));
+                        const goalLabel = getLearningGoalLabel(profile.goal);
+                        /* 1.1 — Update goal badge with current goal */
+                        if (homeGoalBadge) {
+                            homeGoalBadge.textContent = goalLabel || "ยังไม่ได้ตั้ง";
+                        }
                         if (homeCoachTitle) {
                             homeCoachTitle.textContent = focus?.label && focus.type !== "baseline_check"
-                                ? `วันนี้โฟกัส: ${focus.label}`
-                                : "เริ่มฝึก 5 นาทีจากประโยคจริง";
+                                ? `วันนี้ฝึก ${dailyMinutes} นาที: ${focus.label}`
+                                : `วันนี้ฝึก ${dailyMinutes} นาทีเพื่อ${goalLabel}`;
                         }
                         if (homeCoachReason) {
-                            homeCoachReason.textContent = getHomeCoachReason(profile, topMistake, dueCount);
+                            const miniReview = getTodayMiniReviewText();
+                            homeCoachReason.textContent = miniReview || `${getHomeCoachReason(profile, topMistake, dueCount)} เป้าหมายหลักตอนนี้คือ ${goalLabel}`;
                         }
+                        /* 1.2 — Coach steps with individual start CTA */
                         if (homeCoachPlan) {
                             const steps = plan.length ? plan : [
                                 { icon: "fi fi-rr-edit", text: "ตรวจประโยคภาษาอังกฤษ 1 ประโยค" },
                                 { icon: "fi fi-rr-books", text: "บันทึกคำศัพท์ที่เจอใหม่" },
                                 { icon: "fi fi-rr-microphone", text: "ฝึกพูดตาม 1 ประโยคสั้น" }
                             ];
-                            homeCoachPlan.innerHTML = steps.map((step) => `
-                                <div class="home-coach-step">
-                                    <i class="${escapeHtml(step.icon || "fi fi-rr-target")}"></i>
-                                    <span>${escapeHtml(step.text || "")}</span>
-                                </div>
+                            homeCoachPlan.innerHTML = steps.map((step, idx) => `
+                                <button type="button" class="home-coach-step" data-coach-action="${escapeHtml(inferCoachActionFromStepText(step.text))}">
+                                    <span class="coach-step-num">${idx + 1}</span>
+                                    <span class="coach-step-content">
+                                        <i class="${escapeHtml(step.icon || "fi fi-rr-target")}"></i>
+                                        <span>${escapeHtml(step.text || "")}</span>
+                                    </span>
+                                    <span class="coach-step-start-cta">เริ่ม <i class="fi fi-rr-play-alt"></i></span>
+                                </button>
                             `).join("");
+                        }
+                        if (homeWeeklyPath) {
+                            const weeklyPath = getWeeklyLearningPath(profile);
+                            homeWeeklyPath.innerHTML = `
+                                <span><i class="fi fi-rr-calendar-lines-pen"></i> Learning Path</span>
+                                <span class="home-weekly-path-pill">${escapeHtml(weeklyPath.title)}</span>
+                                <span>${escapeHtml(weeklyPath.reason)}</span>
+                            `;
                         }
                     }
                     window.renderHomeCoachPanel = renderHomeCoachPanel;
+                    function openWritingCoachDialog(mode = null) {
+                        if (!writingCoachDialog) {
+                            handleHomeQuickStartAction("grammar");
+                            return;
+                        }
+                        const goal = getLearningGoalFromContext();
+                        if (writingCoachMode) {
+                            writingCoachMode.value = mode || (goal === "email" || goal === "work" ? "email" : "paragraph");
+                        }
+                        if (writingCoachTone) {
+                            writingCoachTone.value = goal === "work" || goal === "email" ? "business" : "neutral";
+                        }
+                        if (writingCoachResults) writingCoachResults.innerHTML = "";
+                        if (!writingCoachDialog.open) writingCoachDialog.showModal();
+                        setTimeout(() => writingCoachInput?.focus(), 80);
+                    }
+                    function getWritingCoachPrompt(mode = writingCoachMode?.value || "paragraph") {
+                        const goal = getLearningGoalFromContext();
+                        if (mode === "email") {
+                            return goal === "work"
+                                ? "Write a short email asking your teammate for an update on a project deadline."
+                                : "Write a short polite email asking for more information.";
+                        }
+                        if (mode === "essay") {
+                            return "Write a short essay paragraph: Do you agree that learning English every day is better than studying a lot once a week?";
+                        }
+                        return "Write one paragraph about something you did recently and what you learned from it.";
+                    }
+                    async function analyzeWritingCoach() {
+                        const text = String(writingCoachInput?.value || "").trim();
+                        if (!text) {
+                            if (writingCoachInput) writingCoachInput.value = getWritingCoachPrompt();
+                            writingCoachInput?.focus();
+                            return;
+                        }
+                        const mode = writingCoachMode?.value || "paragraph";
+                        const tone = writingCoachTone?.value || "neutral";
+                        if (writingCoachResults) {
+                            writingCoachResults.innerHTML = `<div class="writing-result-card"><h3>กำลังตรวจงานเขียน...</h3><p>Enghelper กำลังดู rubric และ rewrite ให้เหมาะกับระดับ ${escapeHtml(tone)}</p></div>`;
+                        }
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: `Evaluate this ${mode} for a Thai English learner. Return JSON only. Text: "${text}"` }] }],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        shortFeedback: { type: "STRING" },
+                                        rubric: {
+                                            type: "OBJECT",
+                                            properties: {
+                                                grammar: { type: "NUMBER" },
+                                                clarity: { type: "NUMBER" },
+                                                tone: { type: "NUMBER" },
+                                                structure: { type: "NUMBER" },
+                                                vocabulary: { type: "NUMBER" }
+                                            }
+                                        },
+                                        rewrite: { type: "STRING" },
+                                        casualRewrite: { type: "STRING" },
+                                        formalRewrite: { type: "STRING" },
+                                        businessRewrite: { type: "STRING" },
+                                        nextPractice: { type: "STRING" }
+                                    },
+                                    required: ["shortFeedback", "rubric", "rewrite", "nextPractice"]
+                                }
+                            }
+                        };
+                        try {
+                            const result = await callGemini(payload, null, writingCoachSubmitBtn, { contextScope: "grammar", taskType: "writing-coach" });
+                            const rubric = result?.rubric || {};
+                            if (writingCoachResults) {
+                                const rubricKeys = ["grammar", "clarity", "tone", "structure", "vocabulary"];
+                                const rubricLabels = { grammar: "Grammar", clarity: "Clarity", tone: "Tone", structure: "Structure", vocabulary: "Vocabulary" };
+                                const rubricColors = { grammar: "#6366f1", clarity: "#06b6d4", tone: "#f59e0b", structure: "#10b981", vocabulary: "#ec4899" };
+                                const overallScore = rubricKeys.reduce((sum, k) => sum + Math.max(0, Math.min(5, Number(rubric[k]) || 0)), 0) / rubricKeys.length;
+                                writingCoachResults.innerHTML = `
+                                    <div class="ai-result-layer ai-result-layer--open">
+                                        <div class="ai-result-layer-header"><h4><i class="fi fi-rr-check-circle"></i> คำตอบสั้น</h4></div>
+                                        <div class="ai-result-body">
+                                            <p>${escapeHtml(result?.shortFeedback || "ตรวจเสร็จแล้ว ลองดู rewrite และ rubric ด้านล่าง")}</p>
+                                            <div class="writing-overall-score">คะแนนรวม: <strong>${overallScore.toFixed(1)}</strong>/5</div>
+                                        </div>
+                                    </div>
+                                    <div class="ai-result-layer ai-result-layer--open">
+                                        <button type="button" class="ai-result-toggle" onclick="this.parentElement.classList.toggle('ai-result-layer--collapsed');this.parentElement.classList.toggle('ai-result-layer--open')">
+                                            <h4><i class="fi fi-rr-chart-simple"></i> Rubric (5 ด้าน)</h4>
+                                            <i class="fi fi-rr-angle-down ai-result-chevron"></i>
+                                        </button>
+                                        <div class="ai-result-body">
+                                            <div class="rubric-grid">
+                                                ${rubricKeys.map((key) => {
+                                                    const score = Math.max(0, Math.min(5, Number(rubric[key]) || 0));
+                                                    const pct = (score / 5) * 100;
+                                                    return `<div class="rubric-item">
+                                                        <div class="rubric-label">${rubricLabels[key]}</div>
+                                                        <div class="rubric-bar-track"><div class="rubric-bar-fill" style="width:${pct}%;background:${rubricColors[key]}"></div></div>
+                                                        <div class="rubric-score">${score}/5</div>
+                                                    </div>`;
+                                                }).join("")}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ai-result-layer ai-result-layer--collapsed" id="wc-rewrite-layer">
+                                        <button type="button" class="ai-result-toggle" onclick="this.parentElement.classList.toggle('ai-result-layer--collapsed');this.parentElement.classList.toggle('ai-result-layer--open')">
+                                            <h4><i class="fi fi-rr-edit"></i> Rewrite (${escapeHtml(tone)})</h4>
+                                            <i class="fi fi-rr-angle-down ai-result-chevron"></i>
+                                        </button>
+                                        <div class="ai-result-body">
+                                            <p class="wc-rewrite-main">${escapeHtml(result?.[`${tone}Rewrite`] || result?.rewrite || "")}</p>
+                                            <button type="button" class="ai-layer-copy-btn" data-copy-target=".wc-rewrite-main" title="คัดลอก"><i class="fi fi-rr-copy"></i></button>
+                                            ${["casual", "neutral", "formal", "business"].filter(t => t !== tone && result?.[`${t}Rewrite`]).map(t => `
+                                                <details class="rewrite-tone-details"><summary>${t.charAt(0).toUpperCase() + t.slice(1)} version</summary><p>${escapeHtml(result[`${t}Rewrite`])}</p></details>
+                                            `).join("")}
+                                        </div>
+                                    </div>
+                                    <div class="ai-result-layer ai-result-layer--collapsed">
+                                        <button type="button" class="ai-result-toggle" onclick="this.parentElement.classList.toggle('ai-result-layer--collapsed');this.parentElement.classList.toggle('ai-result-layer--open')">
+                                            <h4><i class="fi fi-rr-graduation-cap"></i> แบบฝึกต่อ</h4>
+                                            <i class="fi fi-rr-angle-down ai-result-chevron"></i>
+                                        </button>
+                                        <div class="ai-result-body">
+                                            <p>${escapeHtml(result?.nextPractice || "ลองเขียนอีก 2 ประโยคโดยใช้โครงเดิม")}</p>
+                                        </div>
+                                    </div>
+                                `;
+                                /* 1.4 — Event delegation for copy buttons inside writing coach results */
+                                writingCoachResults.addEventListener("click", (e) => {
+                                    const copyBtn = e.target.closest(".ai-layer-copy-btn");
+                                    if (!copyBtn) return;
+                                    e.stopPropagation();
+                                    const selector = copyBtn.dataset.copyTarget;
+                                    const source = selector ? writingCoachResults.querySelector(selector) : null;
+                                    if (source) {
+                                        navigator.clipboard.writeText(source.textContent).then(() => {
+                                            showToast2("\u0E04\u0E31\u0E14\u0E25\u0E2D\u0E01\u0E41\u0E25\u0E49\u0E27!", "success");
+                                        }).catch(() => showToast2("\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E04\u0E31\u0E14\u0E25\u0E2D\u0E01\u0E44\u0E14\u0E49", "error"));
+                                    }
+                                });
+                            }
+                            logTodayLearningActivity("writing_coach", { label: `Writing Coach: ${mode}`, tone }, { persist: true });
+                            saveData();
+                        } catch (error) {
+                            console.error("[WritingCoach] failed:", error);
+                            if (writingCoachResults) writingCoachResults.innerHTML = `<div class="writing-result-card"><h3>ยังตรวจไม่ได้</h3><p>ลองใหม่อีกครั้ง หรือใช้ grammar checker ไปก่อนครับ</p></div>`;
+                        }
+                    }
+                    function handleCoachStepAction(action) {
+                        const selected = String(action || "grammar");
+                        if (selected === "writing") return openWritingCoachDialog();
+                        if (selected === "speaking") {
+                            if (typeof practicePronunciation === "function") practicePronunciation(getSpeakingDrillForGoal());
+                            return;
+                        }
+                        if (selected === "vocab") {
+                            if (typeof window.handleMissionClick === "function") window.handleMissionClick("review_vocab");
+                            else vocabLibraryDialog?.showModal();
+                            return;
+                        }
+                        if (selected === "test") {
+                            if (testMeDialog && !testMeDialog.open) testMeDialog.showModal();
+                            return;
+                        }
+                        if (selected === "roleplay") {
+                            if (typeof openSmartRolePlayDialog === "function") openSmartRolePlayDialog("home-coach");
+                            else aiRolePlayDialog?.showModal();
+                            return;
+                        }
+                        if (typeof window.handleMissionClick === "function") window.handleMissionClick("smart_challenge");
+                    }
                     function handleHomeQuickStartAction(action) {
                         const selectedAction = String(action || "").trim();
                         switch (selectedAction) {
                             case "writing":
-                                resetGrammarCheckPanel?.();
-                                openGrammarCheckInsideVocabLibrary?.();
-                                if (grammarCheckInput) {
-                                    grammarCheckInput.placeholder = "เขียนประโยค ย่อหน้า email หรือ essay สั้น ๆ แล้วให้ Enghelper ช่วยตรวจแบบเข้าใจง่าย...";
-                                    grammarCheckInput.focus();
-                                }
-                                showToast2("เริ่มจากเขียนประโยคจริงของคุณได้เลยครับ", "info");
+                                openWritingCoachDialog();
                                 break;
                             case "grammar":
                                 resetGrammarCheckPanel?.();
@@ -8840,7 +9365,7 @@
                                 break;
                             case "speaking":
                                 if (typeof practicePronunciation === "function") {
-                                    practicePronunciation("I want to improve my English today.");
+                                    practicePronunciation(getSpeakingDrillForGoal());
                                 }
                                 break;
                             case "vocab":
@@ -9033,6 +9558,16 @@
                             case "smart_challenge": {
                                 const profile = refreshLearningProfileSnapshot("smart-challenge");
                                 const focus = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus[0] : null;
+                                const dueMistake = getMistakeReviewItems(1)[0] || null;
+                                if (dueMistake && typeof openGrammarCheckInsideVocabLibrary === "function") {
+                                    openGrammarCheckInsideVocabLibrary();
+                                    if (grammarCheckInput) {
+                                        grammarCheckInput.value = buildMistakeReviewPrompt(dueMistake);
+                                        grammarCheckInput.placeholder = `ฝึกซ้ำเรื่อง ${dueMistake.label || getLearningMistakeLabel(dueMistake.type)}`;
+                                        grammarCheckInput.focus();
+                                    }
+                                    break;
+                                }
                                 if (focus?.type === "srs_review") {
                                     document.getElementById("flashcard-dialog")?.showModal();
                                     break;
@@ -9523,8 +10058,11 @@
                             }
                         }
                         const goalTopicMap = {
+                            zero_start: "basic beginner English",
                             travel: "travel survival phrases",
                             work: "business English",
+                            email: "professional email English",
+                            toeic: "TOEIC vocabulary",
                             exam: "exam vocabulary",
                             communication: "daily conversation"
                         };
@@ -10824,7 +11362,7 @@
                                 parts.push(`\u0E23\u0E30\u0E14\u0E31\u0E1A\u0E20\u0E32\u0E29\u0E32\u0E2D\u0E31\u0E07\u0E01\u0E24\u0E29: ${levelMap[contextData.englishLevel] || contextData.englishLevel}`);
                             }
                             if (contextData.goal) {
-                                const goalMap = { communication: "\u0E2A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E23\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B", work: "\u0E43\u0E0A\u0E49\u0E17\u0E33\u0E07\u0E32\u0E19/\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08", exam: "\u0E2A\u0E2D\u0E1A TOEIC/IELTS", travel: "\u0E17\u0E48\u0E2D\u0E07\u0E40\u0E17\u0E35\u0E48\u0E22\u0E27" };
+                                const goalMap = { zero_start: "เริ่มจากศูนย์", communication: "\u0E2A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E23\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B", work: "\u0E43\u0E0A\u0E49\u0E17\u0E33\u0E07\u0E32\u0E19/\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08", email: "เขียนอีเมล", toeic: "สอบ TOEIC", exam: "\u0E2A\u0E2D\u0E1A TOEIC/IELTS", travel: "\u0E17\u0E48\u0E2D\u0E07\u0E40\u0E17\u0E35\u0E48\u0E22\u0E27", daily: "ใช้จริงในชีวิตประจำวัน" };
                                 parts.push(`\u0E40\u0E1B\u0E49\u0E32\u0E2B\u0E21\u0E32\u0E22: ${goalMap[contextData.goal] || contextData.goal}`);
                             }
                             if (contextData.interests && contextData.interests.length > 0) {
@@ -10865,6 +11403,7 @@
                             "Use English for task instructions, JSON keys, English examples, stories, role-play dialogue, and target language practice.",
                             "Use Thai for learner-facing explanations, feedback, memory tips, error explanations, and coaching notes unless a schema says otherwise.",
                             "Prioritize learning value over short answers: be concrete, practical, and directly useful for studying.",
+                            "For learner-facing answers, structure the teaching in three layers whenever the requested schema allows it: (1) short answer the learner can use immediately, (2) Thai explanation of why, (3) extra examples or next practice.",
                             "Adapt CEFR difficulty, vocabulary, examples, tone, and topic choice to the learner profile if provided.",
                             "When personal context is available, weave it into examples or scenarios naturally without exposing sensitive profile details.",
                             "Prefer natural real-world English over dictionary-like wording. Avoid filler, generic encouragement, and unsupported claims.",
@@ -10881,7 +11420,8 @@
                             ],
                             grammar: [
                                 "For grammar tasks, explain the core idea in simple Thai, show the form/pattern clearly, contrast common mistakes, and use examples connected to daily life or the learner profile.",
-                                "When checking grammar, be kind but precise: show what changed, why it changed, and how to avoid the error next time."
+                                "When checking grammar, be kind but precise: show what changed, why it changed, and how to avoid the error next time.",
+                                "For grammar checking, include a concise corrected answer, a Thai explanation, and extra natural examples when the schema supports them."
                             ],
                             games: [
                                 "For quizzes and games, create fair questions with one clearly correct answer, plausible distractors, and explanations that teach rather than merely reveal the answer.",
@@ -17434,7 +17974,7 @@
                             showToast2("\u0E01\u0E23\u0E38\u0E13\u0E32\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E15\u0E23\u0E27\u0E08\u0E2A\u0E2D\u0E1A", "error");
                             return;
                         }
-                        const prompt = `You are a kind English grammar assistant for Thai learners. Analyze the following text. Identify errors, explain them simply in Thai without scolding, and provide the corrected full text. Also classify each error with one short errorType such as article, tense, preposition, word_order, vocabulary, naturalness, spelling, punctuation, or grammar. Respond in JSON format only.`;
+                        const prompt = `You are a kind English grammar assistant for Thai learners. Analyze the following text. Identify errors, explain them simply in Thai without scolding, and provide the corrected full text. Also classify each error with one short errorType such as article, tense, preposition, word_order, vocabulary, naturalness, spelling, punctuation, or grammar. Return a three-layer learning answer: shortAnswer, explanation, extraExamples. Respond in JSON format only.`;
                         const payload = {
                             contents: [{
                                 role: "user", parts: [{
@@ -17449,6 +17989,9 @@
                                     type: "OBJECT",
                                     properties: {
                                         correctedText: { type: "STRING" },
+                                        shortAnswer: { type: "STRING" },
+                                        explanation: { type: "STRING" },
+                                        extraExamples: { type: "ARRAY", items: { type: "STRING" } },
                                         errors: {
                                             type: "ARRAY",
                                             items: {
@@ -17492,12 +18035,39 @@
                             }, { dedupeKey: `grammar-check:${Date.now()}` });
                             saveData();
                         }
+                        const reviewResult = completeMistakeReviewAttempt(!mistakeEntries.length);
+                        if (reviewResult && !mistakeEntries.length) {
+                            showToast2(`ทวนเรื่อง ${reviewResult.label} ผ่านแล้ว รอบถัดไปจะมาในภายหลัง`, "success");
+                            saveData();
+                        }
                         const correctedTextP = document.createElement("p");
-                        correctedTextP.textContent = results.correctedText;
-                        correctedTextContainer.innerHTML = "<h4>\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E17\u0E35\u0E48\u0E41\u0E01\u0E49\u0E44\u0E02\u0E41\u0E25\u0E49\u0E27</h4>";
-                        correctedTextContainer.appendChild(correctedTextP);
-                        correctedTextContainer.appendChild(copyCorrectedTextBtn);
-                        errorExplanationContainer.innerHTML = "<h4>\u0E04\u0E33\u0E2D\u0E18\u0E34\u0E1A\u0E32\u0E22\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14</h4>";
+                        correctedTextP.textContent = results.shortAnswer || results.correctedText;
+                        correctedTextContainer.innerHTML = "";
+                        /* 1.3 — Accordion Layer 1: Short Answer (always visible) */
+                        const layer1 = document.createElement("div");
+                        layer1.className = "ai-result-layer ai-result-layer--open";
+                        layer1.innerHTML = `<div class="ai-result-layer-header"><h4><i class="fi fi-rr-check-circle"></i> คำตอบสั้น</h4></div>`;
+                        layer1.appendChild(correctedTextP);
+                        if (results.correctedText && results.correctedText !== correctedTextP.textContent) {
+                            const correctedFull = document.createElement("p");
+                            correctedFull.className = "grammar-layer-note";
+                            correctedFull.textContent = `ฉบับเต็ม: ${results.correctedText}`;
+                            layer1.appendChild(correctedFull);
+                        }
+                        layer1.appendChild(copyCorrectedTextBtn);
+                        correctedTextContainer.appendChild(layer1);
+                        /* 1.3 — Accordion Layer 2: Explanation (collapsed) */
+                        errorExplanationContainer.innerHTML = "";
+                        const layer2 = document.createElement("div");
+                        layer2.className = "ai-result-layer ai-result-layer--collapsed";
+                        layer2.innerHTML = `<button type="button" class="ai-result-toggle" onclick="this.parentElement.classList.toggle('ai-result-layer--collapsed');this.parentElement.classList.toggle('ai-result-layer--open')"><h4><i class="fi fi-rr-lightbulb-on"></i> คำอธิบาย</h4><i class="fi fi-rr-angle-down ai-result-chevron"></i></button><div class="ai-result-body"></div>`;
+                        const layer2Body = layer2.querySelector(".ai-result-body");
+                        if (results.explanation) {
+                            const summaryDiv = document.createElement("div");
+                            summaryDiv.className = "grammar-error-item grammar-layer-summary";
+                            summaryDiv.innerHTML = `<p>${escapeHtml(results.explanation)}</p>`;
+                            layer2Body.appendChild(summaryDiv);
+                        }
                         if (results.errors && results.errors.length > 0) {
                             results.errors.forEach((error) => {
                                 const errorDiv = document.createElement("div");
@@ -17505,10 +18075,19 @@
                                 const typeLabel = getLearningMistakeLabel(error.errorType || "grammar");
                                 const corrected = error.correctedFragment ? ` &rarr; <strong>${escapeHtml(error.correctedFragment)}</strong>` : "";
                                 errorDiv.innerHTML = `<p><span class="history-type-badge">${escapeHtml(typeLabel)}</span> <strong>"${escapeHtml(error.originalFragment || "")}"</strong>${corrected} ${escapeHtml(error.explanation || "")}</p>`;
-                                errorExplanationContainer.appendChild(errorDiv);
+                                layer2Body.appendChild(errorDiv);
                             });
                         } else {
-                            errorExplanationContainer.innerHTML += "<p>\u0E22\u0E2D\u0E14\u0E40\u0E22\u0E35\u0E48\u0E22\u0E21! \u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14\u0E17\u0E32\u0E07\u0E44\u0E27\u0E22\u0E32\u0E01\u0E23\u0E13\u0E4C</p>";
+                            layer2Body.innerHTML += "<p>\u0E22\u0E2D\u0E14\u0E40\u0E22\u0E35\u0E48\u0E22\u0E21! \u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14\u0E17\u0E32\u0E07\u0E44\u0E27\u0E22\u0E32\u0E01\u0E23\u0E13\u0E4C</p>";
+                        }
+                        errorExplanationContainer.appendChild(layer2);
+                        /* 1.3 — Accordion Layer 3: Examples (collapsed) */
+                        const examples = Array.isArray(results.extraExamples) ? results.extraExamples.filter(Boolean).slice(0, 3) : [];
+                        if (examples.length) {
+                            const layer3 = document.createElement("div");
+                            layer3.className = "ai-result-layer ai-result-layer--collapsed";
+                            layer3.innerHTML = `<button type="button" class="ai-result-toggle" onclick="this.parentElement.classList.toggle('ai-result-layer--collapsed');this.parentElement.classList.toggle('ai-result-layer--open')"><h4><i class="fi fi-rr-graduation-cap"></i> ตัวอย่างเพิ่มเติม</h4><i class="fi fi-rr-angle-down ai-result-chevron"></i></button><div class="ai-result-body">${examples.map((example) => `<p>${escapeHtml(example)}</p>`).join("")}</div>`;
+                            errorExplanationContainer.appendChild(layer3);
                         }
                     }
                     copyCorrectedTextBtn.addEventListener("click", () => {
@@ -21339,6 +21918,14 @@
                     function showPronunciationResult(target, heard) {
                         const analysis = getPronunciationWordAnalysis(target, heard);
                         const score = getSimilarityPercentage(target, heard);
+                        userStats.speakingCoachHistory = [{
+                            target,
+                            heard,
+                            score,
+                            missedWords: [...analysis.missedWords, ...analysis.closeWords].slice(0, 8),
+                            goal: getLearningGoalFromContext(),
+                            createdAt: (/* @__PURE__ */ new Date()).toISOString()
+                        }, ...(Array.isArray(userStats.speakingCoachHistory) ? userStats.speakingCoachHistory : [])].slice(0, 120);
                         logTodayLearningActivity("pronunciation", {
                             targetWord: target,
                             heardText: heard,
@@ -34287,6 +34874,18 @@
                                 handleHomeQuickStartAction(button.dataset.homeAction);
                             });
                         });
+                        homeChangeGoalBtn?.addEventListener("click", () => {
+                            if (typeof window.openPersonalContextDialog === "function") {
+                                window.openPersonalContextDialog(false);
+                            } else {
+                                document.getElementById("personal-context-dialog")?.showModal();
+                            }
+                        });
+                        homeCoachPlan?.addEventListener("click", (event) => {
+                            const stepBtn = event.target.closest("[data-coach-action]");
+                            if (!stepBtn) return;
+                            handleCoachStepAction(stepBtn.dataset.coachAction);
+                        });
                         homeCoachStartBtn?.addEventListener("click", () => {
                             if (typeof window.handleMissionClick === "function") {
                                 window.handleMissionClick("smart_challenge");
@@ -34294,6 +34893,14 @@
                                 handleHomeQuickStartAction("grammar");
                             }
                         });
+                        closeWritingCoachBtn?.addEventListener("click", () => writingCoachDialog?.close());
+                        writingCoachPromptBtn?.addEventListener("click", () => {
+                            if (writingCoachInput) {
+                                writingCoachInput.value = getWritingCoachPrompt(writingCoachMode?.value);
+                                writingCoachInput.focus();
+                            }
+                        });
+                        writingCoachSubmitBtn?.addEventListener("click", analyzeWritingCoach);
                         if (quickAddBannerInput) {
                             const showBannerStarterCommands = () => {
                                 if (!quickAddBannerInput.value.trim()) {
@@ -39128,7 +39735,7 @@
                             ageGroup: { student: "\u0E19\u0E31\u0E01\u0E40\u0E23\u0E35\u0E22\u0E19", university: "\u0E19\u0E31\u0E01\u0E28\u0E36\u0E01\u0E29\u0E32", adult: "\u0E27\u0E31\u0E22\u0E17\u0E33\u0E07\u0E32\u0E19", senior: "\u0E1C\u0E39\u0E49\u0E43\u0E2B\u0E0D\u0E48" },
                             gender: { male: "\u0E40\u0E1E\u0E28\u0E0A\u0E32\u0E22", female: "\u0E40\u0E1E\u0E28\u0E2B\u0E0D\u0E34\u0E07", other: "\u0E40\u0E1E\u0E28\u0E2D\u0E37\u0E48\u0E19\u0E46" },
                             englishLevel: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
-                            goal: { communication: "\u0E2A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E23\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B", work: "\u0E43\u0E0A\u0E49\u0E17\u0E33\u0E07\u0E32\u0E19/\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08", exam: "\u0E2A\u0E2D\u0E1A TOEIC/IELTS", travel: "\u0E17\u0E48\u0E2D\u0E07\u0E40\u0E17\u0E35\u0E48\u0E22\u0E27", daily: "\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B" },
+                            goal: { zero_start: "เริ่มจากศูนย์", communication: "\u0E2A\u0E37\u0E48\u0E2D\u0E2A\u0E32\u0E23\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B", work: "\u0E43\u0E0A\u0E49\u0E17\u0E33\u0E07\u0E32\u0E19/\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08", email: "เขียนอีเมล", toeic: "สอบ TOEIC", exam: "\u0E2A\u0E2D\u0E1A TOEIC/IELTS", travel: "\u0E17\u0E48\u0E2D\u0E07\u0E40\u0E17\u0E35\u0E48\u0E22\u0E27", daily: "\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\u0E17\u0E31\u0E48\u0E27\u0E44\u0E1B" },
                             learningStyle: { fun: "\u0E2A\u0E19\u0E38\u0E01\u0E40\u0E1B\u0E47\u0E19\u0E01\u0E31\u0E19\u0E40\u0E2D\u0E07", mixed: "\u0E1C\u0E2A\u0E21\u0E1C\u0E2A\u0E32\u0E19", serious: "\u0E08\u0E23\u0E34\u0E07\u0E08\u0E31\u0E07\u0E17\u0E32\u0E07\u0E01\u0E32\u0E23" },
                             difficulty: { easy: "\u0E07\u0E48\u0E32\u0E22", medium: "\u0E1B\u0E32\u0E19\u0E01\u0E25\u0E32\u0E07", hard: "\u0E17\u0E49\u0E32\u0E17\u0E32\u0E22" }
                         };
