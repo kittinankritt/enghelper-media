@@ -3226,6 +3226,14 @@
                     const smartStreakDays = document.getElementById("smart-streak-days");
                     const smartStreakGoal = document.getElementById("smart-streak-goal");
                     const smartStreakRemaining = document.getElementById("smart-streak-remaining");
+                    const streakWeaknessSummary = document.getElementById("streak-weakness-summary");
+                    const streakWeaknessDetail = document.getElementById("streak-weakness-detail");
+                    const streakReviewSummary = document.getElementById("streak-review-summary");
+                    const streakReviewDetail = document.getElementById("streak-review-detail");
+                    const streakWeeklySummary = document.getElementById("streak-weekly-summary");
+                    const streakWeeklyDetail = document.getElementById("streak-weekly-detail");
+                    const streakNextSummary = document.getElementById("streak-next-summary");
+                    const streakNextDetail = document.getElementById("streak-next-detail");
                     const streakBannerTag = document.getElementById("streak-banner-tag");
                     const streakBannerTitle = document.getElementById("streak-banner-title");
                     const streakBannerDesc = document.getElementById("streak-banner-desc");
@@ -15313,23 +15321,77 @@
                             smartStreakRemaining.textContent = signals.remainingMinutes > 0 ? `${signals.remainingMinutes} \u0E19\u0E32\u0E17\u0E35` : "\u0E04\u0E23\u0E1A\u0E41\u0E25\u0E49\u0E27";
                         }
                     }
+                    function getSmartStreakWeeklyProgress() {
+                        const days = [];
+                        let totalMinutes = 0;
+                        let activeDays = 0;
+                        for (let offset = 6; offset >= 0; offset--) {
+                            const date = /* @__PURE__ */ new Date();
+                            date.setDate(date.getDate() - offset);
+                            const key = getLocalDateKey(date);
+                            const minutes = key === getLocalDateKey() ? Math.max(Number(userStats.todayStudyMinutes) || 0, Number(userStats.studyHistory?.[key]) || 0) : Number(userStats.studyHistory?.[key]) || 0;
+                            totalMinutes += minutes;
+                            if (minutes > 0) activeDays++;
+                            days.push({ key, minutes });
+                        }
+                        const dailyGoal = Math.max(1, Number(userStats.dailyGoalMinutes) || 15);
+                        const weeklyGoal = dailyGoal * 7;
+                        return {
+                            days,
+                            totalMinutes,
+                            activeDays,
+                            weeklyGoal,
+                            progressPercent: Math.min(100, Math.round(totalMinutes / weeklyGoal * 100))
+                        };
+                    }
+                    function renderSmartStreakProgressCards(recommendation = currentSmartStreakRecommendation, signals = getSmartStreakSignals()) {
+                        const profile = typeof refreshLearningProfileSnapshot === "function" ? refreshLearningProfileSnapshot("smart-streak-popup") : userStats.learningProfile || {};
+                        const topWeakness = (profile.topWeaknesses || [])[0] || getLearningMistakeSummary(1)[0] || null;
+                        const dueWords = Array.isArray(signals.dueWords) ? signals.dueWords : [];
+                        const weekly = getSmartStreakWeeklyProgress();
+                        if (streakWeaknessSummary) {
+                            streakWeaknessSummary.textContent = topWeakness ? (topWeakness.label || getLearningMistakeLabel(topWeakness.type)) : "\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E08\u0E38\u0E14\u0E15\u0E34\u0E14\u0E0B\u0E49\u0E33";
+                        }
+                        if (streakWeaknessDetail) {
+                            streakWeaknessDetail.textContent = topWeakness ? `พบ ${topWeakness.count || 1} ครั้งจากกิจกรรมล่าสุด` : "\u0E1D\u0E36\u0E01 grammar, roleplay หรือ speaking แล้วระบบจะเริ่มจับ pattern ให้";
+                        }
+                        if (streakReviewSummary) {
+                            streakReviewSummary.textContent = `${dueWords.length} \u0E04\u0E33`;
+                        }
+                        if (streakReviewDetail) {
+                            const previewWords = dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ");
+                            streakReviewDetail.textContent = previewWords ? `ควรเจอวันนี้: ${previewWords}` : "\u0E04\u0E33\u0E28\u0E31\u0E1E\u0E17\u0E4C\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E04\u0E49\u0E32\u0E07\u0E17\u0E1A\u0E17\u0E27\u0E19";
+                        }
+                        if (streakWeeklySummary) {
+                            streakWeeklySummary.textContent = `${weekly.totalMinutes} \u0E19\u0E32\u0E17\u0E35`;
+                        }
+                        if (streakWeeklyDetail) {
+                            streakWeeklyDetail.textContent = `${weekly.activeDays}/7 \u0E27\u0E31\u0E19\u0E21\u0E35\u0E01\u0E32\u0E23\u0E40\u0E23\u0E35\u0E22\u0E19 \u00B7 ${weekly.progressPercent}% \u0E02\u0E2D\u0E07\u0E40\u0E1B\u0E49\u0E32\u0E2A\u0E31\u0E1B\u0E14\u0E32\u0E2B\u0E4C`;
+                        }
+                        if (streakNextSummary) {
+                            streakNextSummary.textContent = recommendation?.badge || recommendation?.activityKind || "\u0E1D\u0E36\u0E01\u0E2A\u0E31\u0E49\u0E19\u0E46";
+                        }
+                        if (streakNextDetail) {
+                            streakNextDetail.textContent = recommendation?.title || (profile.recommendedFocus?.[0]?.reason || "\u0E23\u0E30\u0E1A\u0E1A\u0E08\u0E30\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E01\u0E34\u0E08\u0E01\u0E23\u0E23\u0E21\u0E17\u0E35\u0E48\u0E04\u0E38\u0E49\u0E21\u0E01\u0E31\u0E1A\u0E08\u0E31\u0E07\u0E2B\u0E27\u0E30\u0E02\u0E2D\u0E07\u0E04\u0E38\u0E13");
+                        }
+                    }
                     function updateSmartStreakBannerContent(previewRecommendation = null) {
                         if (!streakBannerTitle || !streakBannerDesc || !streakBannerBtn || !streakBannerTag) return null;
                         const signals = getSmartStreakSignals();
                         const recommendation = previewRecommendation || pickSmartStreakRecommendation(buildSmartStreakCandidates());
                         if (!recommendation) {
                             streakBannerTag.textContent = "Goal";
-                            streakBannerTitle.textContent = "รักษาสถิติของคุณไว้!";
-                            streakBannerDesc.textContent = "คุณมาถูกทางแล้ว เรียนต่อเนื่องเพื่อรับเหรียญรางวัลพิเศษ";
-                            setBannerButtonLabel(streakBannerBtn, "เริ่มเลย");
+                            streakBannerTitle.textContent = "ดูโค้ชความก้าวหน้าวันนี้";
+                            streakBannerDesc.textContent = "เปิดดูจุดที่ควรฝึก คำที่ควรทบทวน และกิจกรรมถัดไปในที่เดียว";
+                            setBannerButtonLabel(streakBannerBtn, "ดูสรุป");
                             return null;
                         }
                         const shortDescription = String(recommendation.description || recommendation.reason || "").replace(/\s+/g, " ").trim();
                         const bannerDescription = shortDescription.length > 92 ? `${shortDescription.slice(0, 89).trim()}...` : shortDescription;
                         streakBannerTag.textContent = signals.currentStreak > 0 ? `${signals.currentStreak} วันติด` : "Goal";
-                        streakBannerTitle.textContent = "รักษาสถิติของคุณไว้!";
+                        streakBannerTitle.textContent = "โค้ชความก้าวหน้าวันนี้";
                         streakBannerDesc.textContent = bannerDescription || "ระบบเลือกกิจกรรมสั้นที่เหมาะกับคุณไว้แล้ว";
-                        setBannerButtonLabel(streakBannerBtn, "เริ่มเลย");
+                        setBannerButtonLabel(streakBannerBtn, "ดูสรุป");
                         return recommendation;
                     }
                     function renderSmartStreakRecommendation(options = {}) {
@@ -15339,7 +15401,9 @@
                             { excludeSignatures: options.excludeSignatures || [] }
                         );
                         currentSmartStreakRecommendation = recommendation;
-                        renderSmartStreakMetrics();
+                        const streakSignals = getSmartStreakSignals();
+                        renderSmartStreakMetrics(streakSignals);
+                        renderSmartStreakProgressCards(recommendation, streakSignals);
                         if (!recommendation) return null;
                         rememberSmartStreakRecommendation(recommendation);
                         saveData();

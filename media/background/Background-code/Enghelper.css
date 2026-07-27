@@ -10549,6 +10549,68 @@ dialog.fc-dialog-locked[open] {
     line-height: 1.35;
 }
 
+.streak-progress-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.streak-progress-card {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 11px;
+    align-items: start;
+    padding: 13px 14px;
+    border-radius: 20px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04)),
+        rgba(30, 13, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    min-width: 0;
+}
+
+.streak-progress-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffd285;
+    flex: 0 0 auto;
+}
+
+.streak-progress-icon i {
+    font-size: 1.05rem;
+}
+
+.streak-progress-label {
+    display: block;
+    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 0.69rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.streak-progress-card strong {
+    display: block;
+    color: #fff7fb;
+    font-size: 0.98rem;
+    line-height: 1.35;
+    font-weight: 850;
+}
+
+.streak-progress-card p {
+    margin: 4px 0 0;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
 .dialog-actions.streak-smart-footer {
     display: grid;
     grid-template-columns: 1fr;
@@ -10644,6 +10706,10 @@ dialog.fc-dialog-locked[open] {
     .streak-smart-metrics {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+
+    .streak-progress-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 640px) {
@@ -10718,6 +10784,22 @@ dialog.fc-dialog-locked[open] {
 
     .streak-smart-metric strong {
         font-size: 0.92rem;
+    }
+
+    .streak-progress-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .streak-progress-card {
+        grid-template-columns: 34px minmax(0, 1fr);
+        padding: 12px;
+        border-radius: 18px;
+    }
+
+    .streak-progress-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
     }
 
     .streak-smart-footer {
