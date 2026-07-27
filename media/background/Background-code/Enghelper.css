@@ -51462,6 +51462,18 @@ dialog {
     color: #ffffff !important;
 }
 
+/* Dashboard (สีฟ้าน้ำทะเล) */
+.sidebar .sidebar-btn.nav-dashboard:hover {
+    background: #0EA5E9 !important;
+    color: #ffffff !important;
+}
+
+.sidebar .sidebar-btn.nav-dashboard:hover .custom-tooltip,
+.sidebar .sidebar-btn.nav-dashboard:hover .custom-tooltip::before {
+    background: #0EA5E9 !important;
+    color: #ffffff !important;
+}
+
 /* 2. คลังคำศัพท์ (สีน้ำเงินอินดิโก้) */
 .sidebar .sidebar-btn.nav-vocab:hover {
     background: #6366F1 !important;
@@ -53552,6 +53564,10 @@ dialog {
 
 .app-wrapper>aside.sidebar .sidebar-top>button.sidebar-btn.nav-home:is(:hover, :focus-visible, .active, .dock-hovered) {
     background: #10B981 !important;
+}
+
+.app-wrapper>aside.sidebar .sidebar-top>button.sidebar-btn.nav-dashboard:is(:hover, :focus-visible, .active, .dock-hovered) {
+    background: #0EA5E9 !important;
 }
 
 .app-wrapper>aside.sidebar .sidebar-top>button.sidebar-btn.nav-vocab:is(:hover, :focus-visible, .active, .dock-hovered) {

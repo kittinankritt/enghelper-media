@@ -3044,6 +3044,7 @@
                     const sidebar = document.querySelector(".sidebar");
                     const homeBtnSidebar = document.getElementById("home-btn-sidebar");
                     const homeBtnSidebarCopy = document.getElementById("home-btn-sidebar-copy");
+                    const dashboardBtnSidebar = document.getElementById("dashboard-btn-sidebar");
                     const homeInsightVocabBtn = document.getElementById("home-insight-vocab-btn");
                     const homeInsightStreakBtn = document.getElementById("home-insight-streak-btn");
                     const homeInsightReviewBtn = document.getElementById("home-insight-review-btn");
@@ -27325,6 +27326,8 @@
                         if (sidebar) {
                             sidebar.classList.toggle("home-active", showHome);
                         }
+                        homeBtnSidebarCopy?.classList.toggle("active", showHome);
+                        dashboardBtnSidebar?.classList.toggle("active", !showHome);
                         if (homeView) {
                             homeView.style.display = showHome ? "block" : "none";
                         }
@@ -27339,6 +27342,17 @@
                         window.scrollTo({ top: 0, behavior: "smooth" });
                     };
                     if (homeBtnSidebarCopy) homeBtnSidebarCopy.addEventListener("click", handleHomeSidebarClick);
+                    if (dashboardBtnSidebar) {
+                        dashboardBtnSidebar.addEventListener("click", () => {
+                            showDashboardView();
+                            const greeting = document.querySelector("#dashboard-view .greeting-large-title");
+                            if (greeting) {
+                                greeting.scrollIntoView({ behavior: "smooth", block: "center" });
+                            } else {
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                        });
+                    }
                     if (homeInsightVocabBtn) homeInsightVocabBtn.addEventListener("click", () => vocabLibraryBtnSidebar?.click());
                     if (homeInsightStreakBtn) homeInsightStreakBtn.addEventListener("click", () => {
                         if (typeof window.openSmartStreakDialog === "function") {
