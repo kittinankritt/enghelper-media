@@ -25569,6 +25569,10 @@ div#card-level #level-watermark,
 }
 
 /* Gradients */
+.bg-gradient-srs {
+    background: linear-gradient(135deg, #f92b7e 0%, #7000ff 100%) !important;
+}
+
 .bg-gradient-ai {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
 }
@@ -60847,6 +60851,104 @@ button:not(:disabled):active,
 [data-theme="dark"] .did-you-know-clay-card {
     background: linear-gradient(135deg, rgba(30, 40, 60, 0.95), rgba(40, 30, 60, 0.95)) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ── DASHBOARD SRS SMART REVIEW WIDGET — CLAYMORPHISM OVERRIDES ── */
+.enghelper-srs-widget {
+    background: linear-gradient(135deg, rgba(255, 240, 246, 0.95), rgba(245, 235, 255, 0.95)) !important;
+    box-shadow: 12px 12px 28px rgba(249, 43, 126, 0.12), -8px -8px 20px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(249, 43, 126, 0.05) !important;
+    border: 2.5px solid rgba(255, 255, 255, 0.85) !important;
+    border-radius: 24px !important;
+    padding: 18px 24px !important;
+    margin-bottom: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    transition: var(--clay-transition) !important;
+}
+
+.enghelper-srs-widget:hover {
+    transform: translateY(-3px) scale(1.01) !important;
+    box-shadow: 16px 16px 36px rgba(249, 43, 126, 0.16), -10px -10px 24px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(255, 255, 255, 0.9) !important;
+}
+
+.enghelper-srs-title {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: var(--text-color, #111827) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.enghelper-srs-title i {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #ffffff, #fff0f5) !important;
+    box-shadow: var(--clay-shadow-sphere) !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.25rem !important;
+    color: var(--primary-color, #f92b7e) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.enghelper-srs-widget:hover .enghelper-srs-title i {
+    transform: rotate(15deg) scale(1.1) !important;
+}
+
+.enghelper-srs-count-badge {
+    background: linear-gradient(135deg, #f92b7e, #ff4f9a) !important;
+    color: #ffffff !important;
+    padding: 8px 18px !important;
+    border-radius: var(--clay-radius-pill) !important;
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+    box-shadow: 4px 4px 12px rgba(249, 43, 126, 0.3), inset 2px 2px 4px rgba(255, 255, 255, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.15) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+    letter-spacing: 0.2px !important;
+}
+
+.enghelper-srs-start-btn {
+    background: linear-gradient(135deg, #f92b7e, #d91b65) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: var(--clay-radius-pill) !important;
+    padding: 12px 24px !important;
+    font-size: 0.98rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 6px 6px 18px rgba(249, 43, 126, 0.35), -3px -3px 10px rgba(255, 255, 255, 0.8), inset 2px 2px 4px rgba(255, 255, 255, 0.5) !important;
+    transition: var(--clay-transition) !important;
+}
+
+.enghelper-srs-start-btn:hover {
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 8px 8px 24px rgba(249, 43, 126, 0.45), -4px -4px 12px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.6) !important;
+}
+
+.enghelper-srs-start-btn:active {
+    transform: translateY(1px) scale(0.96) !important;
+    box-shadow: var(--clay-shadow-pressed) !important;
+}
+
+[data-theme="dark"] .enghelper-srs-widget {
+    background: linear-gradient(135deg, rgba(40, 25, 45, 0.95), rgba(25, 30, 50, 0.95)) !important;
+    box-shadow: 12px 12px 30px rgba(0, 0, 0, 0.4), inset 2px 2px 4px rgba(255, 255, 255, 0.1), inset -2px -2px 4px rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .enghelper-srs-title i {
+    background: linear-gradient(135deg, #2a1f33, #1f2438) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* =========================================================================
