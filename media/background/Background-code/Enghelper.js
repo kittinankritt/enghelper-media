@@ -1,8 +1,14 @@
 /* Extracted from NewEnghelper.html. */
 /* Each HTML script tag selects the original inline block via data-enghelper-script. */
 (function () {
-    const currentScript = document.currentScript;
-    const blockName = currentScript && currentScript.getAttribute("data-enghelper-script");
+    let currentScript = document.currentScript;
+    if (!currentScript) {
+        const scripts = document.querySelectorAll('script[data-enghelper-script]');
+        if (scripts.length > 0) {
+            currentScript = Array.from(scripts).find(s => s.getAttribute('data-enghelper-script') === 'main-module') || scripts[scripts.length - 1];
+        }
+    }
+    const blockName = (currentScript && currentScript.getAttribute("data-enghelper-script")) || "main-module";
 
     function replayDomReadyListener(target, listener) {
         const event = new Event("DOMContentLoaded");
@@ -2084,6 +2090,32 @@
                     },
                     grammarInsightSignals: [],
                     learningMistakes: [],
+                    learningProfile: {
+                        schemaVersion: 1,
+                        updatedAt: null,
+                        level: "starter",
+                        goal: "daily",
+                        vocabCount: 0,
+                        dueReviewCount: 0,
+                        difficultWordCount: 0,
+                        topWeaknesses: [],
+                        preferredActivities: [],
+                        recommendedFocus: [],
+                        lastRefreshReason: "init"
+                    },
+                    personalizationState: {
+                        lastPlanDate: null,
+                        lastPlanSignature: null,
+                        recentPlanSignatures: []
+                    },
+                    aiQualityStats: {
+                        totalCalls: 0,
+                        successfulCalls: 0,
+                        failedCalls: 0,
+                        schemaWarnings: 0,
+                        lastIssueAt: null,
+                        recentIssues: []
+                    },
                     learningActivityLog: [],
                     smartStoryLauncher: {
                         lastRecommendedSignature: null,
@@ -3613,6 +3645,56 @@
                         })).filter((entry) => entry.type && (entry.label || entry.original || entry.explanation)).sort((a, b) => new Date(b.lastSeenAt) - new Date(a.lastSeenAt)).slice(0, 160) : [];
                         return userStats.learningMistakes;
                     }
+                    function normalizeLearningProfileState() {
+                        const rawProfile = userStats.learningProfile && typeof userStats.learningProfile === "object" ? userStats.learningProfile : {};
+                        const rawPersonalization = userStats.personalizationState && typeof userStats.personalizationState === "object" ? userStats.personalizationState : {};
+                        const rawQuality = userStats.aiQualityStats && typeof userStats.aiQualityStats === "object" ? userStats.aiQualityStats : {};
+                        userStats.learningProfile = {
+                            schemaVersion: 1,
+                            updatedAt: typeof rawProfile.updatedAt === "string" ? rawProfile.updatedAt : null,
+                            level: typeof rawProfile.level === "string" ? rawProfile.level : "starter",
+                            goal: typeof rawProfile.goal === "string" ? rawProfile.goal : "daily",
+                            vocabCount: Math.max(0, parseInt(rawProfile.vocabCount, 10) || 0),
+                            dueReviewCount: Math.max(0, parseInt(rawProfile.dueReviewCount, 10) || 0),
+                            difficultWordCount: Math.max(0, parseInt(rawProfile.difficultWordCount, 10) || 0),
+                            topWeaknesses: Array.isArray(rawProfile.topWeaknesses) ? rawProfile.topWeaknesses.map((item) => ({
+                                type: String(item?.type || "general").trim(),
+                                label: String(item?.label || "").trim(),
+                                count: Math.max(0, parseInt(item?.count, 10) || 0),
+                                source: String(item?.source || "").trim()
+                            })).filter((item) => item.type).slice(0, 8) : [],
+                            preferredActivities: Array.isArray(rawProfile.preferredActivities) ? rawProfile.preferredActivities.map((item) => ({
+                                type: String(item?.type || "").trim(),
+                                count: Math.max(0, parseInt(item?.count, 10) || 0)
+                            })).filter((item) => item.type).slice(0, 8) : [],
+                            recommendedFocus: Array.isArray(rawProfile.recommendedFocus) ? rawProfile.recommendedFocus.map((item) => ({
+                                type: String(item?.type || "").trim(),
+                                label: String(item?.label || "").trim(),
+                                reason: String(item?.reason || "").trim(),
+                                score: Number.isFinite(Number(item?.score)) ? Number(item.score) : 0
+                            })).filter((item) => item.type).slice(0, 8) : [],
+                            lastRefreshReason: typeof rawProfile.lastRefreshReason === "string" ? rawProfile.lastRefreshReason : "normalize"
+                        };
+                        userStats.personalizationState = {
+                            lastPlanDate: typeof rawPersonalization.lastPlanDate === "string" ? rawPersonalization.lastPlanDate : null,
+                            lastPlanSignature: typeof rawPersonalization.lastPlanSignature === "string" ? rawPersonalization.lastPlanSignature : null,
+                            recentPlanSignatures: Array.isArray(rawPersonalization.recentPlanSignatures) ? rawPersonalization.recentPlanSignatures.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 14) : []
+                        };
+                        userStats.aiQualityStats = {
+                            totalCalls: Math.max(0, parseInt(rawQuality.totalCalls, 10) || 0),
+                            successfulCalls: Math.max(0, parseInt(rawQuality.successfulCalls, 10) || 0),
+                            failedCalls: Math.max(0, parseInt(rawQuality.failedCalls, 10) || 0),
+                            schemaWarnings: Math.max(0, parseInt(rawQuality.schemaWarnings, 10) || 0),
+                            lastIssueAt: typeof rawQuality.lastIssueAt === "string" ? rawQuality.lastIssueAt : null,
+                            recentIssues: Array.isArray(rawQuality.recentIssues) ? rawQuality.recentIssues.map((item) => ({
+                                contextScope: String(item?.contextScope || "general").trim(),
+                                taskType: String(item?.taskType || "").trim(),
+                                status: String(item?.status || "warning").trim(),
+                                message: String(item?.message || "").trim(),
+                                createdAt: typeof item?.createdAt === "string" ? item.createdAt : null
+                            })).filter((item) => item.createdAt).slice(0, 20) : []
+                        };
+                    }
                     function normalizeSmartStoryLauncherState() {
                         const rawState = userStats.smartStoryLauncher && typeof userStats.smartStoryLauncher === "object" ? userStats.smartStoryLauncher : {};
                         const recentRecommendations = Array.isArray(rawState.recentRecommendations) ? rawState.recentRecommendations.map((entry) => ({
@@ -3756,6 +3838,7 @@
                         normalizeSmartGrammarLauncherState();
                         normalizeGrammarInsightSignals();
                         normalizeLearningMistakes();
+                        normalizeLearningProfileState();
                         normalizeSmartStoryLauncherState();
                         normalizeSmartStreakLauncherState();
                         userStats.longestStreak = Math.max(userStats.longestStreak || 0, userStats.currentStreak || 0);
@@ -7696,6 +7779,7 @@
                             userStats.dailyMissions.vocabAddedCounter = (userStats.dailyMissions.vocabAddedCounter || 0) + (currentLen - lastLen);
                         }
                         userStats.dailyMissions.lastLength = currentLen;
+                        refreshLearningProfileSnapshot("save-data");
                         updateDailyMissionsUI();
                         pauseStudySession();
                         const dataMap = {
@@ -7982,9 +8066,6 @@
                             applyFilterAndRender();
                             updateDashboardStats();
                             if (typeof updateDangerZoneCounts === "function") updateDangerZoneCounts();
-                            if (cloudData.userSettings) {
-                                applyUserSettings(cloudData.userSettings);
-                            }
                         }
                     }
                     function resetStudyTrackingForNewDay(todayKey = getLocalDateKey()) {
@@ -8360,6 +8441,160 @@
                             sources: Array.from(entry.sources)
                         }));
                     }
+                    function getActivityPreferenceSummary(limit = 6) {
+                        const activityLog = normalizeLearningActivityLog();
+                        const grouped = activityLog.reduce((acc, entry, index) => {
+                            const type = String(entry.type || "").trim();
+                            if (!type) return acc;
+                            const recencyWeight = index < 12 ? 2 : index < 40 ? 1.3 : 1;
+                            acc[type] = (acc[type] || 0) + recencyWeight;
+                            return acc;
+                        }, {});
+                        return Object.entries(grouped).map(([type, count]) => ({
+                            type,
+                            count: Math.round(count * 10) / 10
+                        })).sort((a, b) => b.count - a.count).slice(0, limit);
+                    }
+                    function inferLearnerLevelFromStats() {
+                        const vocabCount = Array.isArray(englishDataStore) ? englishDataStore.length : 0;
+                        const totalActivities = Array.isArray(userStats.learningActivityLog) ? userStats.learningActivityLog.length : 0;
+                        const grammarLessons = Array.isArray(grammarHistoryStore) ? grammarHistoryStore.length : 0;
+                        const roleplays = Array.isArray(rolePlayHistoryStore) ? rolePlayHistoryStore.length : 0;
+                        if (vocabCount >= 500 || totalActivities >= 180 || (grammarLessons >= 20 && roleplays >= 20)) return "advanced";
+                        if (vocabCount >= 150 || totalActivities >= 70 || grammarLessons >= 10 || roleplays >= 8) return "intermediate";
+                        if (vocabCount >= 35 || totalActivities >= 18 || grammarLessons >= 4 || roleplays >= 3) return "elementary";
+                        return "starter";
+                    }
+                    function getLearningGoalFromContext() {
+                        try {
+                            const contextData = typeof window.getPersonalContext === "function" ? window.getPersonalContext() : JSON.parse(localStorage.getItem("personal_context") || "{}");
+                            const goal = String(contextData?.goal || contextData?.learningGoal || contextData?.purpose || "").toLowerCase();
+                            if (goal.includes("work") || goal.includes("job") || goal.includes("business") || goal.includes("งาน")) return "work";
+                            if (goal.includes("travel") || goal.includes("trip") || goal.includes("เที่ยว")) return "travel";
+                            if (goal.includes("exam") || goal.includes("toeic") || goal.includes("ielts") || goal.includes("สอบ")) return "exam";
+                            if (goal.includes("speak") || goal.includes("conversation") || goal.includes("communication") || goal.includes("พูด") || goal.includes("สื่อสาร")) return "communication";
+                        } catch (error) {
+                            console.warn("Unable to infer learning goal:", error);
+                        }
+                        return "daily";
+                    }
+                    function buildRecommendedFocus(topWeaknesses = getLearningMistakeSummary(5)) {
+                        const dueCount = typeof getWordsForReview === "function" ? getWordsForReview().length : 0;
+                        const focus = [];
+                        topWeaknesses.forEach((weakness, index) => {
+                            const type = normalizeLearningMistakeType(weakness.type);
+                            let reason = "พบจากข้อผิดพลาดล่าสุดของคุณ";
+                            let score = (weakness.count || 0) * 10 - index * 2;
+                            if (type === "pronunciation") {
+                                reason = "คะแนนฝึกพูดล่าสุดยังมีจุดที่ควรฝึกซ้ำ";
+                                score += 14;
+                            } else if (["article", "preposition", "tense", "word_order"].includes(type)) {
+                                reason = "เป็นรูปแบบแกรมมาร์ที่ส่งผลกับการใช้ประโยคจริงบ่อย";
+                                score += 10;
+                            } else if (type === "vocabulary" || type === "naturalness") {
+                                reason = "ช่วยให้ประโยคดูเป็นธรรมชาติขึ้นทันที";
+                                score += 8;
+                            }
+                            focus.push({
+                                type,
+                                label: weakness.label || getLearningMistakeLabel(type),
+                                reason,
+                                score
+                            });
+                        });
+                        if (dueCount > 0) {
+                            focus.push({
+                                type: "srs_review",
+                                label: "Spaced review",
+                                reason: `มีคำศัพท์รอทบทวน ${dueCount} คำ`,
+                                score: 20 + Math.min(40, dueCount * 2)
+                            });
+                        }
+                        if (!focus.length) {
+                            focus.push({
+                                type: "baseline_check",
+                                label: "Quick skill check",
+                                reason: "ยังมีข้อมูลไม่มาก ระบบเริ่มจากกิจกรรมสั้นเพื่อเก็บสัญญาณการเรียน",
+                                score: 10
+                            });
+                        }
+                        return focus.sort((a, b) => b.score - a.score).slice(0, 6);
+                    }
+                    function refreshLearningProfileSnapshot(reason = "auto") {
+                        normalizeLearningProfileState();
+                        const topWeaknesses = getLearningMistakeSummary(6).map((item) => ({
+                            type: item.type,
+                            label: item.label,
+                            count: item.count,
+                            source: item.latest?.source || ""
+                        }));
+                        const profile = {
+                            schemaVersion: 1,
+                            updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+                            level: inferLearnerLevelFromStats(),
+                            goal: getLearningGoalFromContext(),
+                            vocabCount: Array.isArray(englishDataStore) ? englishDataStore.length : 0,
+                            dueReviewCount: typeof getWordsForReview === "function" ? getWordsForReview().length : 0,
+                            difficultWordCount: Array.isArray(userStats.difficultWords) ? userStats.difficultWords.length : 0,
+                            topWeaknesses,
+                            preferredActivities: getActivityPreferenceSummary(6),
+                            recommendedFocus: buildRecommendedFocus(topWeaknesses),
+                            lastRefreshReason: reason
+                        };
+                        userStats.learningProfile = profile;
+                        return profile;
+                    }
+                    window.refreshLearningProfileSnapshot = refreshLearningProfileSnapshot;
+                    function recordAIQualityEvent(status = "success", details = {}) {
+                        normalizeLearningProfileState();
+                        const quality = userStats.aiQualityStats;
+                        quality.totalCalls += 1;
+                        if (status === "success") {
+                            quality.successfulCalls += 1;
+                        } else if (status === "failed") {
+                            quality.failedCalls += 1;
+                            quality.lastIssueAt = (/* @__PURE__ */ new Date()).toISOString();
+                        }
+                        if (status === "schema-warning") {
+                            quality.schemaWarnings += 1;
+                            quality.lastIssueAt = (/* @__PURE__ */ new Date()).toISOString();
+                        }
+                        if (status !== "success") {
+                            quality.recentIssues = [{
+                                contextScope: String(details.contextScope || "general"),
+                                taskType: String(details.taskType || ""),
+                                status,
+                                message: String(details.message || "").slice(0, 180),
+                                createdAt: (/* @__PURE__ */ new Date()).toISOString()
+                            }, ...(quality.recentIssues || [])].slice(0, 20);
+                        }
+                        return quality;
+                    }
+                    function validateAIResponseQuality(result, payload, options = {}) {
+                        if (result === null || typeof result === "undefined") {
+                            recordAIQualityEvent("failed", {
+                                contextScope: options.contextScope,
+                                taskType: options.taskType,
+                                message: "AI returned empty response"
+                            });
+                            return result;
+                        }
+                        const expectsJson = payload?.generationConfig?.responseMimeType === "application/json" || Boolean(payload?.generationConfig?.responseSchema);
+                        if (expectsJson && (typeof result !== "object" || Array.isArray(result) && payload?.generationConfig?.responseSchema?.type === "OBJECT")) {
+                            recordAIQualityEvent("schema-warning", {
+                                contextScope: options.contextScope,
+                                taskType: options.taskType,
+                                message: "AI response did not match expected JSON shape"
+                            });
+                        } else {
+                            recordAIQualityEvent("success", {
+                                contextScope: options.contextScope,
+                                taskType: options.taskType
+                            });
+                        }
+                        return result;
+                    }
+                    window.recordAIQualityEvent = recordAIQualityEvent;
                     function recordLearningMistake(input = {}, options = {}) {
                         const type = normalizeLearningMistakeType(input.type || input.errorType || input.category);
                         const now = (/* @__PURE__ */ new Date()).toISOString();
@@ -8411,6 +8646,7 @@
                             original: entry.original,
                             corrected: entry.corrected
                         }, { dedupeKey: `${signature}:${getLocalDateKey()}` });
+                        refreshLearningProfileSnapshot("learning-mistake");
                         renderLearningInsightDashboard();
                         if (options.persist && typeof saveData === "function") {
                             saveData();
@@ -8419,25 +8655,44 @@
                     }
                     window.recordLearningMistake = recordLearningMistake;
                     function getDailyChallengePlan() {
+                        const profile = refreshLearningProfileSnapshot("daily-challenge");
+                        const focusItems = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus : [];
                         const topMistakes = getLearningMistakeSummary(2);
                         const dueWords = typeof getWordsForReview === "function" ? getWordsForReview().slice(0, 2) : [];
                         const plan = [];
-                        if (dueWords.length) {
+                        const primaryFocus = focusItems[0];
+                        if (primaryFocus?.type === "srs_review" && dueWords.length) {
                             plan.push({
                                 icon: "fi fi-rr-books",
                                 text: `ทบทวนคำศัพท์ ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
                             });
                         }
-                        if (topMistakes[0]) {
+                        if (primaryFocus && primaryFocus.type !== "srs_review" && primaryFocus.type !== "baseline_check") {
                             plan.push({
                                 icon: "fi fi-rr-badge-check",
-                                text: `แก้ประโยคสั้น ๆ โดยโฟกัส ${topMistakes[0].label}`
+                                text: `ฝึกจุดอ่อนหลัก: ${primaryFocus.label}`
+                            });
+                        }
+                        if (!plan.length && dueWords.length) {
+                            plan.push({
+                                icon: "fi fi-rr-books",
+                                text: `ทบทวนคำศัพท์ ${dueWords.map((item) => item.englishData).filter(Boolean).slice(0, 2).join(", ")}`
                             });
                         }
                         if (topMistakes[1]) {
                             plan.push({
                                 icon: "fi fi-rr-comments",
                                 text: `ซ้อมบทสนทนา 2 เทิร์น เพื่อใช้ ${topMistakes[1].label} ให้คล่องขึ้น`
+                            });
+                        } else if (profile.goal === "work" || profile.goal === "communication") {
+                            plan.push({
+                                icon: "fi fi-rr-comments",
+                                text: profile.goal === "work" ? "ซ้อม roleplay สั้น ๆ ในบริบทงาน 2 เทิร์น" : "ซ้อมถาม-ตอบสั้น ๆ ให้ประโยคลื่นขึ้น"
+                            });
+                        } else if (profile.goal === "travel") {
+                            plan.push({
+                                icon: "fi fi-rr-plane",
+                                text: "ซ้อมประโยคขอความช่วยเหลือหรือถามทาง 1 สถานการณ์"
                             });
                         }
                         if (!plan.length) {
@@ -8446,7 +8701,23 @@
                                 { icon: "fi fi-rr-microphone", text: "ฝึกออกเสียงคำหรือประโยคสั้น 1 ครั้ง" }
                             );
                         }
-                        return plan.slice(0, 3);
+                        const secondaryFocus = focusItems.find((item) => item.type !== primaryFocus?.type && item.type !== "srs_review");
+                        if (secondaryFocus && plan.length < 3) {
+                            plan.push({
+                                icon: "fi fi-rr-target",
+                                text: `ปิดท้ายด้วยแบบฝึกสั้นเรื่อง ${secondaryFocus.label}`
+                            });
+                        }
+                        const finalPlan = plan.slice(0, 3);
+                        const signature = finalPlan.map((step) => step.text).join("|");
+                        normalizeLearningProfileState();
+                        userStats.personalizationState.lastPlanDate = getLocalDateKey();
+                        userStats.personalizationState.lastPlanSignature = signature;
+                        userStats.personalizationState.recentPlanSignatures = [
+                            signature,
+                            ...(userStats.personalizationState.recentPlanSignatures || []).filter((item) => item !== signature)
+                        ].slice(0, 14);
+                        return finalPlan;
                     }
                     function renderLearningInsightDashboard() {
                         const listEl = document.getElementById("mistake-dashboard-list");
@@ -8660,18 +8931,24 @@
                             case "daily_goal":
                                 break;
                             case "smart_challenge": {
+                                const profile = refreshLearningProfileSnapshot("smart-challenge");
+                                const focus = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus[0] : null;
+                                if (focus?.type === "srs_review") {
+                                    document.getElementById("flashcard-dialog")?.showModal();
+                                    break;
+                                }
                                 const topMistake = getLearningMistakeSummary(1)[0];
-                                if (topMistake?.type === "pronunciation") {
+                                if (focus?.type === "pronunciation" || topMistake?.type === "pronunciation") {
                                     const latest = topMistake.latest;
                                     if (latest?.original && typeof practicePronunciation === "function") {
                                         practicePronunciation(latest.original);
                                         break;
                                     }
                                 }
-                                if (topMistake && typeof openGrammarCheckInsideVocabLibrary === "function") {
+                                if ((focus || topMistake) && typeof openGrammarCheckInsideVocabLibrary === "function") {
                                     openGrammarCheckInsideVocabLibrary();
                                     if (grammarCheckInput) {
-                                        grammarCheckInput.placeholder = `ลองเขียน 1 ประโยคที่ใช้ ${topMistake.label}`;
+                                        grammarCheckInput.placeholder = `ลองเขียน 1 ประโยคที่ใช้ ${(focus?.label || topMistake?.label || "จุดที่ควรฝึก")}`;
                                     }
                                     break;
                                 }
@@ -10573,6 +10850,34 @@
                     function getDefaultMaxOutputTokensForScope(scope = "general", isJson = false) {
                         return getMaxOutputTokens(scope, "", isJson);
                     }
+                    function getLearningProfilePrompt(scope = "general") {
+                        try {
+                            const profile = refreshLearningProfileSnapshot(`ai-${scope}`);
+                            const focus = Array.isArray(profile.recommendedFocus) ? profile.recommendedFocus.slice(0, 3) : [];
+                            const weaknesses = Array.isArray(profile.topWeaknesses) ? profile.topWeaknesses.slice(0, 3) : [];
+                            const preferred = Array.isArray(profile.preferredActivities) ? profile.preferredActivities.slice(0, 3) : [];
+                            const parts = [
+                                `derivedLevel=${profile.level}`,
+                                `derivedGoal=${profile.goal}`,
+                                `vocab=${profile.vocabCount}`,
+                                `dueReviews=${profile.dueReviewCount}`,
+                                `difficultWords=${profile.difficultWordCount}`
+                            ];
+                            if (weaknesses.length) {
+                                parts.push(`topWeaknesses=${weaknesses.map((item) => `${item.label || item.type}(${item.count})`).join(", ")}`);
+                            }
+                            if (focus.length) {
+                                parts.push(`recommendedFocus=${focus.map((item) => `${item.label || item.type}: ${item.reason}`).join(" | ")}`);
+                            }
+                            if (preferred.length) {
+                                parts.push(`recentActivityBias=${preferred.map((item) => `${item.type}(${item.count})`).join(", ")}`);
+                            }
+                            return `[Derived learning profile] ${parts.join("; ")}. Use this only to adapt difficulty, examples, practice focus, and feedback. Do not mention these internal metrics unless the user asks.`;
+                        } catch (error) {
+                            console.warn("Unable to build learning profile prompt:", error);
+                            return null;
+                        }
+                    }
                     function applyLearningPromptContract(payload, contextScope, personalContext, options = {}) {
                         const enhanced = { ...payload };
                         delete enhanced.contextScope;
@@ -10585,6 +10890,7 @@
                         const existingInstruction = enhanced.systemInstruction?.parts?.map((part) => part?.text || "").join("\n") || "";
                         const instructionParts = [
                             getAIQualityInstruction(contextScope, { isJson }),
+                            getLearningProfilePrompt(contextScope),
                             personalContext,
                             existingInstruction
                         ].filter(Boolean);
@@ -11274,7 +11580,7 @@
                                                     color: "#3b82f6"
                                                 }
                                             }));
-                                            return directResult;
+                                            return validateAIResponseQuality(directResult, enhancedPayload, options);
                                         } catch (directError) {
                                             console.warn("[callGemini] Direct Gemini path failed:", directError);
                                             errors.push(`Gemini Direct: ${directError?.message || directError}`);
@@ -11333,7 +11639,7 @@
                                                     color: "#3b82f6"
                                                 }
                                             }));
-                                            return result;
+                                            return validateAIResponseQuality(result, enhancedPayload, options);
                                         } catch (providerError) {
                                             console.warn(`[callGemini] ${providerLabels[provider2] || provider2} failed (Index: ${queueIndex}):`, providerError);
                                             errors.push(`${providerLabels[provider2] || provider2}: ${providerError?.message || providerError}`);
@@ -11385,6 +11691,11 @@
                             }
                         } catch (error) {
                             console.error("AI Provider Error:", error);
+                            recordAIQualityEvent("failed", {
+                                contextScope,
+                                taskType: options.taskType || "",
+                                message: error?.message || String(error || "AI provider error")
+                            });
                             const parsedError = parseGeminiApiError(error);
                             const now = Date.now();
                             if (!options.isSilent && now - lastAIErrorTime > 3e3) {
@@ -34827,9 +35138,17 @@
                             }
                         }
                         function applyTheme2(color) {
+                            if (!color) return;
                             document.documentElement.style.setProperty("--primary-color", color);
                             const rgbValues = hexToRgb(color);
                             document.documentElement.style.setProperty("--theme-rgb", rgbValues);
+                            document.querySelectorAll(".theme-option, .theme-card[data-color]").forEach((swatch) => {
+                                if (swatch.dataset.color && swatch.dataset.color.toUpperCase() === color.toUpperCase()) {
+                                    swatch.classList.add("active");
+                                } else {
+                                    swatch.classList.remove("active");
+                                }
+                            });
                             let secondaryColor, bgStart, bgEnd, cardEnd, hoverBg;
                             switch (color.toUpperCase()) {
                                 case "#F92B7E":
@@ -34844,19 +35163,22 @@
                                     bgEnd = "#e4fdffff";
                                     cardEnd = "#F0FDFA";
                                     break;
-                                case "#18e7a2ff":
+                                case "#10B981":
+                                case "#18E7A2FF":
                                     secondaryColor = "#00e5ffff";
                                     bgStart = "#D1FAE5";
                                     bgEnd = "#ebfff4ffff";
                                     cardEnd = "#ECFDF5";
                                     break;
-                                case "#ffb300ff":
+                                case "#F59E0B":
+                                case "#FFB300FF":
                                     secondaryColor = "#db7c23ff";
                                     bgStart = "#FEF3C7";
                                     bgEnd = "#FEE2E2";
                                     cardEnd = "#FFFBEB";
                                     break;
-                                case "#9173d7ff":
+                                case "#8B5CF6":
+                                case "#9173D7FF":
                                     secondaryColor = "#c681cfff";
                                     bgStart = "#EDE9FE";
                                     bgEnd = "#FCE7F3";
@@ -34868,7 +35190,8 @@
                                     bgEnd = "#E5E7EB";
                                     cardEnd = "#F9FAFB";
                                     break;
-                                case "#45a99dcd":
+                                case "#14B8A6":
+                                case "#45A99DCD":
                                     secondaryColor = "#68b6c4ff";
                                     bgStart = "#CCFBF1";
                                     bgEnd = "#defcffff";
@@ -34893,8 +35216,25 @@
                             hoverBg = `rgba(${rgbValues}, 0.1)`;
                             document.documentElement.style.setProperty("--hover-bg", hoverBg);
                             updateGreetingCardBackground2(color);
+                            localStorage.setItem("user_theme_color", color);
                         }
                         window.applyTheme = applyTheme2;
+                        
+                        // Global Event Delegation for layout buttons and theme swatches
+                        document.addEventListener("click", (e) => {
+                            const layoutBtn = e.target.closest(".layout-select-btn");
+                            if (layoutBtn && layoutBtn.dataset.layout) {
+                                const layout = layoutBtn.dataset.layout;
+                                applySidebarLayout2(layout);
+                            }
+                            const themeSwatch = e.target.closest(".theme-option, .theme-card[data-color]");
+                            if (themeSwatch && themeSwatch.dataset.color) {
+                                const color = themeSwatch.dataset.color;
+                                applyTheme2(color);
+                                if (typeof saveData === "function") saveData();
+                            }
+                        });
+
                         const avatarTriggerBtn = document.getElementById("avatar-trigger-btn");
                         const avatarPopover = document.getElementById("avatar-selector-popover");
                         const profileImage2 = document.getElementById("profile-image");
@@ -35049,29 +35389,10 @@
                                 showToast2("\u0E23\u0E35\u0E40\u0E0B\u0E47\u0E15\u0E23\u0E39\u0E1B\u0E42\u0E1B\u0E23\u0E44\u0E1F\u0E25\u0E4C\u0E41\u0E25\u0E49\u0E27", "success");
                             });
                         }
-                        colorSwatches.forEach((swatch) => {
-                            swatch.addEventListener("click", () => {
-                                colorSwatches.forEach((el) => el.classList.remove("active"));
-                                swatch.classList.add("active");
-                                const newColor = swatch.dataset.color;
-                                applyTheme2(newColor);
-                                localStorage.setItem("user_theme_color", newColor);
-                                if (typeof saveData === "function") {
-                                    saveData();
-                                }
-                                showToast2("\u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19\u0E18\u0E35\u0E21\u0E2A\u0E35\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22!", "success");
-                            });
-                        });
+
                         const savedThemeColor = localStorage.getItem("user_theme_color");
                         if (savedThemeColor) {
                             applyTheme2(savedThemeColor);
-                            colorSwatches.forEach((swatch) => {
-                                if (swatch.dataset.color === savedThemeColor) {
-                                    swatch.classList.add("active");
-                                } else {
-                                    swatch.classList.remove("active");
-                                }
-                            });
                         }
                         const goalBtns = document.querySelectorAll(".goal-select-btn");
                         function syncGoalUI2() {
@@ -35099,13 +35420,13 @@
                                 showToast2(`<i class="fi fi-rr-check"></i> \u0E15\u0E31\u0E49\u0E07\u0E40\u0E1B\u0E49\u0E32\u0E2B\u0E21\u0E32\u0E22\u0E40\u0E1B\u0E47\u0E19 ${minutes} \u0E19\u0E32\u0E17\u0E35\u0E41\u0E25\u0E49\u0E27`, "success");
                             });
                         });
-                        const layoutBtns = document.querySelectorAll(".layout-select-btn");
-                        const appWrapper = document.querySelector(".app-wrapper");
                         function applySidebarLayout2(layout, saveToCloud = true) {
-                            if (!appWrapper) return;
-                            appWrapper.classList.remove("layout-left", "layout-right", "layout-top", "layout-bottom");
-                            appWrapper.classList.add(`layout-${layout}`);
-                            layoutBtns.forEach((btn) => {
+                            const appWrapper = document.querySelector(".app-wrapper");
+                            if (appWrapper) {
+                                appWrapper.classList.remove("layout-left", "layout-right", "layout-top", "layout-bottom");
+                                appWrapper.classList.add(`layout-${layout}`);
+                            }
+                            document.querySelectorAll(".layout-select-btn").forEach((btn) => {
                                 if (btn.dataset.layout === layout) {
                                     btn.classList.add("active");
                                 } else {
@@ -35124,15 +35445,9 @@
                             }
                         }
                         window.applySidebarLayout = applySidebarLayout2;
-                        layoutBtns.forEach((btn) => {
-                            btn.addEventListener("click", () => {
-                                const layout = btn.dataset.layout;
-                                applySidebarLayout2(layout);
-                                showToast2(`\u0E1B\u0E23\u0E31\u0E1A\u0E15\u0E33\u0E41\u0E2B\u0E19\u0E48\u0E07\u0E40\u0E21\u0E19\u0E39\u0E40\u0E1B\u0E47\u0E19: ${btn.title}`, "success");
-                            });
-                        });
                         const savedLayout = localStorage.getItem("sidebar_layout") || "bottom";
                         applySidebarLayout2(savedLayout, false);
+
                         const autoSaveInputs = document.querySelectorAll(".auto-save-input");
                         const autoSaveStatus = document.getElementById("auto-save-status");
                         autoSaveInputs.forEach((input) => {
@@ -43182,17 +43497,16 @@
     };
 
     const runner = runners[blockName];
-    if (!runner) {
-        console.warn("Enghelper.js loaded without a matching data-enghelper-script value.");
-        return;
-    }
-
-    try {
-        const result = runner();
-        if (result && typeof result.catch === "function") {
-            result.catch((error) => console.error("Enghelper script block failed:", blockName, error));
+    if (runner) {
+        try {
+            const result = runner();
+            if (result && typeof result.catch === "function") {
+                result.catch((error) => console.error("Enghelper script block failed:", blockName, error));
+            }
+        } catch (error) {
+            console.error("Enghelper script block failed:", blockName, error);
         }
-    } catch (error) {
-        console.error("Enghelper script block failed:", blockName, error);
+    } else {
+        console.warn("Enghelper.js loaded without a matching data-enghelper-script value:", blockName);
     }
 }());
