@@ -469,6 +469,7 @@
                     const srsBtn = document.getElementById('enghelper-srs-start-btn');
                     if (srsBtn) {
                         srsBtn.addEventListener('click', () => {
+                            if (typeof window.openEnghelperSrsReviewPopup === "function" && window.openEnghelperSrsReviewPopup()) return;
                             const testNav = document.getElementById('test-me-btn-sidebar') || document.getElementById('card-review');
                             if (testNav) testNav.click();
                         });
@@ -8106,7 +8107,7 @@
                         window.deletedGameHistoryStore = deletedGameHistoryStore;
                         window.deletedNotificationHistoryStore = deletedNotificationHistoryStore;
                         if (cloudData.userStats) {
-                            const cloudStats = cloudData.userStats;
+                            const cloudStats = migrateUserStatsData(cloudData.userStats);
                             if (hasUnsynced) {
                                 userStats = {
                                     ...cloudStats,
@@ -8326,6 +8327,61 @@
                     function getSrsDueWords() {
                         return getWordsForReview();
                     }
+                    let currentSrsReviewItem = null;
+                    function getSrsReviewQueue(limit = 12) {
+                        return getPrioritizedLearningItems(getSrsDueWords()).slice(0, limit);
+                    }
+                    function renderSrsReviewPopup() {
+                        if (!srsReviewBody) return;
+                        const queue = getSrsReviewQueue();
+                        currentSrsReviewItem = queue[0] || null;
+                        const canReview = Boolean(currentSrsReviewItem);
+                        if (srsReviewAgainBtn) srsReviewAgainBtn.disabled = !canReview;
+                        if (srsReviewRememberBtn) srsReviewRememberBtn.disabled = !canReview;
+                        if (!canReview) {
+                            srsReviewBody.innerHTML = `
+                                <div class="srs-review-empty">
+                                    <i class="fi fi-rr-party-horn"></i>
+                                    <h3>วันนี้ทบทวนครบแล้ว</h3>
+                                    <p>ยังไม่มีคำที่ถึงรอบทบทวน เพิ่มคำจากกิจกรรมอื่นไว้ แล้วระบบจะจัดรอบให้เอง</p>
+                                    <button type="button" class="home-goal-btn" data-srs-action="vocabulary">เปิดคลังคำศัพท์</button>
+                                </div>`;
+                            return;
+                        }
+                        const item = currentSrsReviewItem;
+                        const srs = item.srs || {};
+                        const goalLabel = getLearningGoalLabel(getLearningGoalFromContext());
+                        srsReviewBody.innerHTML = `
+                            <div class="srs-review-progress">เหลือ ${queue.length} รายการในรอบนี้ <span>โฟกัส: ${escapeHtml(goalLabel)}</span></div>
+                            <article class="srs-review-card">
+                                <span class="srs-review-type">${escapeHtml(item.partOfSpeech || item.pos || "Vocabulary")}</span>
+                                <h3>${escapeHtml(item.englishData || "")}</h3>
+                                <p class="srs-review-meaning">${escapeHtml(item.thaiExplanation || item.translation || item.meaning || "ลองนึกความหมายก่อน แล้วเลือกความมั่นใจของคุณ")}</p>
+                                ${item.example ? `<p class="srs-review-example">${escapeHtml(item.example)}</p>` : ""}
+                                <p class="srs-review-meta">รอบจำ ${Math.max(0, Number(srs.repetitions) || 0)} ครั้ง · ระบบจะปรับวันทบทวนตามคำตอบของคุณ</p>
+                            </article>`;
+                    }
+                    function openSrsReviewPopup() {
+                        if (!srsReviewDialog) return false;
+                        renderSrsReviewPopup();
+                        if (!srsReviewDialog.open) srsReviewDialog.showModal();
+                        return true;
+                    }
+                    function rateCurrentSrsReview(quality) {
+                        if (!currentSrsReviewItem) return;
+                        const item = currentSrsReviewItem;
+                        calculateSM2(item, quality);
+                        logTodayLearningActivity("srs_review", {
+                            label: item.englishData || "SRS review",
+                            quality,
+                            goal: getLearningGoalFromContext()
+                        });
+                        saveData();
+                        renderSrsReviewPopup();
+                        renderHomeCoachPanel?.();
+                        renderDashboard?.();
+                    }
+                    window.openEnghelperSrsReviewPopup = openSrsReviewPopup;
                     function getSmartWordOfTheDay() {
                         if (!englishDataStore || englishDataStore.length === 0) return null;
                         const learningWords = englishDataStore.filter((item) => (item.srs?.repetitions || 0) < 5);
@@ -8671,6 +8727,19 @@
                         }
                         return quality;
                     }
+                    function getAIResponseFallbackValue(property, key, payload) {
+                        const type = String(property?.type || "STRING").toUpperCase();
+                        if (key === "status") return "complete";
+                        if (key === "confidence") return "medium";
+                        if (key === "shortAnswer" || key === "answer" || key === "reply") return "ระบบจัดคำตอบให้แล้ว กรุณาตรวจรายละเอียดด้านล่าง";
+                        if (key === "explanation" || key === "thaiExplanation") return "คำตอบนี้ถูกจัดรูปแบบอัตโนมัติเพื่อให้มีคำอธิบายที่อ่านง่ายสำหรับผู้เรียน";
+                        if (key === "nextPractice") return "ลองนำคำตอบนี้ไปแต่งประโยคของตัวเองอีก 1 ประโยค";
+                        if (type === "ARRAY") return [];
+                        if (type === "OBJECT") return {};
+                        if (type === "BOOLEAN") return false;
+                        if (type === "NUMBER" || type === "INTEGER") return 0;
+                        return "";
+                    }
                     function validateAIResponseQuality(result, payload, options = {}) {
                         if (result === null || typeof result === "undefined") {
                             recordAIQualityEvent("failed", {
@@ -8680,22 +8749,50 @@
                             });
                             return result;
                         }
-                        const expectsJson = payload?.generationConfig?.responseMimeType === "application/json" || Boolean(payload?.generationConfig?.responseSchema);
-                        if (expectsJson && (typeof result !== "object" || Array.isArray(result) && payload?.generationConfig?.responseSchema?.type === "OBJECT")) {
-                            recordAIQualityEvent("schema-warning", {
-                                contextScope: options.contextScope,
-                                taskType: options.taskType,
-                                message: "AI response did not match expected JSON shape"
-                            });
-                        } else {
-                            recordAIQualityEvent("success", {
-                                contextScope: options.contextScope,
-                                taskType: options.taskType
-                            });
+                        const config = payload?.generationConfig || {};
+                        const schema = config.responseSchema;
+                        const expectsJson = config.responseMimeType === "application/json" || Boolean(schema);
+                        if (!expectsJson) {
+                            recordAIQualityEvent("success", { contextScope: options.contextScope, taskType: options.taskType });
+                            return result;
                         }
-                        return result;
+                        if (schema?.type === "ARRAY") {
+                            if (Array.isArray(result)) {
+                                recordAIQualityEvent("success", { contextScope: options.contextScope, taskType: options.taskType });
+                                return result;
+                            }
+                            recordAIQualityEvent("schema-warning", { contextScope: options.contextScope, taskType: options.taskType, message: "Expected JSON array; returned a safe empty array" });
+                            return [];
+                        }
+                        const properties = schema?.properties || {};
+                        const response = result && typeof result === "object" && !Array.isArray(result) ? { ...result } : {};
+                        const requiredKeys = Array.isArray(schema?.required) ? schema.required : [];
+                        const teachingKeys = ["shortAnswer", "explanation", "thaiExplanation", "extraExamples", "nextPractice", "status", "confidence"];
+                        const requestedKeys = [...new Set([...requiredKeys, ...teachingKeys.filter((key) => Object.prototype.hasOwnProperty.call(properties, key))])];
+                        const missing = requestedKeys.filter((key) => response[key] === null || typeof response[key] === "undefined" || response[key] === "");
+                        missing.forEach((key) => {
+                            response[key] = getAIResponseFallbackValue(properties[key], key, payload);
+                        });
+                        if (missing.length || typeof result !== "object" || Array.isArray(result)) {
+                            recordAIQualityEvent("schema-warning", { contextScope: options.contextScope, taskType: options.taskType, message: `Applied fallback to ${missing.length || 1} response field(s)` });
+                        } else {
+                            recordAIQualityEvent("success", { contextScope: options.contextScope, taskType: options.taskType });
+                        }
+                        return response;
                     }
                     window.recordAIQualityEvent = recordAIQualityEvent;
+                    window.getEnghelperDebugSnapshot = () => {
+                        normalizeLearningProfileState();
+                        return {
+                            schemaVersion: userStats.schemaVersion,
+                            aiQuality: userStats.aiQualityStats,
+                            learnerProfile: userStats.learningProfile,
+                            vocabularyCount: englishDataStore.length,
+                            dueReviewCount: getSrsDueWords().length,
+                            mistakeCount: userStats.learningMistakes.length,
+                            generatedAt: (new Date()).toISOString()
+                        };
+                    };
                     function recordLearningMistake(input = {}, options = {}) {
                         const type = normalizeLearningMistakeType(input.type || input.errorType || input.category);
                         const now = (/* @__PURE__ */ new Date()).toISOString();
@@ -9171,10 +9268,14 @@
                         }
                         if (homeWeeklyPath) {
                             const weeklyPath = getWeeklyLearningPath(profile);
+                            const memoryLine = topMistake
+                                ? `Enghelper จำได้ว่าคุณกำลังฝึก ${getLearningMistakeLabel(topMistake.type, topMistake.label)} จึงจัดแผนวันนี้ให้ตรงจุด`
+                                : `Enghelper จำเป้าหมาย ${goalLabel} ของคุณ และจะปรับแผนจากกิจกรรมที่ทำต่อไป`;
                             homeWeeklyPath.innerHTML = `
                                 <span><i class="fi fi-rr-calendar-lines-pen"></i> Learning Path</span>
                                 <span class="home-weekly-path-pill">${escapeHtml(weeklyPath.title)}</span>
                                 <span>${escapeHtml(weeklyPath.reason)}</span>
+                                <span class="home-weekly-path-memory">${escapeHtml(memoryLine)}</span>
                             `;
                         }
                     }
@@ -34894,6 +34995,25 @@
                             }
                         });
                         closeWritingCoachBtn?.addEventListener("click", () => writingCoachDialog?.close());
+                        closeSrsReviewBtn?.addEventListener("click", () => srsReviewDialog?.close());
+                        srsReviewAgainBtn?.addEventListener("click", () => rateCurrentSrsReview(1));
+                        srsReviewRememberBtn?.addEventListener("click", () => rateCurrentSrsReview(4));
+                        srsReviewBody?.addEventListener("click", (event) => {
+                            if (!event.target.closest('[data-srs-action="vocabulary"]')) return;
+                            srsReviewDialog?.close();
+                            handleHomeQuickStartAction("vocab");
+                        });
+                        mobileQuickActionBar?.addEventListener("click", (event) => {
+                            const button = event.target.closest("[data-mobile-action]");
+                            if (!button) return;
+                            const action = button.dataset.mobileAction;
+                            mobileQuickActionBar.querySelectorAll("[data-mobile-action]").forEach((item) => item.classList.toggle("active", item === button));
+                            if (action === "srs") return openSrsReviewPopup();
+                            if (action === "writing") return openWritingCoachDialog();
+                            if (action === "speaking") return handleHomeQuickStartAction("speaking");
+                            if (action === "dashboard") return dashboardBtnSidebar?.click();
+                            return homeBtnSidebar?.click();
+                        });
                         writingCoachPromptBtn?.addEventListener("click", () => {
                             if (writingCoachInput) {
                                 writingCoachInput.value = getWritingCoachPrompt(writingCoachMode?.value);
