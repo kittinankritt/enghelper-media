@@ -62017,3 +62017,370 @@ button:not(:disabled):active,
         background: var(--surface-color, #fff);
     }
 }
+
+/* Home: a calm decision surface instead of a dense hero. */
+.home-focus-view {
+    background: var(--background-color, #f8fafc);
+}
+
+.home-focus-shell {
+    min-height: auto;
+    display: block;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 34px 28px 48px;
+}
+
+.home-focus-shell::before,
+.home-focus-shell::after,
+.home-focus-shell-bg {
+    display: none !important;
+}
+
+.home-hero-card {
+    display: flex;
+    align-items: stretch;
+    gap: 18px;
+    min-height: 0;
+    max-width: 1040px;
+    text-align: left;
+}
+
+.home-hero-copy {
+    align-items: stretch;
+    gap: 18px;
+    max-width: none;
+}
+
+.home-hero-headline,
+.home-hero-text {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.home-greeting-topline {
+    gap: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.home-greeting-time,
+.home-greeting-subtitle,
+.home-greeting-separator {
+    font-size: 0.86rem;
+}
+
+.home-greeting-time {
+    color: var(--primary-color);
+    font-weight: 800;
+}
+
+.home-greeting-title {
+    font-size: clamp(1.85rem, 3.5vw, 2.7rem);
+    line-height: 1.08;
+    font-weight: 800;
+}
+
+.home-hero-value {
+    width: min(100%, 650px);
+    margin: 0;
+    color: var(--light-text-color);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    font-weight: 600;
+    text-wrap: pretty;
+}
+
+.home-insight-strip {
+    order: 2;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border-top: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+    border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+}
+
+.home-insight-pill {
+    min-width: 0;
+    min-height: 64px;
+    gap: 9px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.home-insight-pill + .home-insight-pill {
+    border-left: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+}
+
+.home-insight-pill:hover {
+    transform: none;
+    border-color: transparent;
+    box-shadow: none;
+    background: rgba(var(--theme-rgb), 0.055);
+}
+
+.home-insight-pill i {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.home-insight-pill strong {
+    font-size: 1rem;
+}
+
+.home-today-coach-panel {
+    order: 3;
+    width: 100%;
+    gap: 14px;
+    margin: 0;
+    padding: 22px;
+    border: 1px solid rgba(var(--theme-rgb), 0.18);
+    border-radius: 8px;
+    background: var(--surface-color, #fff);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.home-today-coach-header h2 {
+    font-size: clamp(1.18rem, 2vw, 1.48rem);
+}
+
+.home-coach-start-btn,
+.home-goal-btn {
+    min-height: 40px;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+.home-coach-start-btn {
+    background: var(--primary-color);
+}
+
+.home-today-coach-plan {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.home-coach-step {
+    min-height: 76px;
+    padding: 11px;
+    border-radius: 8px;
+    background: var(--background-color, #f8fafc);
+    box-shadow: none;
+}
+
+.home-coach-step:hover {
+    transform: none;
+    box-shadow: none;
+    background: rgba(var(--theme-rgb), 0.06);
+}
+
+.home-weekly-path {
+    padding-top: 4px;
+}
+
+.home-weekly-path-pill {
+    border-radius: 6px;
+}
+
+.home-quick-start-grid {
+    order: 4;
+    width: 100%;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+}
+
+.home-quick-start-action {
+    min-height: 72px;
+    justify-content: center;
+    gap: 9px;
+    padding: 10px;
+    border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+    border-radius: 8px;
+    background: var(--surface-color, #fff);
+    box-shadow: none;
+}
+
+.home-quick-start-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.home-quick-start-action i {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.home-quick-start-action strong {
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.home-quick-start-action small {
+    display: none;
+}
+
+.home-ai-composer {
+    width: 100%;
+    margin-top: 2px;
+}
+
+.home-ai-composer-shell {
+    min-height: 108px;
+    gap: 10px;
+    padding: 16px 18px 12px;
+    border-radius: 8px;
+    background: var(--surface-color, #fff);
+    border: 1px solid var(--border-color, rgba(148, 163, 184, 0.28));
+    box-shadow: none;
+}
+
+.home-ai-composer-shell:focus-within {
+    transform: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--theme-rgb), 0.1);
+}
+
+.home-ai-composer textarea {
+    min-height: 42px;
+    color: var(--text-color) !important;
+    font-size: 0.98rem;
+}
+
+.home-ai-composer textarea::placeholder {
+    color: var(--light-text-color);
+}
+
+.home-ai-composer-toolbar {
+    min-height: 38px;
+}
+
+.home-ai-tool-btn {
+    height: 36px;
+    border-radius: 6px;
+    background: var(--background-color, #f8fafc);
+    color: var(--text-color);
+    box-shadow: none;
+}
+
+.home-ai-icon-btn,
+.home-ai-send-btn {
+    width: 38px;
+    height: 38px;
+}
+
+[data-theme="dark"] .home-focus-view {
+    background: #12131a;
+}
+
+[data-theme="dark"] .home-insight-pill {
+    background: transparent;
+    box-shadow: none;
+}
+
+[data-theme="dark"] .home-insight-pill:hover,
+[data-theme="dark"] .home-coach-step:hover {
+    background: rgba(255, 255, 255, 0.055);
+}
+
+[data-theme="dark"] .home-today-coach-panel,
+[data-theme="dark"] .home-quick-start-action,
+[data-theme="dark"] .home-ai-composer-shell {
+    background: #1b1d27;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+
+[data-theme="dark"] .home-coach-step,
+[data-theme="dark"] .home-ai-tool-btn {
+    background: #242633;
+}
+
+@media (max-width: 768px) {
+    .home-focus-shell {
+        padding: 22px 14px 96px;
+    }
+
+    .home-hero-card,
+    .home-hero-copy {
+        gap: 14px;
+    }
+
+    .home-greeting-title {
+        font-size: 1.72rem;
+    }
+
+    .home-greeting-subtitle,
+    .home-greeting-separator {
+        display: none;
+    }
+
+    .home-insight-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-insight-pill {
+        min-height: 58px;
+        padding: 8px 10px;
+    }
+
+    .home-insight-pill:nth-child(3) {
+        border-left: 0;
+        border-top: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+    }
+
+    .home-insight-pill:nth-child(4) {
+        border-top: 1px solid var(--border-color, rgba(148, 163, 184, 0.22));
+    }
+
+    .home-today-coach-panel {
+        padding: 16px;
+    }
+
+    .home-today-coach-header {
+        gap: 12px;
+    }
+
+    .home-coach-actions,
+    .home-goal-btn,
+    .home-coach-start-btn {
+        width: 100%;
+    }
+
+    .home-today-coach-plan,
+    .home-quick-start-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-coach-step {
+        min-height: 70px;
+    }
+
+    .home-quick-start-action {
+        min-height: 62px;
+        justify-content: flex-start;
+    }
+
+    .home-quick-start-action:last-child {
+        grid-column: span 2;
+    }
+
+    .home-ai-composer-shell {
+        min-height: 100px;
+        padding: 14px;
+    }
+}
