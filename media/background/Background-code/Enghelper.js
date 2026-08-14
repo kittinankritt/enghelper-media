@@ -28670,13 +28670,9 @@
                         const homeGreetingTitle = document.getElementById("home-greeting-title");
                         [dashboardGreetingTitle, homeGreetingTitle].forEach((titleEl) => {
                             if (!titleEl) return;
-                            const isHomeTitle = titleEl.id === "home-greeting-title";
-                            const hasNamedProfile = userName && !["User", "Guest User"].includes(userName);
-                            titleEl.textContent = isHomeTitle
-                                ? (hasNamedProfile ? `${userName}, วันนี้ฝึกต่อกัน` : "วันนี้อยากฝึกอะไร?")
-                                : (userName || "User");
+                            titleEl.textContent = userName || "User";
                             if (userName.length > 10) {
-                                titleEl.style.fontSize = isHomeTitle ? "clamp(1.85rem, 3.5vw, 2.7rem)" : "2.8rem";
+                                titleEl.style.fontSize = titleEl.id === "home-greeting-title" ? "clamp(2.4rem, 7vw, 4.2rem)" : "2.8rem";
                             } else {
                                 titleEl.style.fontSize = "";
                             }
